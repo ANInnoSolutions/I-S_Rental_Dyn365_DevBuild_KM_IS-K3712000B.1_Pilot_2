@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxMenu xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V1">
+	<Name>ITVTRental</Name>
+	<Label>@ITVTRental:Rental</Label>
+	<Elements>
+		<AxMenuElement xmlns=""
+			i:type="AxMenuElementSubMenu">
+			<Name>Workspaces</Name>
+			<Label>@SYS:Platform_Menu_ColHeading_Workspaces</Label>
+			<Elements>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalTableWorkspace</Name>
+					<MenuItemName>ITVTRentalTableWorkspace</MenuItemName>
+				</AxMenuElement>
+			</Elements>
+		</AxMenuElement>
+		<AxMenuElement xmlns=""
+			i:type="AxMenuElementSubMenu">
+			<Name>RentalOrders</Name>
+			<Label>@ITVTRental:RentalOrders</Label>
+			<Elements>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalTableListPage</Name>
+					<MenuItemName>ITVTRentalTableListPage</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalTableListPageOpen</Name>
+					<MenuItemName>ITVTRentalTableListPageOpen</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalTableListPageProject</Name>
+					<MenuItemName>ITVTRentalTableListPageProject</MenuItemName>
+				</AxMenuElement>
+			</Elements>
+		</AxMenuElement>
+		<AxMenuElement xmlns=""
+			i:type="AxMenuElementSubMenu">
+			<Name>DeliveryAndReturn</Name>
+			<Label>@ITVTRental:DeliveryAndReturn</Label>
+			<Elements>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalLineOpenStartRental</Name>
+					<MenuItemName>ITVTRentalLineOpenStartRental</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalLineOpenEndRental</Name>
+					<MenuItemName>ITVTRentalLineOpenEndRental</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalLineOpenDeliveryForm</Name>
+					<MenuItemName>ITVTRentalLineOpenDelivery</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalOrderOpenDelivery</Name>
+					<MenuItemName>ITVTRentalOrderOpenDelivery</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalOrderOpenReturn</Name>
+					<MenuItemName>ITVTRentalOrderOpenReturn</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>InventTransferOrder</Name>
+					<MenuItemName>InventTransferOrder</MenuItemName>
+					<ShowParentModule>No</ShowParentModule>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalArrivalOverview</Name>
+					<MenuItemName>ITVTRentalArrivalOverview</MenuItemName>
+				</AxMenuElement>
+			</Elements>
+		</AxMenuElement>
+		<AxMenuElement xmlns=""
+			i:type="AxMenuElementSubMenu">
+			<Name>FixedAssets</Name>
+			<Label>@SYS334024</Label>
+			<Elements>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTAssetRentalRecon</Name>
+					<MenuItemName>ITVTAssetRentalRecon</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTAssetRentalReconGenerate</Name>
+					<MenuItemName>ITVTAssetRentalReconGenerate</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTAssetRentalReconPost</Name>
+					<MenuItemName>ITVTAssetRentalReconPost</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+			</Elements>
+		</AxMenuElement>
+		<AxMenuElement xmlns=""
+			i:type="AxMenuElementSubMenu">
+			<Name>InquiriesAndReport</Name>
+			<Label>@AccountsReceivable:SubmenuInquiriesAndReports</Label>
+			<Elements>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalOrderConfirmJour</Name>
+					<MenuItemName>ITVTRentalOrderConfirm</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTInventDimPhys</Name>
+					<MenuItemName>ITVTInventDimPhys</MenuItemName>
+					<MenuItemType>Output</MenuItemType>
+				</AxMenuElement>
+			</Elements>
+		</AxMenuElement>
+		<AxMenuElement xmlns=""
+			i:type="AxMenuElementSubMenu">
+			<Name>Periodic</Name>
+			<Label>@SYS333865</Label>
+			<Elements>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalLineStartRental</Name>
+					<MenuItemName>ITVTRentalLineStartRental</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalLineEndRental</Name>
+					<MenuItemName>ITVTRentalLineEndRental</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalOrderConfirm</Name>
+					<MenuItemName>ITVTRentalOrderConfirm</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalRunAction</Name>
+					<MenuItemName>ITVTRentalRunAction</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+					<Parameters>ITVTRentalRunService.executeRentalRun</Parameters>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalLineDeliveryQtyDelivery</Name>
+					<MenuItemName>ITVTRentalLineDeliveryQtyDelivery</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalLineDeliveryQtyReturn</Name>
+					<MenuItemName>ITVTRentalLineDeliveryQtyReturn</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalLineOpenDelivery</Name>
+					<MenuItemName>ITVTRentalLineOpenDelivery</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalDepreciation</Name>
+					<MenuItemName>ITVTRentalDepreciation</MenuItemName>
+					<MenuItemType>Action</MenuItemType>
+				</AxMenuElement>
+			</Elements>
+		</AxMenuElement>
+		<AxMenuElement xmlns=""
+			i:type="AxMenuElementSubMenu">
+			<Name>Setup</Name>
+			<Label>@SYS333869</Label>
+			<Elements>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalParameters</Name>
+					<MenuItemName>ITVTRentalParameters</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalStatus</Name>
+					<MenuItemName>ITVTRentalStatus</MenuItemName>
+				</AxMenuElement>
+				<AxMenuElement xmlns=""
+					i:type="AxMenuElementMenuItem">
+					<Name>ITVTRentalTimeUnit</Name>
+					<MenuItemName>ITVTRentalTimeUnit</MenuItemName>
+				</AxMenuElement>
+			</Elements>
+		</AxMenuElement>
+		<AxMenuElement xmlns=""
+			i:type="AxMenuElementSubMenu">
+			<Name>ITVTRental</Name>
+			<Label>@ITVTRental:Rental</Label>
+			<Elements />
+		</AxMenuElement>
+	</Elements>
+</AxMenu>
