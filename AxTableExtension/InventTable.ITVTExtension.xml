@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>InventTable.ITVTExtension</Name>
+	<FieldGroupExtensions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>ITVTRental</Name>
+			<Label>Rental</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTIsRentalItem</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalService</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ITVTFixedAssets</Name>
+			<Label>@ITVTRental:RentalItem</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTIsFixedAsset</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTFixedAssetHGBPct</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTFixedAssetIFRSPct</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTFixedAssetHGBSL</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTFixedAssetIFRSSL</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTIsRentalItem</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>NoYesID</ExtendedDataType>
+			<HelpText>@ITVTRental:IsRentalItem</HelpText>
+			<Label>@ITVTRental:IsRental</Label>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTIsFixedAsset</Name>
+			<ExtendedDataType>ITVTInventTableIsFixedAsset</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetHGBPct</Name>
+			<ExtendedDataType>ITVTFixedAssetHGBPct</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetHGBSL</Name>
+			<ExtendedDataType>ITVTFixedAssetHGBSL</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetIFRSPct</Name>
+			<ExtendedDataType>ITVTFixedAssetIFRSPct</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetIFRSSL</Name>
+			<ExtendedDataType>ITVTFixedAssetIFRSSL</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTRentalService</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>ITVTRentalServiceItemId</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>ITVTRentalServiceIdx</Name>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>ITVTRentalService</DataField>
+				</AxTableIndexField>
+				<AxTableIndexField>
+					<DataField>ItemId</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>ITVTRentalServiceInventTable</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<OnDelete>Restricted</OnDelete>
+			<RelatedTable>InventTable</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>ITVTRentalServiceInventTable</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>ITVTRentalServiceInventTable</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ITVTRentalService</Name>
+					<SourceEDT>ItemId</SourceEDT>
+					<Field>ITVTRentalService</Field>
+					<RelatedField>ItemId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+	</Relations>
+</AxTableExtension>

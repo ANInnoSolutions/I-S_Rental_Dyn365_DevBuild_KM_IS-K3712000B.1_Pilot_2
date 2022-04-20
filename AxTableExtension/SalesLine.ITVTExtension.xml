@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>SalesLine.ITVTExtension</Name>
+	<FieldGroupExtensions>
+		<AxTableFieldGroupExtension>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalAdditionalText</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalConstructionSite</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalDocumentNumber</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalMinPeriod</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTLastInvoiceDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTIsFulfilled</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroupExtension>
+		<AxTableFieldGroupExtension>
+			<Name>Delivery</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTDelivered</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTDeliveredBack</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroupExtension>
+	</FieldGroupExtensions>
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>ITVTRentalDetails</Name>
+			<Label>@SYS80118</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalTimeUnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalToDate</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTRentalTimeUnitId</Name>
+			<ExtendedDataType>ITVTRentalTimeUnitId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTRentalFromDate</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>FromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTRentalToDate</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>ToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>ITVTParentRecId</Name>
+			<ExtendedDataType>RefRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTFromQuotation</Name>
+			<ExtendedDataType>NoYesId</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFactorPercentage</Name>
+			<ExtendedDataType>ITVTRentalFactorPercentage</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTRentalPrice</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>SalesPrice</ExtendedDataType>
+			<Label>@ITVTRental:RentalPrice</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTRentalAdditionalText</Name>
+			<ExtendedDataType>ITVTRentalAdditionalText</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTRentalConstructionSite</Name>
+			<ExtendedDataType>ITVTRentalConstructionSite</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTRentalDocumentNumber</Name>
+			<ExtendedDataType>ITVTRentalDocumentNumber</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTDelivered</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>ITVTDelivered</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTDeliveredBack</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>ITVTDeliveredBack</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt">
+			<Name>ITVTRentalMinPeriod</Name>
+			<ExtendedDataType>ITVTRentalMinPeriod</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTLastInvoiceDate</Name>
+			<ExtendedDataType>ITVTRentalOrderLineLastInvoiceDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTIsFulfilled</Name>
+			<ExtendedDataType>ITVTRentalOrderLineFulfilled</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTOriginInventTransId</Name>
+			<ExtendedDataType>InventTransId</ExtendedDataType>
+			<Visible>No</Visible>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTRentFree</Name>
+			<Label>@ITVTRental:RentFree</Label>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations>
+		<AxTableRelation>
+			<Name>ITVTRentalTimeUnit</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>ITVTRentalTimeUnit</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ITVTRentalTimeUnitId</Name>
+					<Field>ITVTRentalTimeUnitId</Field>
+					<RelatedField>TimeUnitId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>ITVTOriginSalesLine</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>SalesLine</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>ITVTOriginSalesLine</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>ITVTOriginSalesLine</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ITVTOriginInventTransId</Name>
+					<SourceEDT>InventTransId</SourceEDT>
+					<Field>ITVTOriginInventTransId</Field>
+					<RelatedField>InventTransId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+	</Relations>
+</AxTableExtension>

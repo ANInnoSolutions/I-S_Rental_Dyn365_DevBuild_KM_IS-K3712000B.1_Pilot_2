@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>EcoResReleasedProductV2Staging.ITVTRental</Name>
+	<FieldGroupExtensions />
+	<FieldGroups />
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTIsRentalItem</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>NoYesID</ExtendedDataType>
+			<HelpText>@ITVTRental:IsRentalItem</HelpText>
+			<Label>@ITVTRental:IsRental</Label>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetHGBPct</Name>
+			<ExtendedDataType>ITVTFixedAssetHGBPct</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetHGBSL</Name>
+			<ExtendedDataType>ITVTFixedAssetHGBSL</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetIFRSPct</Name>
+			<ExtendedDataType>ITVTFixedAssetIFRSPct</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetIFRSSL</Name>
+			<ExtendedDataType>ITVTFixedAssetIFRSSL</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTIsFixedAsset</Name>
+			<Label>@ITVTRental:FixedAssets</Label>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations />
+</AxTableExtension>

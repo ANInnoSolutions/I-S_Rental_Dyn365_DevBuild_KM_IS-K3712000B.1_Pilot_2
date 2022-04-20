@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>SalesOrderHeaderV2Staging.ITVTExtension</Name>
+	<FieldGroupExtensions />
+	<FieldGroups />
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTIsRental</Name>
+			<ExtendedDataType>ITVTIsRental</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTRentalTimeUnitId</Name>
+			<ExtendedDataType>ITVTRentalTimeUnitId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTRentalFromDate</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>ITVTRentalFromDate</ExtendedDataType>
+			<Label>@ITVTRental:RentalStartDateRequested</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTRentalToDate</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>ITVTRentalToDate</ExtendedDataType>
+			<Label>@ITVTRental:RentalEndDateRequested</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt">
+			<Name>ITVTRentalMinPeriod</Name>
+			<ExtendedDataType>ITVTRentalMinPeriod</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTProjInventLocationId</Name>
+			<ExtendedDataType>ITVTProjInventLocationId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTUseFactorPercentage</Name>
+			<ExtendedDataType>ITVTUseFactorPercentage</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTConfirmedRentalFromDate</Name>
+			<ExtendedDataType>ITVTConfirmedRentalFromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTConfirmedRentalToDate</Name>
+			<ExtendedDataType>ITVTConfirmedRentalToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTRentalIsFulfilled</Name>
+			<ExtendedDataType>ITVTRentalIsFulfilled</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTRentalOrderAutoReservation</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>InventTransferAutoReservation</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTProjectLocationReceiptDate</Name>
+			<ExtendedDataType>ITVTProjectLocationReceiptDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTReturnDate</Name>
+			<ExtendedDataType>ITVTReturnDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTReturnReceiptDate</Name>
+			<ExtendedDataType>ITVTReturnReceiptDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTIsPendingReturn</Name>
+			<ExtendedDataType>ITVTIsPendingReturn</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations />
+</AxTableExtension>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>SalesTable.ITVTExtension2</Name>
+	<FieldGroupExtensions>
+		<AxTableFieldGroupExtension>
+			<Name>ITVTRentalGroup</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTProjectLocationReceiptDate</DataField>
+					<PositionType>AfterItem</PositionType>
+					<PreviousSibling>ITVTRentalToDate</PreviousSibling>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTReturnDate</DataField>
+					<PositionType>AfterItem</PositionType>
+					<PreviousSibling>ITVTRentalMinPeriod</PreviousSibling>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTReturnReceiptDate</DataField>
+					<PositionType>AfterItem</PositionType>
+					<PreviousSibling>ITVTRentalMinPeriod</PreviousSibling>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTIsPendingReturn</DataField>
+					<PositionType>AfterItem</PositionType>
+					<PreviousSibling>ITVTRentalMinPeriod</PreviousSibling>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalOrderAutoReservation</DataField>
+					<PositionType>AfterItem</PositionType>
+					<PreviousSibling>ITVTRentalMinPeriod</PreviousSibling>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroupExtension>
+		<AxTableFieldGroupExtension>
+			<Name>ITVTCreateRentalOrder</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTProjectLocationReceiptDate</DataField>
+					<PositionType>AfterItem</PositionType>
+					<PreviousSibling>ITVTRentalToDate</PreviousSibling>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroupExtension>
+	</FieldGroupExtensions>
+	<FieldGroups />
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTRentalOrderAutoReservation</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>InventTransferAutoReservation</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTProjectLocationReceiptDate</Name>
+			<ExtendedDataType>ITVTProjectLocationReceiptDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTReturnDate</Name>
+			<ExtendedDataType>ITVTReturnDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTReturnReceiptDate</Name>
+			<ExtendedDataType>ITVTReturnReceiptDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTIsPendingReturn</Name>
+			<ExtendedDataType>ITVTIsPendingReturn</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations />
+</AxTableExtension>

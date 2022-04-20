@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>InventSumDateTransReport.ITVTExtension</Name>
+	<FieldGroupExtensions />
+	<FieldGroups />
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTNumOfFixedAssets</Name>
+			<ExtendedDataType>Qty</ExtendedDataType>
+			<Label>@ITVTRental:NumOfFixedAssets</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTFixedAssetQty</Name>
+			<ExtendedDataType>Qty</ExtendedDataType>
+			<Label>@ITVTRental:FixedAssetQty</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTReconQty</Name>
+			<ExtendedDataType>Qty</ExtendedDataType>
+			<Label>@ITVTRental:ReconQty</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTDifference</Name>
+			<ExtendedDataType>Qty</ExtendedDataType>
+			<Label>@SYS40887</Label>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations />
+</AxTableExtension>

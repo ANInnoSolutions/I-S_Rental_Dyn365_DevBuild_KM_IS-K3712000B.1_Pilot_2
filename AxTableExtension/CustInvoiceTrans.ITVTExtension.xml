@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>CustInvoiceTrans.ITVTExtension</Name>
+	<FieldGroupExtensions />
+	<FieldGroups />
+	<FieldModifications />
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt">
+			<Name>ITVTTimeUnitCount</Name>
+			<ExtendedDataType>ITVTTimeUnitCount</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTRentalTimeUnitId</Name>
+			<ExtendedDataType>ITVTRentalTimeUnitId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTRentalFromDate</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>FromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ITVTRentalToDate</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>ToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ITVTRentalPrice</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>SalesPrice</ExtendedDataType>
+			<Label>@ITVTRental:RentalPrice</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ITVTDepreciationAdjustVoucher</Name>
+			<ExtendedDataType>ITVTDepreciationAdjustVoucher</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes />
+	<Mappings />
+	<PropertyModifications />
+	<RelationExtensions />
+	<RelationModifications />
+	<Relations />
+</AxTableExtension>
