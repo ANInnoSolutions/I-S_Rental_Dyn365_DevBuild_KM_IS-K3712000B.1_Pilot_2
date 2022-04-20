@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableFormEventHandler</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Handles events raised by <c>SalesTable</c> form.
+/// </summary>
+public class ITVTSalesTableFormEventHandler
+{
+   
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>ITVTOpenInExcel_OnClicked</Name>
+				<Source><![CDATA[
+    [FormControlEventHandler(formControlStr(SalesTable, ITVTOpenInExcel), FormControlEventType::Clicked)]
+    public static void ITVTOpenInExcel_OnClicked(FormControl sender, FormControlEventArgs e)
+    {
+        FormRun         form = sender.formRun() as FormRun;        
+        FormDataSource  ITVTRentalLine_ds = form.dataSource(formDataSourceStr(SalesTable, ITVTRentalLine)) as FormDataSource;
+        FormDataSource  salesTable_ds = form.dataSource(formDataSourceStr(SalesTable, SalesTable)) as FormDataSource;
+        ITVTRentalLine  iTVTRentalLine = ITVTRentalLine_ds.cursor();
+        SalesTable      salesTable = salesTable_ds.cursor();
+        
+        if (salesTable && formHasMethod(form, identifierStr(openRentalLinesInExcel)))
+        {
+            form.openRentalLinesInExcel(salesTable.SalesId, iTVTRentalLine);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>InventDimParmFixedRental_OnClicked</Name>
+				<Source><![CDATA[
+    [FormControlEventHandler(formControlStr(SalesTable, InventDimParmFixedRental), FormControlEventType::Clicked)]
+    public static void InventDimParmFixedRental_OnClicked(FormControl sender, FormControlEventArgs e)
+    {
+        FormRun		callerFormRun = sender.formRun() as FormRun;
+		FormRun		formRun;
+        Args		args = new Args();
+
+        // Run the InventDimParmFixed with settings from the caller form (SalesTable)
+        args.name(formstr(InventDimParmFixed));
+        args.caller(callerFormRun);
+
+        formRun = ClassFactory.formRunClass(args);
+        formRun.init();
+        formRun.run();
+        formRun.wait(); 
+        
+		// Update the visibility of rental inventory dimensions on the caller form (SalesTable)
+        callerFormRun.updateRentalInventDim();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>RentalLineGrid_ItemId_OnLookup</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    [FormControlEventHandler(formControlStr(SalesTable, RentalLineGrid_ItemId), FormControlEventType::Lookup)]
+    public static void RentalLineGrid_ItemId_OnLookup(FormControl sender, FormControlEventArgs e)
+    {
+        ITVTRentalLine::lookupRentalItemId(sender);
+
+        FormControlCancelableSuperEventArgs ce = e as FormControlCancelableSuperEventArgs;
+		ce.CancelSuperCall();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>InventLocationId_OnModified</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    [FormDataFieldEventHandler(formDataFieldStr(SalesTable, ITVTRentalLineInventDim, InventLocationId), FormDataFieldEventType::Modified)]
+    public static void InventLocationId_OnModified(FormDataObject sender, FormDataFieldEventArgs e)
+    {
+        FormDataSource	itvtRentalLineInventDim_ds	= sender.datasource();
+        InventDim		itvtRentalLineInventDim = itvtRentalLineInventDim_ds.cursor();
+        itvtRentalLineInventDim = ITVTRentalLine::inventLocationModified(itvtRentalLineInventDim);
+    }
+    
+
+
+	/*
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    [FormDataFieldEventHandler(formDataFieldStr(SalesTable, SalesLine, ItemId), FormDataFieldEventType::Validating)]
+    public static void ItemId_OnValidating(FormDataObject sender, FormDataFieldEventArgs e)
+    {
+        
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    [FormDataFieldEventHandler(formDataFieldStr(SalesTable, SalesLine, ItemId), FormDataFieldEventType::Modified)]
+    public static void ItemId_OnModified(FormDataObject sender, FormDataFieldEventArgs e)
+    {
+        var dataObject = sender as FormDataObject;
+        if (dataObject != null)
+        {
+            var datasource = dataObject.datasource() as FormDataSource;
+            if (datasource != null)
+            {
+                SalesLine salesLine = datasource.cursor() as SalesLine;
+
+                if (salesLine.inventTable().ITVTIsRentalItem)
+                {
+                    warning("@ITVTRental:SalesLineRentalItemWarning");
+                }
+            }
+        }
+    }
+	*/
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

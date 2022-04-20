@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableListPageForm_SalesTable_DS_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(formDataSourceStr(SalesTableListPage, SalesTable))]
+final class ITVTSalesTableListPageForm_SalesTable_DS_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>active</Name>
+				<Source><![CDATA[
+    int active()
+    {
+        int ret = next active();
+
+        SalesTable salesTableLocal = this.cursor();
+        FormDataSource salesTableDS = this;
+        FormRun salesTableListPageForm = salesTableDS.formRun();
+
+        salesTableListPageForm.design().controlName(formControlStr(SalesTableListPage, ITVTRentalRunAction)).enabled(salesTableLocal.ITVTIsRental);
+        salesTableListPageForm.design().controlName(formControlStr(SalesTableListPage, ITVTRentalOrderConfirmJournal)).enabled(salesTableLocal.ITVTIsRental);
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

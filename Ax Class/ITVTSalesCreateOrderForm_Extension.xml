@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesCreateOrderForm_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension for table sales line
+/// </summary>
+[ExtensionOf(formStr(SalesCreateOrder))]
+final class ITVTSalesCreateOrderForm_Extension
+{
+    private ITVTIsRental	            isRental;
+    private ITVTProjInventLocationId    projInventLocationId;
+    private CustAccount                 projCustAccount;
+    private CustAccount                 custAccount;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>isRental</Name>
+				<Source><![CDATA[
+    public ITVTIsRental isRental()
+    {
+        return isRental;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>projInventLocationId</Name>
+				<Source><![CDATA[
+    public ITVTProjInventLocationId projInventLocationId()
+    {
+        return projInventLocationId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>projCustAccount</Name>
+				<Source><![CDATA[
+    public CustAccount projCustAccount()
+    {
+        return projCustAccount;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>custAccount</Name>
+				<Source><![CDATA[
+    public CustAccount custAccount()
+    {
+        return custAccount;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    void init()
+    {
+        next init();
+
+        isRental                = salesTableForm.parmIsRental();
+        projInventLocationId    = salesTableForm.parmProjInventLocationId();
+        projCustAccount         = salesTableForm.parmProjCustAccount();
+
+        if (isRental)
+        {
+            if (salesTableForm.custAccount())
+				custAccount     = salesTableForm.custAccount();
+        }
+
+        this.setProjLocation(isRental);
+	}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setProjLocation</Name>
+				<Source><![CDATA[
+    public void setProjLocation(boolean _isRental = false)
+    {
+        if (_isRental)
+        {
+            ITVTProjLocation.allowEdit(true);
+            ITVTCreateProjLocation createProjLocation = ITVTRentalParameters::find().CreateProjLocation;
+            ITVTProjLocation.value(createProjLocation);
+        }
+		else
+        {
+            ITVTProjLocation.allowEdit(false);
+            ITVTProjLocation.value(NoYes::No);
+        }
+
+        this.setMainLocation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setMainLocation</Name>
+				<Source><![CDATA[
+    public void setMainLocation()
+    {
+        if (ITVTProjLocation.value())
+        {
+            ITVTMainLocation.allowEdit(true);
+            ITVTMainLocation.text(InventParameters::find().FallbackInventLocationId);
+        }
+        else
+        {
+            ITVTMainLocation.allowEdit(false);
+            ITVTMainLocation.text('');
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createProjectWarehouse</Name>
+				<Source><![CDATA[
+    public void createProjectWarehouse()
+    {
+        if (ITVTProjLocation.value())
+        {
+            ITVTProjInventLocationCreatorController::runNoDialog(salesTable, ITVTMainLocation.text());
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

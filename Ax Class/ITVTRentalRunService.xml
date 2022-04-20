@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalRunService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// An operation which is used for creating rental service order lines
+/// </summary>
+class ITVTRentalRunService extends SysOperationServiceBase
+{
+    #TimeConstants
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>getRentalRunPeriods</Name>
+				<Source><![CDATA[
+    protected ITVTRentRunPeriodTmp getRentalRunPeriods(ITVTRentalLine _rentalLine, TransDate _rentalRunDate)
+    {
+        ITVTRentRunPeriodTmp rentRunPeriodTmp;
+
+        TransDate           rentalFromDate = _rentalLine.RentalRunToDate ? _rentalLine.RentalRunToDate + 1 : _rentalLine.PostedRentalFromDate;;
+        TransDate           rentalToDate;
+        ITVTTimeUnitCount   numberOfTimeUnits;
+        ITVTRentalTimeUnit  rentalTimeUnit = ITVTRentalTimeUnit::find(_rentalLine.RentalTimeUnitId);
+
+        do
+        {
+            TransDate tmpDate;
+            switch (rentalTimeUnit.BaseUnit)
+            {
+                case ITVTRentalTimeBaseUnit::Month:
+                    rentalToDate = dateMthFwd(dateStartMth(rentalFromDate), rentalTimeUnit.TimeUnits) - 1;
+                    break;
+
+                case ITVTRentalTimeBaseUnit::Week:
+                    rentalToDate = ITVTRentalParameters::dateStartWk(rentalFromDate) + (rentalTimeUnit.TimeUnits * #daysPerWeek) - 1;
+                    break;
+
+                case ITVTRentalTimeBaseUnit::Day:
+                    rentalToDate = rentalFromDate + rentalTimeUnit.TimeUnits - 1;
+                    break;
+            }
+
+            boolean rentFree = this.isPeriodFullyFree(_rentalLine,rentalFromDate,rentalToDate);
+
+            if (!rentRunPeriodTmp || rentRunPeriodTmp.RentFree != rentFree)
+            {
+                rentRunPeriodTmp.clear();
+                rentRunPeriodTmp.initFromRentalLine(_rentalLine);
+                rentRunPeriodTmp.FromDate   = rentalFromDate;
+                rentRunPeriodTmp.ToDate     = rentalToDate;
+                rentRunPeriodTmp.RentFree   = rentFree;
+            }
+            else
+            {
+                rentRunPeriodTmp.ToDate     = rentalToDate;
+            }
+
+            rentRunPeriodTmp.NumberOfTimeUnits++;
+            rentRunPeriodTmp.write();           
+            
+            rentalFromDate = rentalToDate+1;
+        }
+        while (rentalToDate < _rentalRunDate);      
+        
+        return rentRunPeriodTmp;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isPeriodFullyFree</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// If at least 1 day is chargeable, then whole period is chargeable
+    /// </summary>
+    /// <param name = "_rentalLine"></param>
+    /// <param name = "_fromDate"></param>
+    /// <param name = "_toDate"></param>
+    /// <returns></returns>
+    private boolean isPeriodFullyFree(ITVTRentalLine _rentalLine, TransDate _fromDate, TransDate _toDate)
+    {
+        ITVTRentFreePeriod freePeriod;
+        TransDate checkDate = _fromDate;
+
+        select firstfast firstonly freePeriod
+            where  freePeriod.SalesId == _rentalLine.SalesId
+            && (freePeriod.InventTransId == _rentalLine.InventTransId || !freePeriod.InventTransId);
+
+        if (!freePeriod)
+            return false;
+        
+        while (checkDate <= _toDate)
+        {
+            select firstfast firstonly freePeriod
+                where  freePeriod.SalesId == _rentalLine.SalesId
+                    && (freePeriod.InventTransId == _rentalLine.InventTransId || !freePeriod.InventTransId)
+                    && freePeriod.FromDate <= checkDate
+                    && freePeriod.ToDate >= checkDate;
+
+            if (!freePeriod)
+                return false;
+
+            checkDate++;
+        }            
+        
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getRentalTerms</Name>
+				<Source><![CDATA[
+    private container getRentalTerms(
+        ITVTRentalLine          _rentalLine,
+        TransDate               _rentalRunDate)
+    {        
+        TransDate           rentalFromDate = _rentalLine.RentalRunToDate ? _rentalLine.RentalRunToDate + 1 : _rentalLine.PostedRentalFromDate;;
+        TransDate           rentalToDate;
+        ITVTTimeUnitCount   numberOfTimeUnits;
+        ITVTRentalTimeUnit  rentalTimeUnit = ITVTRentalTimeUnit::find(_rentalLine.RentalTimeUnitId);
+        
+        utcdatetime tmpDateUtc;
+        utcdatetime rentalRunDateUtc = DateTimeUtil::newDateTime(_rentalRunDate,0);
+        switch (rentalTimeUnit.BaseUnit)
+        {
+            case ITVTRentalTimeBaseUnit::Month:
+                tmpDateUtc = DateTimeUtil::newDateTime(dateStartMth(rentalFromDate)-1,0);
+                do 
+                {
+                    numberOfTimeUnits++;
+                    tmpDateUtc =  DateTimeUtil::addMonths(tmpDateUtc,rentalTimeUnit.TimeUnits);
+                }
+                while (tmpDateUtc < rentalRunDateUtc);
+                rentalToDate = DateTimeUtil::date(tmpDateUtc);
+                break;
+
+            case ITVTRentalTimeBaseUnit::Week:
+                //tmpDateUtc = DateTimeUtil::newDateTime(dateStartWk(rentalFromDate)-1,0);
+                tmpDateUtc = DateTimeUtil::newDateTime(ITVTRentalParameters::dateStartWk(rentalFromDate)-1,0);
+                do
+                {
+                    numberOfTimeUnits++;
+                    tmpDateUtc =  DateTimeUtil::addDays(tmpDateUtc,rentalTimeUnit.TimeUnits * #daysPerWeek);
+                }
+                while (tmpDateUtc < rentalRunDateUtc);
+                rentalToDate = DateTimeUtil::date(tmpDateUtc);
+                break;
+
+            case ITVTRentalTimeBaseUnit::Day:
+                tmpDateUtc = DateTimeUtil::newDateTime(rentalFromDate-1,0);
+                do
+                {
+                    numberOfTimeUnits++;
+                    tmpDateUtc =  DateTimeUtil::addDays(tmpDateUtc,rentalTimeUnit.TimeUnits);
+                }
+                while (tmpDateUtc < rentalRunDateUtc);
+                rentalToDate = DateTimeUtil::date(tmpDateUtc);
+                break;
+        }
+
+        return [rentalFromDate,rentalToDate,numberOfTimeUnits];
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>executeRentalRun</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// The method runs customization logic for the service
+    /// </summary>
+    /// <param name = "_contract">The service's contract</param>
+    public void executeRentalRun(ITVTRentalRunContract _contract)
+    {
+        RecordInsertList    ril = new RecordInsertList(tableNum(SalesLine));
+
+        QueryRun qRun = new QueryRun(this.buildRentalRunQuery(_contract.getQuery(), _contract.parmRentalRunDate()));
+
+        ttsbegin;
+
+        while (qRun.next())
+        {
+            ITVTRentalLine   rentalLine   = qRun.get(tableNum(ITVTRentalLine));
+            InventTable      inventTable = qRun.get(tableNum(InventTable));
+
+            ITVTRentRunPeriodTmp runPeriodTmp = this.getRentalRunPeriods(rentalLine, _contract.parmRentalRunDate());
+
+            while select runPeriodTmp
+                order by FromDate
+            {
+                SalesLine   newSalesLine = this.createSalesLine(rentalLine, inventTable, runPeriodTmp);
+
+                if (newSalesLine.ITVTRentalToDate < rentalLine.PostedRentalFromDate )
+                {
+                    continue;
+                }
+            
+                if (newSalesLine.validateWrite())
+                {
+                    newSalesLine.insert();
+                    // ril.add(newSalesLine);
+                }
+
+                newSalesLine.reread();
+                if (newSalesLine.RecId)
+                {
+					rentalLine.selectForUpdate(true);
+					rentalLine.reread();
+					rentalLine.RentalRunToDate = newSalesLine.ITVTRentalToDate;
+					rentalLine.update();
+                }
+            }            
+        }
+
+        // ril.insertDatabase();
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createSalesLine</Name>
+				<Source><![CDATA[
+    protected SalesLine createSalesLine(ITVTRentalLine _rentalLine, InventTable _inventTable, ITVTRentRunPeriodTmp _runPeriodTmp)
+    {
+        SalesLine   newSalesLine;
+
+        newSalesLine.clear();
+        newSalesLine.initValue();
+        newSalesLine.initFromSalesTable(_rentalLine.salesTable());
+
+        newSalesLine.ITVTOriginInventTransId  = _rentalLine.InventTransId;
+
+        newSalesLine.LineNum  = (_rentalLine.LineNum * 2 + 1) / 2;
+
+        newSalesLine.ItemId   = _inventTable.ITVTRentalService;
+        newSalesLine.modifiedField(fieldNum(SalesLine, ItemId));
+        newSalesLine.initFromInventTable(newSalesLine.inventTable());
+
+        newSalesLine.SalesQty = _rentalLine.Qty;
+        newSalesLine.salesQtyModified();
+
+        newSalesLine.SalesUnit = newSalesLine.inventTable().salesUnitId();
+        newSalesLine.ITVTRentalFromDate = _runPeriodTmp.FromDate;
+        newSalesLine.ITVTRentalToDate		= _runPeriodTmp.ToDate;
+        newSalesLine.ShippingDateRequested	= _runPeriodTmp.ToDate;
+        newSalesLine.ReceiptDateRequested   = _runPeriodTmp.ToDate;
+        newSalesLine.ITVTTimeUnitCount  = _runPeriodTmp.NumberOfTimeUnits;
+
+        newSalesLine.ITVTRentFree   = _runPeriodTmp.RentFree;
+        if (_runPeriodTmp.RentFree)
+        {
+            newSalesLine.ITVTRentalPrice    = 0;
+        }
+        else
+        {
+            newSalesLine.ITVTRentalPrice    = _rentalLine.RentalPrice;
+        }
+
+        /*
+        newSalesLine.SalesPrice             = (rentalLine.SalesPrice * newSalesLine.ITVTFactorPercentage * rentalTimeUnit.NumOfDays * rentalTimeUnit.TimeUnits) /
+                                                dayOfMth(lastDateOfRentalMouth);
+        */
+        newSalesLine.LineDisc               = _rentalLine.LineDisc;
+        newSalesLine.LinePercent            = _rentalLine.LinePercent;
+        newSalesLine.SalesPrice             = newSalesLine.ITVTRentalPrice * newSalesLine.ITVTTimeUnitCount;
+        newSalesLine.modifiedField(fieldNum(SalesLine, SalesPrice));
+
+        newSalesLine.ITVTRentalTimeUnitId   = _rentalLine.RentalTimeUnitId;
+
+        newSalesLine.TaxGroup               = _rentalLine.TaxGroup;
+        newSalesLine.TaxItemGroup           = _rentalLine.TaxItemGroup;
+
+        return newSalesLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>buildRentalRunQuery</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It builds an iterable query which is used in the selection of the rental order lines
+    /// </summary>
+    /// <param name = "_query">The query containing sales orders</param>
+    /// <param name = "_rentalRunDate">The rental run date</param>
+    /// <returns>The built query</returns>
+    protected Query buildRentalRunQuery(
+        Query _query,
+        TransDate _rentalRunDate)
+    {
+        Query ret = _query;
+
+        QueryBuildDataSource salesTableQbds = ret.dataSourceTable(tableNum(SalesTable));
+        QueryBuildDataSource rentalLineQbds = salesTableQbds.addDataSource(tableNum(ITVTRentalLine));
+        
+        rentalLineQbds.addLink(fieldNum(SalesTable, SalesId), fieldNum(ITVTRentalLine, SalesId));
+
+        date today = DateTimeUtil::getToday(DateTimeUtil::getUserPreferredTimeZone());
+
+        SysQuery::findOrCreateRange(rentalLineQbds, fieldNum(ITVTRentalLine, PostedRentalFromDate)).value(SysQuery::valueNot(DateTimeUtil::date(DateTimeUtil::minValue())));
+        SysQuery::findOrCreateRange(rentalLineQbds, fieldNum(ITVTRentalLine, RentalRunToDate)).value(SysQueryRangeUtil::lessThanDate(_rentalRunDate - today));
+        SysQuery::findOrCreateRange(rentalLineQbds, fieldNum(ITVTRentalLine, RentalTimeUnitId)).value(SysQuery::valueNotEmptyString());
+        
+        QueryBuildDataSource inventTableQbds = rentalLineQbds.addDataSource(tableNum(InventTable));
+        
+        inventTableQbds.relations(true);
+        inventTableQbds.joinMode(JoinMode::InnerJoin);
+        inventTableQbds.fetchMode(QueryFetchMode::One2One);
+
+        SysQuery::findOrCreateRange(inventTableQbds, fieldNum(InventTable, ItemType)).value(SysQuery::value(ItemType::Item));
+        SysQuery::findOrCreateRange(inventTableQbds, fieldNum(InventTable, ITVTRentalService)).value(SysQuery::valueNotEmptyString());
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

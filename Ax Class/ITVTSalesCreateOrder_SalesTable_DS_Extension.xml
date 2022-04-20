@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesCreateOrder_SalesTable_DS_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for datasource SalesTable on the SalesCreateOrder form
+/// </summary>
+[ExtensionOf(formDataSourceStr(SalesCreateOrder, SalesTable))]
+final class ITVTSalesCreateOrder_SalesTable_DS_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initValue</Name>
+				<Source><![CDATA[
+    void initValue()
+    {
+        SalesTable				salesTableLocal  = this.cursor();
+        ITVTRentalParameters	rentalParameters = ITVTRentalParameters::find();
+        
+        salesTableLocal.ITVTIsRental             = element.isRental();
+        salesTableLocal.ITVTRentalTimeUnitId     = rentalParameters.TimeUnitId;
+        salesTableLocal.ITVTProjInventLocationId = element.projInventLocationId();
+        salesTableLocal.ITVTUseFactorPercentage  = rentalParameters.UseFactorPercentage;
+
+        salesTableLocal.ITVTRentalFromDate       = DateTimeUtil::getToday(DateTimeUtil::getUserPreferredTimeZone());
+        salesTableLocal.ITVTRentalToDate         = dateMax();
+        
+        next initValue();
+
+        if (element.custAccount())
+        {
+            salestableLocal.CustAccount          = element.custAccount();
+        }
+        else
+        {
+            salestableLocal.CustAccount          = element.projCustAccount();
+        }
+        salesTableLocal.initFromCustTable();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>write</Name>
+				<Source><![CDATA[
+    void write()
+    {
+        next write();
+
+        if (element.closedOK()
+            && element.salesTable.RecId)
+        {
+            element.createProjectWarehouse();
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

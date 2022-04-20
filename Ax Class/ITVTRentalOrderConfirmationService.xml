@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderConfirmationService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The service class which contains logic for Rental order confirmation
+/// </summary>
+class ITVTRentalOrderConfirmationService extends SysOperationServiceBase
+{
+    Set                     postedConfirmations;
+    LineNum                 rentalOrderTransLineNum;
+    RecordInsertList        rilRentalOrderTrans;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    private void init()
+    {
+        postedConfirmations = new Set(Types::Int64);
+        rilRentalOrderTrans = new RecordInsertList(tableNum(ITVTRentalOrderTrans));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runConfirmation</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the logic to start rental lines
+    /// </summary>
+    /// <param name = "_contract">The used contract</param>
+    public void runConfirmation(ITVTRentalOrderConfirmationContract _contract)
+    {
+        this.init();
+
+        ttsbegin;
+
+        Query query = this.initQuery(_contract);
+
+        QueryRun queryRun = new QueryRun(query);
+        SalesTable salesTable;
+
+        while (queryRun.next())
+        {
+            salesTable = queryRun.get(tableNum(SalesTable));
+            
+            if (ITVTRentalLine::exist(salesTable.SalesId))
+            {
+                this.confirmSalesOrder(salesTable);
+                this.postProcessSalesOrder(salesTable);
+            }
+        }
+
+        ttscommit;
+
+        if (!this.isExecutingInBatch() 
+            && _contract.parmPrintConfirmation())
+        {
+            this.printConfirmations();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postProcessSalesOrder</Name>
+				<Source><![CDATA[
+    delegate void postProcessSalesOrder(SalesTable _salesTable)
+    {
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initQuery</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes query
+    /// </summary>
+    /// <param name = "_contract">Service contract</param>
+    /// <returns>Query with valid ranges</returns>
+    protected Query initQuery(ITVTRentalOrderConfirmationContract _contract)
+    {
+        Query query = _contract.getQuery();
+        
+        QueryBuildDataSource qbdsSalesTable = query.dataSourceTable(tableNum(SalesTable));
+        qbdsSalesTable.addRange(fieldNum(SalesTable, SalesType)).value(this.salesType(_contract));
+
+        return query;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesType</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets sales type range value for processing confirmations
+    /// </summary>
+    /// <param name = "_contract">Service contract</param>
+    /// <returns>Applicable sales types</returns>
+    protected str salesType(ITVTRentalOrderConfirmationContract _contract)
+    {
+        return SysQuery::valueNot(SalesType::Journal);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>printConfirmations</Name>
+				<Source><![CDATA[
+    private void printConfirmations()
+    {
+        SetEnumerator si = postedConfirmations.getEnumerator();
+
+        while (si.moveNext())
+        {
+            ITVTRentalOrderJour rentalOrderJour = ITVTRentalOrderJour::findRecId(si.current());
+            this.printConfirmation(rentalOrderJour);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>printConfirmation</Name>
+				<Source><![CDATA[
+    private void printConfirmation(ITVTRentalOrderJour _rentalOrderJour)
+    {
+        Args args = new Args();
+        args.record(_rentalOrderJour);
+        args.menuItemType(MenuItemType::Output);
+        args.menuItemName(menuItemOutputStr(ITVTRentalOrderConfirm));
+        ITVTRentalOrderConfirmController::main(args);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>confirmSalesOrder</Name>
+				<Source><![CDATA[
+    private void confirmSalesOrder(SalesTable _salesTable)
+    {
+        ITVTRentalOrderJour rentalOrderJour = this.createRentalOrderJour(_salesTable);
+        
+        this.createRentalOrderLines(rentalOrderJour);
+
+        postedConfirmations.add(rentalOrderJour.RecId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initJournalHeader</Name>
+				<Source><![CDATA[
+    private void initJournalHeader(
+        ITVTRentalOrderJour _rentalOrderJour,
+        SalesTable          _salesTable)
+    {
+        _rentalOrderJour.initValue();
+
+        _rentalOrderJour.ConfirmId           = this.getJournalNumber();
+        _rentalOrderJour.ConfirmDate         = DateTimeUtil::getToday(DateTimeUtil::getUserPreferredTimeZone());
+
+        _rentalOrderJour.initFromSalesTable(_salesTable);
+        _rentalOrderJour.setDocNum(_salesTable);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>numberSequenceReferenceNum</Name>
+				<Source><![CDATA[
+    private NumberSequenceReference numberSequenceReferenceNum()
+    {
+        return SalesParameters::numRefConfirmId();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getJournalNumber</Name>
+				<Source><![CDATA[
+    private Num getJournalNumber()
+    {
+        NumberSeq numberSeq = NumberSeq::newGetNum(this.numberSequenceReferenceNum());
+        return numberSeq.num();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRentalOrderJour</Name>
+				<Source><![CDATA[
+    private ITVTRentalOrderJour createRentalOrderJour(SalesTable _salesTable)
+    {
+        ITVTRentalOrderJour rentalOrderJour;
+
+        this.initJournalHeader(rentalOrderJour, _salesTable);
+
+        ITVTRentalLine rentalLine;
+
+        select sum(LineAmount) from rentalLine
+            where rentalLine.SalesId == _salesTable.SalesId;
+
+        rentalOrderJour.ConfirmAmount     = rentalLine.LineAmount;
+        
+        rentalOrderJour.insert();
+
+        return rentalOrderJour;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRentalOrderLines</Name>
+				<Source><![CDATA[
+    private void createRentalOrderLines(ITVTRentalOrderJour _rentalOrderJour)
+    {
+        ITVTRentalLine rentalLine;
+
+        while select rentalLine
+            where rentalLine.SalesId == _rentalOrderJour.SalesId
+        {
+            this.createRentalOrderTrans(_rentalOrderJour, rentalLine);
+        }
+
+        rilRentalOrderTrans.insertDatabase();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRentalOrderTrans</Name>
+				<Source><![CDATA[
+    private void createRentalOrderTrans(
+        ITVTRentalOrderJour     _rentalOrderJour,
+        ITVTRentalLine          _rentalLine)
+    {
+
+        ITVTRentalOrderTrans rentalOrderTrans;
+
+        rentalOrderTrans.initFromRentalLine(_rentalLine);
+        rentalOrderTrans.LineNum = rentalOrderTransLineNum;
+        rentalOrderTrans.ITVTRentalOrderJourRecId = _rentalOrderJour.RecId;
+
+        rilRentalOrderTrans.add(rentalOrderTrans);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

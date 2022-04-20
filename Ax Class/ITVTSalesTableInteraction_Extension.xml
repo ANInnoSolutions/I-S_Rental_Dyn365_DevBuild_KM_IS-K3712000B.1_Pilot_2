@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableInteraction_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for <c>SalesTableInteraction</c> class
+/// </summary>
+[ExtensionOf(classStr(SalesTableInteraction))]
+final class ITVTSalesTableInteraction_Extension
+{
+    #localmacro.SetEnabled
+        macroFormControlStr = %1;
+        if (page.actionPaneControlVisible(macroFormControlStr))
+        {
+            page.actionPaneControlEnabled(macroFormControlStr, %2);
+        }
+    #endmacro
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>enableHeaderActions</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Enables or disables the header level menu items.
+    /// </summary>
+    public void enableHeaderActions()
+    {
+        next enableHeaderActions();
+
+        this.itvtEnableHeaderSell();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>itvtEnableHeaderSell</Name>
+				<Source><![CDATA[
+    private void itvtEnableHeaderSell()
+    {
+        #SetEnabled(formcontrolstr(SalesTable, ITVTRentalOrderConfirmJournal), salesTableInteractionHelper.parmExistsRentalConfirmation())
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>enableHeaderUpdateJournalActions</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Enables or disables the header level journal menu items.
+    /// </summary>
+    protected void enableHeaderUpdateJournalActions()
+    {
+        next enableHeaderUpdateJournalActions();
+
+        #SetEnabled(formcontrolstr(SalesTable, ITVTRentalOrderConfirm), salesTableInteractionHelper.parmCanRentalConfirmationBeUpdated())
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

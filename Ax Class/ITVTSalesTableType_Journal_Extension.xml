@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableType_Journal_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension of the SalesTableType_Journal class
+/// </summary>
+[ExtensionOf(classStr(SalesTableType_Journal))]
+final class ITVTSalesTableType_Journal_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>canTypeBeChanged</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Determines whether the sales order type can be changed.
+    /// </summary>
+    /// <returns>
+    ///    true if the sales order type can be changed; otherwise, false.
+    /// </returns>
+    public boolean canTypeBeChanged()
+    {
+        boolean ret = next canTypeBeChanged();
+
+        ret = ret && this.validateSalesTypeChangeToJournal();
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateSalesTypeChangeToJournal</Name>
+				<Source><![CDATA[
+    private boolean validateSalesTypeChangeToJournal()
+    {
+        boolean ret = true;
+
+        InventTransferTable inventTransferTable;
+
+        select firstonly RecId from inventTransferTable
+            where inventTransferTable.ITVTOriginSalesId == salesTable.SalesId
+                && inventTransferTable.TransferStatus != InventTransferStatus::Created;
+
+        if (inventTransferTable.RecId)
+        {
+            ret =  checkFailed("@ITVTRental:OrderTypeCannotChange");
+        }
+
+        ITVTRentalLine rentalLine;
+
+        select firstonly RecId from rentalLine
+            where rentalLine.SalesId == salesTable.SalesId
+               && rentalLine.Status != ITVTRentalLineStatus::Created;
+
+        if (rentalLine.RecId)
+        {
+            ret =  checkFailed("@ITVTRental:OrderTypeCannotChange");
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

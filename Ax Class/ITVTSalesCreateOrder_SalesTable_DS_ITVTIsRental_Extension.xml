@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesCreateOrder_SalesTable_DS_ITVTIsRental_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Class extension for datasource field SalesTable.ITVTIsRental on SalesCreateOrder form
+/// </summary>
+[ExtensionOf(formDataFieldStr(SalesCreateOrder, SalesTable, ITVTIsRental))]
+final class ITVTSalesCreateOrder_SalesTable_DS_ITVTIsRental_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>modified</Name>
+				<Source><![CDATA[
+    public void modified()
+    {
+        SalesTable		salesTable;
+        FormDataSource	fds;
+        FormDataObject	fdo = any2Object(this) as FormDataObject;
+
+        next modified();
+
+        fds			= fdo.datasource();
+        salesTable	= fds.cursor();
+        
+        element.setProjLocation(salesTable.ITVTIsRental);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

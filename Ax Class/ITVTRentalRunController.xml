@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalRunController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// A service controller for the <c>ITVTRentalRunService</c> operation
+/// </summary>
+class ITVTRentalRunController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalRunController instance = ITVTRentalRunController::construct();
+
+        instance.initializeFromArgs(_args);
+        instance.initContractFromArgs(_args);
+        instance.parmShowDialog(true);
+        instance.parmShowProgressForm(true);
+
+        if (instance.prompt())
+        {
+            instance.runOperation();
+        }
+
+        if (_args.record()
+            && _args.caller() is FormRun)
+        {
+            FormObjectSet datasource = FormDataUtil::getFormDataSource(_args.record());
+
+            if (datasource)
+            {
+                datasource.research(true);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    public static ITVTRentalRunController construct()
+    {
+        return new ITVTRentalRunController();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContractFromArgs</Name>
+				<Source><![CDATA[
+    private void initContractFromArgs(Args _args)
+    {
+        ITVTRentalRunContract contract = this.getDataContractObject();
+        Query query = new Query();
+        QueryBuildDataSource qbdsSalesTable = query.addDataSource(tableNum(SalesTable));
+
+        if (_args
+            && _args.record()
+            && _args.caller() is FormRun)
+        {
+            MultiSelectionHelper multiselectionHelper = MultiSelectionHelper::createFromCaller(_args.caller());
+            SalesTable           salesTable = multiselectionHelper.getFirst();
+
+            while (salesTable)
+            {
+                if (!salesTable.ITVTIsRental)
+                {
+                    throw Error(Error::missingRecord("@ITVTRental:RentalOrders"));
+                }
+
+                qbdsSalesTable.addRange(fieldNum(SalesTable, SalesId)).value(queryValue(salesTable.SalesId));
+                salesTable = multiselectionHelper.getNext();
+            }
+        }
+
+        contract.setQuery(query);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContractFromSalesOrder</Name>
+				<Source><![CDATA[
+    private void initContractFromSalesOrder(
+        SalesId     _salesId,
+        TransDate   _rentalRunDate)
+    {
+        ITVTRentalRunContract contract = this.getDataContractObject();
+        Query query = new Query();
+        QueryBuildDataSource qbdsSalesTable = query.addDataSource(tableNum(SalesTable));
+
+        qbdsSalesTable.addRange(fieldNum(SalesTable, SalesId)).value(queryValue(_salesId));
+        
+        contract.setQuery(query);
+
+        contract.parmRentalRunDate(_rentalRunDate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canGoBatch</Name>
+				<Source><![CDATA[
+    public boolean canGoBatch()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canRunInNewSession</Name>
+				<Source><![CDATA[
+    protected boolean canRunInNewSession()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>afterOperation</Name>
+				<Source><![CDATA[
+    protected void afterOperation(SysOperationExecutionMode _executionMode, AifAsyncResult _asyncResult)
+    {
+        super(_executionMode, _asyncResult);
+
+        if (args
+            && args.record())
+        {
+            FormDataSource fds = FormDataUtil::getFormDataSource(args.record());
+
+            if (fds)
+            {
+                fds.research(true);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runSalesOrder</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Run operation for specific Sales order
+    /// </summary>
+    /// <param name = "_salesId">Sales id</param>
+    /// <param name = "_rentalRunDate">Rental run date</param>
+    public static void runSalesOrder(
+        SalesId     _salesId,
+        TransDate   _rentalRunDate)
+    {
+        ITVTRentalRunController controller = new ITVTRentalRunController();
+
+        controller.parmClassName(classStr(ITVTRentalRunService));
+        controller.parmMethodName(methodStr(ITVTRentalRunService, executeRentalRun));
+        controller.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+
+        controller.initContractFromSalesOrder(_salesId, _rentalRunDate);
+        controller.parmShowDialog(false);
+        controller.runOperation();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

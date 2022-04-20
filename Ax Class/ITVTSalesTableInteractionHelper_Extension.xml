@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableInteractionHelper_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for <c>SalesTableInteractionHelper</c> class
+/// </summary>
+[ExtensionOf(classStr(SalesTableInteractionHelper))]
+final class ITVTSalesTableInteractionHelper_Extension
+{
+    private UnknownNoYes existsRentalConfirmation;
+    private UnknownNoYes canRentalConfirmationBeUpdated;
+
+    #localmacro.GetCached
+        if (%1 == UnknownNoYes::Unknown)
+        {
+            %1 = (
+                %2
+                ) ? UnknownNoYes::Yes : UnknownNoYes::No;
+        }
+        return %1 == UnknownNoYes::Yes;
+    #endmacro
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmExistsRentalConfirmation</Name>
+				<Source><![CDATA[
+    public boolean parmExistsRentalConfirmation()
+    {
+        #GetCached(existsRentalConfirmation, salesTable.lastRentalConfirmation() != '')
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCanRentalConfirmationBeUpdated</Name>
+				<Source><![CDATA[
+    public boolean parmCanRentalConfirmationBeUpdated()
+    {
+        #GetCached(canRentalConfirmationBeUpdated, ITVTRentalLine::exist(salesTable.SalesId))
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

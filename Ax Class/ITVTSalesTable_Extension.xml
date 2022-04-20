@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTable_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for table SalesTable
+/// </summary>
+[ExtensionOf(tablestr(SalesTable))]
+final class ITVTSalesTable_Extension
+{
+ 
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>projInventLocationAddress</Name>
+				<Source><![CDATA[
+    public display Addressing projInventLocationAddress()
+    {
+        return InventLocation::find(this.ITVTProjInventLocationId).inventLocationAddress();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>lastRentalConfirmation</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Finds the last Rental confirmation journal
+    /// </summary>
+    /// <returns>Document number of the last Rental confirmation journal</returns>
+    [SysClientCacheDataMethodAttribute(true)]
+    display CustConfirmDocNum lastRentalConfirmation()
+    {
+        ITVTRentalOrderJour rentalOrderJour;
+
+        select firstonly ConfirmDocNum from rentalOrderJour
+            order by ConfirmDocNum desc, ConfirmDate desc
+                where rentalOrderJour.SalesId == this.SalesId;
+
+        return rentalOrderJour.ConfirmDocNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>update</Name>
+				<Source><![CDATA[
+    public void update()
+    {
+        next update();
+
+		// Code deactivated upon user's request 2.11.2021
+        // this.updateRentalLines(); 
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateRentalLines</Name>
+				<Source><![CDATA[
+    private void updateRentalLines()
+    {
+        ITVTRentalLine rentalLine;
+
+        while select forupdate rentalLine
+            where rentalLine.SalesId == this.SalesId
+               && !rentalLine.PostedRentalFromDate // not started yet
+        {
+            rentalLine.initFromSalesTable(this);
+            rentalLine.update();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>displayTotalWeightOpenDelivery</Name>
+				<Source><![CDATA[
+    [SysClientCacheDataMethodAttribute]
+    public display ITVTTotalWeight displayTotalWeightOpenDelivery()
+    {
+        ITVTRentalLineOpenDelivery rentalLineOpenDelivery;
+
+        select sum(Weight) from rentalLineOpenDelivery  
+            where rentalLineOpenDelivery.UserId == curUserId()
+                && rentalLineOpenDelivery.SalesId == this.SalesId;
+
+        return rentalLineOpenDelivery.Weight;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderConfirmDP</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalOrderConfirmDP</c> class is the report Data Provider class for the <c>ITVTRentalOrderConfirm</c> report
+/// report.
+/// </summary>
+[SRSReportParameterAttribute(classStr(ITVTRentalOrderConfirmContract))]
+class ITVTRentalOrderConfirmDP extends SrsReportDataProviderBase
+{
+    ITVTRentalOrderJourTmp          rentalOrderJourTmp;
+    ITVTRentalOrderTransTmp         rentalOrderTransTmp;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>getRentalOrderJourTmp</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Retrieves the actual data for the report from the temporary table.
+    /// </summary>
+    /// <returns>
+    ///    The <c>ITVTRentalOrderJourTmp</c> temporary table.
+    /// </returns>
+    [
+        SRSReportDataSetAttribute(tablestr(ITVTRentalOrderJourTmp))
+    ]
+    public ITVTRentalOrderJourTmp getRentalOrderJourTmp()
+    {
+        select rentalOrderJourTmp;
+        return rentalOrderJourTmp;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getRentalOrderTransTmp</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Retrieves the actual data for the report from the temporary table.
+    /// </summary>
+    /// <returns>
+    ///    The <c>ITVTRentalOrderTransTmp</c> temporary table.
+    /// </returns>
+    [
+        SRSReportDataSetAttribute(tablestr(ITVTRentalOrderTransTmp))
+    ]
+    public ITVTRentalOrderTransTmp getRentalOrderTransTmp()
+    {
+        select rentalOrderTransTmp;
+        return rentalOrderTransTmp;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processReport</Name>
+				<Source><![CDATA[
+    public void processReport()
+    {
+        ITVTRentalOrderConfirmContract rentalOrderConfirmContract = this.parmDataContract() as ITVTRentalOrderConfirmContract;
+        
+        this.createReportData(rentalOrderConfirmContract);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createReportData</Name>
+				<Source><![CDATA[
+    private void createReportData(ITVTRentalOrderConfirmContract _rentalOrderConfirmContract)
+    {
+        this.createRentalOrderJourData(_rentalOrderConfirmContract.parmRentalOrderJourRecId());
+        this.createRentalOrderTransData(_rentalOrderConfirmContract.parmRentalOrderJourRecId());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRentalOrderJourData</Name>
+				<Source><![CDATA[
+    private void createRentalOrderJourData(RefRecId _rentalOrderJourRecId)
+    {
+        ITVTRentalOrderJour rentalOrderJour = ITVTRentalOrderJour::findRecId(_rentalOrderJourRecId);
+        
+        rentalOrderJourTmp.initFromRentalOrderJour(rentalOrderJour);
+        rentalOrderJourTmp.initFromCompanyInfo();
+
+        rentalOrderJourTmp.CompanyLogo = FormLetter::companyLogo();
+
+        rentalOrderJourTmp.SalesAdministrator = HcmWorker::find(rentalOrderJour.WorkerSalesTaker).name();
+        rentalOrderJourTmp.PaymentCondition = rentalOrderJourTmp.paymentCondition();
+
+        rentalOrderJourTmp.insert();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRentalOrderTransData</Name>
+				<Source><![CDATA[
+    private void createRentalOrderTransData(RefRecId _rentalOrderJourRecId)
+    {
+        ITVTRentalOrderTrans rentalOrderTrans;
+
+        while select rentalOrderTrans
+            where rentalOrderTrans.ITVTRentalOrderJourRecId == _rentalOrderJourRecId
+        {
+            rentalOrderTransTmp.initFromRentalOrderTrans(rentalOrderTrans);
+            rentalOrderTransTmp.insert();
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

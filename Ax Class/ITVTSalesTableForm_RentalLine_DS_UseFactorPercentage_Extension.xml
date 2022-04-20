@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableForm_RentalLine_DS_UseFactorPercentage_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(formDataFieldStr(SalesTable, ITVTRentalLine, UseFactorPercentage))]
+final class ITVTSalesTableForm_RentalLine_DS_UseFactorPercentage_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>modified</Name>
+				<Source><![CDATA[
+    public void modified()
+    {
+        next modified();
+
+        FormDataObject  fdo             = any2Object(this) as FormDataObject;
+        FormDataSource  fds             = fdo.Datasource();
+        ITVTRentalLine  rentalLineLoc   = fds.cursor();
+
+        fds.object(fieldNum(ITVTRentalLine, RentalFactorPercentage)).allowEdit(rentalLineLoc.UseFactorPercentage);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

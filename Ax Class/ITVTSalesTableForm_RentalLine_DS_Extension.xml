@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableForm_RentalLine_DS_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Class extension for ITVTRentalLine datasource of SalesTable form
+/// </summary>
+[ExtensionOf(formDataSourceStr(SalesTable, ITVTRentalLine))]
+final class ITVTSalesTableForm_RentalLine_DS_Extension
+{
+       
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initValue</Name>
+				<Source><![CDATA[
+    void initValue()
+    {
+        ITVTRentalLine rentalLineLocal = this.cursor();
+
+        rentalLineLocal.SalesId = element.salesTableCursor().SalesId;
+
+        next initvalue();
+
+        element.refreshRentalInventDimDatasource();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>active</Name>
+				<Source><![CDATA[
+	int active()
+    {
+        int ret = next active();
+
+        ITVTRentalLine rentalLineLocal = this.cursor();
+        FormDataSource ITVTRentalLineDS = this;
+        
+        ITVTRentalLineDS.object(fieldNum(ITVTRentalLine, RentalFactorPercentage)).allowEdit(rentalLineLocal.UseFactorPercentage);
+
+        // ITVTRentalLineDS.object(fieldNum(ITVTRentalLine, RentalTimeUnitId)).allowEdit(!rentalLineLocal.PostedRentalFromDate);
+        ITVTRentalLineDS.object(fieldNum(ITVTRentalLine, RentalFromDate)).allowEdit(!rentalLineLocal.PostedRentalFromDate);
+        ITVTRentalLineDS.object(fieldNum(ITVTRentalLine, ConfirmedRentalFromDate)).allowEdit(!rentalLineLocal.PostedRentalFromDate);
+        ITVTRentalLineDS.object(fieldNum(ITVTRentalLine, PostedRentalFromDate)).allowEdit(!rentalLineLocal.PostedRentalFromDate);
+        ITVTRentalLineDS.object(fieldNum(ITVTRentalLine, PostedRentalToDate)).allowEdit(!rentalLineLocal.PostedRentalFromDate);
+        ITVTRentalLineDS.object(fieldNum(ITVTRentalLine, Qty)).allowEdit(!rentalLineLocal.PostedRentalFromDate);
+        ITVTRentalLineDS.object(fieldNum(ITVTRentalLine, UnitId)).allowEdit(!rentalLineLocal.PostedRentalFromDate);
+		
+        SalesTable salesTableLocal = ITVTRentalLineDS.formRun().dataSource(formDataSourceStr(SalesTable, SalesTable)).cursor();
+        
+        ITVTRentalLineDS.formRun().design().controlName(formControlStr(SalesTable, ITVTRentalLineDeliveryQtyDelivery)).enabled(salesTableLocal.SalesType != SalesType::Journal);
+        ITVTRentalLineDS.formRun().design().controlName(formControlStr(SalesTable, ITVTRentalLineStartRental)).enabled(salesTableLocal.SalesType != SalesType::Journal);
+        ITVTRentalLineDS.formRun().design().controlName(formControlStr(SalesTable, ITVTRentalLineEndRental)).enabled(salesTableLocal.SalesType != SalesType::Journal);
+        ITVTRentalLineDS.formRun().design().controlName(formControlStr(SalesTable, ITVTRentalLineDeliveryQtyReturn)).enabled(salesTableLocal.SalesType != SalesType::Journal);
+        ITVTRentalLineDS.formRun().design().controlName(formControlStr(SalesTable, InventTrans)).enabled(salesTableLocal.SalesType != SalesType::Journal);
+
+        element.refreshRentalInventDimDatasource();
+        element.updateRentalInventDimAllowEdit();
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>write</Name>
+				<Source><![CDATA[
+    public void write()
+    {
+        FormDataSource fds = this;
+        FormDataSource fdsITVTRentalLineInventDim = fds.formRun().dataSource(formDataSourceStr(SalesTable, ITVTRentalLineInventDim));
+
+        ITVTRentalLine	itvtRentalLine			= this.cursor();
+        InventDim		itvtRentalLineInventDim = fdsITVTRentalLineInventDim.cursor();
+
+        itvtRentalLine.InventDimId = InventDim::findOrCreate(itvtRentalLineInventDim).InventDimId;
+
+        if (!itvtRentalLine.validateWMSSetup())
+        {
+            throw error(strFmt("@ITVTRental:RentalLineWMSProcessActiveError", itvtRentalLine.ItemId, itvtRentalLine.inventDim().InventLocationId));
+        }
+
+        next write();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

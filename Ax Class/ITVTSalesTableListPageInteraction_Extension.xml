@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableListPageInteraction_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for <c>SalesTableListPageInteraction</c> class
+/// </summary>
+[ExtensionOf(classStr(SalesTableListPageInteraction))]
+final class ITVTSalesTableListPageInteraction_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>setButtonEnabled</Name>
+				<Source><![CDATA[
+    protected void setButtonEnabled()
+    {
+        next setButtonEnabled();
+
+        this.listPage().actionPaneControlEnabled(formControlStr(SalesTableListPage, ITVTRentalOrderConfirmJournal), this.currentSalesTable().lastRentalConfirmation() != '');
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

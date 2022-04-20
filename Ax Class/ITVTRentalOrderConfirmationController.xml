@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderConfirmationController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The class controller for operating with the <c>ITVTRentalOrderConfirmationService</c> class
+/// </summary>
+class ITVTRentalOrderConfirmationController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTRentalOrderConfirmationService));
+        this.parmMethodName(methodStr(ITVTRentalOrderConfirmationService, runConfirmation));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalOrderConfirmationController controller = new ITVTRentalOrderConfirmationController();
+
+        controller.initContract(_args);
+        controller.startOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    protected void initContract(Args _args)
+    {
+        ITVTRentalOrderConfirmationContract contract = this.getDataContractObject();
+
+        Query query = new Query();
+        QueryBuildDataSource qdbsSalesTable = query.addDataSource(tableNum(SalesTable));
+
+        if (_args
+            && _args.record()
+            && _args.dataset() == tableNum(SalesTable))
+        {
+            SalesTable           salesTable = _args.record();
+
+            QueryBuildRange qbrSalesId = qdbsSalesTable.addRange(fieldNum(SalesTable, SalesId));
+            qbrSalesId.value(salesTable.SalesId);
+            qbrSalesId.status(RangeStatus::Locked);
+        }
+
+        contract.setQuery(query);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:ConfirmRentalOrderJour";
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableForm_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for form SalesTable
+/// </summary>
+[ExtensionOf(formStr(SalesTable))]
+final class ITVTSalesTableForm_Extension
+{   
+    private ProjId								projId;
+    private ITVTIsRental						isRental;
+    private ITVTProjInventLocationId			projInventLocationId;
+    private CustAccount							projCustAccount;
+    
+    
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>isRental</Name>
+				<Source><![CDATA[
+	public ITVTIsRental isRental()
+    {
+        return isRental;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesTableCursor</Name>
+				<Source><![CDATA[
+    public SalesTable salesTableCursor()
+    {
+        return SalesTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// on form init
+    /// </summary>
+    public void init()
+    {
+        Args			args;
+        FormRun			caller;
+        SalesTable      salesTable;
+        ProjTable		projTable;
+        
+        args = this.args();
+
+        if (args)
+        {
+            switch (args.dataset())
+            {
+                case (tableNum(SalesTable)):
+					salesTable = args.record();
+                    break;
+
+                case (tableNum(ProjTable)):
+                    projTable = args.record();
+                    break;
+            }
+
+            if (args.caller() && args.caller() is FormRun)
+            {
+                caller = args.caller();
+            }
+        }
+        
+        if (
+            (caller && formHasMethod(caller, identifierStr(isRental)) && caller.isRental()) ||
+            /* (salesTable.ITVTIsRental) || */ (projTable)
+			)
+        {
+            isRental = true;
+        }
+        
+        if(projTable)
+        {
+            ProjId               = projTable.ProjId;
+            projCustAccount      = projTable.CustAccount;
+            projInventLocationId = projTable.ITVTInventLocationId;
+        }
+        
+
+        next init();
+
+        salesTableForm.parmIsRental(isRental);
+        salesTableForm.projId(projId);
+        salesTableForm.parmProjCustAccount(projCustAccount);
+        salesTableForm.parmProjInventLocationId(projInventLocationId);
+
+		/*
+		ITVTRentalOrderLineViewLines.visible(isRental);
+        ITVTRent.enabled(isRental);
+        ITVTRentalOrderConfirm.enabled(isRental);
+        ITVTRentalRunAction.enabled(isRental);
+		*/
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateDesign</Name>
+				<Source><![CDATA[
+    void updateDesign(InventDimFormDesignUpdate mode)
+    {
+        next updateDesign(mode);
+
+        inventDimFormSetup.formSetControls(true);
+
+        this.updateRentalInventDim();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateRentalInventDim</Name>
+				<Source><![CDATA[
+	void updateRentalInventDim()
+    {
+        InventDimParm inventDimParmVisible = inventDimFormSetup.parmDimParmVisibleGrid();
+        
+        RentalLineInventoryDimensionsGrp_configId.visible(inventDimParmVisible.ConfigIdFlag);
+        RentalLineInventoryDimensionsGrp_InventSizeId.visible(inventDimParmVisible.InventSizeIdFlag);
+        RentalLineInventoryDimensionsGrp_InventColorId.visible(inventDimParmVisible.InventColorIdFlag);
+        RentalLineInventoryDimensionsGrp_InventStyleId.visible(inventDimParmVisible.InventStyleIdFlag);
+        RentalLineInventoryDimensionsGrp_InventVersionId.visible(inventDimParmVisible.InventVersionIdFlag);
+        RentalLineInventoryDimensionsGrp_InventDimension1.visible(inventDimParmVisible.InventDimension1Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension2.visible(inventDimParmVisible.InventDimension2Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension3.visible(inventDimParmVisible.InventDimension3Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension4.visible(inventDimParmVisible.InventDimension4Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension5.visible(inventDimParmVisible.InventDimension5Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension6.visible(inventDimParmVisible.InventDimension6Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension7.visible(inventDimParmVisible.InventDimension7Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension8.visible(inventDimParmVisible.InventDimension8Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension9.visible(inventDimParmVisible.InventDimension9Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension10.visible(inventDimParmVisible.InventDimension10Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension11.visible(inventDimParmVisible.InventDimension11Flag);
+        RentalLineInventoryDimensionsGrp_InventDimension12.visible(inventDimParmVisible.InventDimension12Flag);
+        RentalLineInventoryDimensionsGrp_InventSiteId.visible(inventDimParmVisible.InventSiteIdFlag);
+        RentalLineInventoryDimensionsGrp_InventLocationId.visible(inventDimParmVisible.InventLocationIdFlag);
+        RentalLineInventoryDimensionsGrp_wMSLocationId.visible(inventDimParmVisible.WMSLocationIdFlag);
+        RentalLineInventoryDimensionsGrp_InventStatusId.visible(inventDimParmVisible.InventStatusFlag);
+        RentalLineInventoryDimensionsGrp_LicensePlateId.visible(inventDimParmVisible.LicensePlateFlag);
+        RentalLineInventoryDimensionsGrp_inventBatchId.visible(inventDimParmVisible.InventBatchIdFlag);
+        RentalLineInventoryDimensionsGrp_inventSerialId.visible(inventDimParmVisible.InventSerialIdFlag);
+        RentalLineInventoryDimensionsGrp_InventOwnerId_RU.visible(inventDimParmVisible.InventOwnerIdFlag_RU);
+        RentalLineInventoryDimensionsGrp_InventProfileId_RU.visible(inventDimParmVisible.InventProfileIdFlag_RU);
+        RentalLineInventoryDimensionsGrp_InventGtdId_RU.visible(inventDimParmVisible.InventGTDIdFlag_RU);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateRentalInventDimAllowEdit</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Sets property AllowEdit for Inventory dimensions controls based on item active dimensions
+    /// </summary>
+    void updateRentalInventDimAllowEdit()
+    {
+        FormDataSource fdsITVTRentalLine = this.dataSource(formDataSourceStr(SalesTable, ITVTRentalLine));
+        ITVTRentalLine	itvtRentalLine = fdsITVTRentalLine.cursor();
+
+        if (itvtRentalLine.ItemId)
+        {
+            if (itvtRentalLine.PostedRentalFromDate)
+            {
+                RentalLineInventoryDimensionsGrp.allowEdit(false);
+            }
+            else
+            {
+                RentalLineInventoryDimensionsGrp.allowEdit(true);
+                InventDimParm inventDimParmEditable = InventDimParm::activeDimFlag(InventDimGroupSetup::newItemId(itvtRentalLine.ItemId));
+
+                RentalLineInventoryDimensionsGrp_configId.allowEdit(inventDimParmEditable.ConfigIdFlag);
+                RentalLineInventoryDimensionsGrp_InventSizeId.allowEdit(inventDimParmEditable.InventSizeIdFlag);
+                RentalLineInventoryDimensionsGrp_InventColorId.allowEdit(inventDimParmEditable.InventColorIdFlag);
+                RentalLineInventoryDimensionsGrp_InventStyleId.allowEdit(inventDimParmEditable.InventStyleIdFlag);
+                RentalLineInventoryDimensionsGrp_InventVersionId.allowEdit(inventDimParmEditable.InventVersionIdFlag);
+                RentalLineInventoryDimensionsGrp_InventDimension1.allowEdit(inventDimParmEditable.InventDimension1Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension2.allowEdit(inventDimParmEditable.InventDimension2Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension3.allowEdit(inventDimParmEditable.InventDimension3Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension4.allowEdit(inventDimParmEditable.InventDimension4Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension5.allowEdit(inventDimParmEditable.InventDimension5Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension6.allowEdit(inventDimParmEditable.InventDimension6Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension7.allowEdit(inventDimParmEditable.InventDimension7Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension8.allowEdit(inventDimParmEditable.InventDimension8Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension9.allowEdit(inventDimParmEditable.InventDimension9Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension10.allowEdit(inventDimParmEditable.InventDimension10Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension11.allowEdit(inventDimParmEditable.InventDimension11Flag);
+                RentalLineInventoryDimensionsGrp_InventDimension12.allowEdit(inventDimParmEditable.InventDimension12Flag);
+                RentalLineInventoryDimensionsGrp_InventSiteId.allowEdit(inventDimParmEditable.InventSiteIdFlag);
+                RentalLineInventoryDimensionsGrp_InventLocationId.allowEdit(inventDimParmEditable.InventLocationIdFlag);
+                RentalLineInventoryDimensionsGrp_wMSLocationId.allowEdit(inventDimParmEditable.WMSLocationIdFlag);
+                RentalLineInventoryDimensionsGrp_InventStatusId.allowEdit(inventDimParmEditable.InventStatusFlag);
+                RentalLineInventoryDimensionsGrp_LicensePlateId.allowEdit(inventDimParmEditable.LicensePlateFlag);
+                RentalLineInventoryDimensionsGrp_inventBatchId.allowEdit(inventDimParmEditable.InventBatchIdFlag);
+                RentalLineInventoryDimensionsGrp_inventSerialId.allowEdit(inventDimParmEditable.InventSerialIdFlag);
+                RentalLineInventoryDimensionsGrp_InventOwnerId_RU.allowEdit(inventDimParmEditable.InventOwnerIdFlag_RU);
+                RentalLineInventoryDimensionsGrp_InventProfileId_RU.allowEdit(inventDimParmEditable.InventProfileIdFlag_RU);
+                RentalLineInventoryDimensionsGrp_InventGtdId_RU.allowEdit(inventDimParmEditable.InventGTDIdFlag_RU);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>refreshRentalInventDimDatasource</Name>
+				<Source><![CDATA[
+    void refreshRentalInventDimDatasource()
+    {
+        FormDataSource fdsITVTRentalLine = this.dataSource(formDataSourceStr(SalesTable, ITVTRentalLine));
+        ITVTRentalLine	itvtRentalLine = fdsITVTRentalLine.cursor();
+
+        FormDataSource fdsITVTRentalLineInventDim = this.dataSource(formDataSourceStr(SalesTable, ITVTRentalLineInventDim));
+        InventDim		itvtRentalLineInventDim = fdsITVTRentalLineInventDim.cursor();
+
+        itvtRentalLineInventDim.data(itvtRentalLine.inventDim());
+        fdsITVTRentalLineInventDim.setCurrent();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>openRentalLinesInExcel</Name>
+				<Source><![CDATA[
+    protected void openRentalLinesInExcel(SalesId _salesId,
+                                          ITVTRentalLine _iTVTRentalLine)
+    {
+        const str templateName = resourceStr(ITVTRentalLinesTemplate);
+        DocuTemplate template = DocuTemplate::findTemplate(OfficeAppApplicationType::Excel, templateName);       
+
+        // Ensure the template was present        
+        if (template)
+        {
+            Map filtersToApply = this.createFiltersForExcelEntity(_salesId, _iTVTRentalLine);
+
+            // Generate the workbook using the template and filters
+            DocuTemplateRender renderer = new DocuTemplateRender();
+            str documentUrl = renderer.renderTemplateToStorage(template, filtersToApply, OfficeTrimmable::construct());
+
+            // Pass the workbook to the user
+            if (documentUrl)
+            {
+                Browser b = new Browser();
+                b.navigate(documentUrl, false, false);
+            }
+            else
+            {
+                error(strFmt("@ApplicationFoundation:DocuTemplateGenerationFailed", templateName));
+            }
+        }
+        else
+        {
+            warning(strFmt("@ApplicationFoundation:DocuTemplateNotFound", templateName));
+        }
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createFiltersForExcelEntity</Name>
+				<Source><![CDATA[
+    private Map createFiltersForExcelEntity(SalesId _salesId, ITVTRentalLine _iTVTRentalLine)
+    {
+        str lineEntityName = tableStr(ITVTRentalLineEntity);
+        str lineEntitySalesId = fieldStr(ITVTRentalLineEntity, SalesId);
+        //str lineEntityLineNum = fieldStr(ITVTRentalLineEntity, LineNum);
+        str lineEntityDataArea = fieldStr(ITVTRentalLineEntity, DataAreaId);
+        Map filtersToApply = new Map(Types::String, Types::Class);   
+             
+        ExportToExcelFilterTreeBuilder filterBuilder = new ExportToExcelFilterTreeBuilder(lineEntityName);
+
+        var filter = filterBuilder.and(
+            filterBuilder.areEqual(lineEntitySalesId, _salesId),
+            filterBuilder.areEqual(lineEntityDataArea, _iTVTRentalLine.dataAreaId));
+
+        filtersToApply.insert(lineEntityName, filter);
+
+        return filtersToApply;
+
+
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

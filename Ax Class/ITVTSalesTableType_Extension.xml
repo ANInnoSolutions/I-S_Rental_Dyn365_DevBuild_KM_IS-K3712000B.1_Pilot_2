@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableType_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension of the SalesTableType class
+/// </summary>
+[ExtensionOf(classStr(SalesTableType))]
+final class ITVTSalesTableType_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initValue</Name>
+				<Source><![CDATA[
+    public void initValue()
+    {
+        next initValue();
+
+        salesTable.ITVTRentalOrderAutoReservation = ITVTRentalParameters::find().RentalOrderAutoReservation;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>formMethodSalesTypeModifiedPostChange</Name>
+				<Source><![CDATA[
+    public void formMethodSalesTypeModifiedPostChange(FormRun         _element,
+                                                      FormDataSource  _salestable_ds,
+                                                      boolean         _forced)
+    {
+        next formMethodSalesTypeModifiedPostChange(_element, _salestable_ds, _forced);
+
+        SalesTable salesTable = _salestable_ds.cursor();
+
+        ITVTRentalLine rentalLine;
+
+        ttsbegin;
+
+        while select forupdate rentalLine
+            where rentalLine.SalesId == salesTable.SalesId
+               && !rentalLine.PostedRentalFromDate
+        {
+            rentalLine.SalesType = salesTable.SalesType;
+
+            if (this is SalesTableType_Journal)
+            {
+                InventUpd_DeleteMovement::newMovement(ITVTInventMov_RentalLine::newFromRentalLine(rentalLine, InventDirection::Issue)).updateNow();
+                InventUpd_DeleteMovement::newMovement(ITVTInventMov_RentalLine::newFromRentalLine(rentalLine, InventDirection::Receipt)).updateNow();
+            }
+
+            rentalLine.update();
+        }
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateField</Name>
+				<Source><![CDATA[
+    public boolean  validateField(
+        FieldId  _fieldId, 
+        TableId _tableId)
+    {
+        boolean ret = next validateField(_fieldId, _tableId);
+
+        if (_tableId == tableNum(SalesTable))
+        {
+            switch (_fieldId)
+            {
+                case fieldNum(SalesTable, ITVTProjectLocationReceiptDate):
+                    if ((salesTable.ITVTConfirmedRentalFromDate
+                        && salesTable.ITVTProjectLocationReceiptDate > salesTable.ITVTConfirmedRentalFromDate)
+                        || (!salesTable.ITVTConfirmedRentalFromDate
+                            && salesTable.ITVTProjectLocationReceiptDate > salesTable.ITVTRentalFromDate))
+                    {
+                        Message::Add(MessageSeverity::Warning, "@ITVTRental:RentalStartBeforeDeliveryDate");
+                    }
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

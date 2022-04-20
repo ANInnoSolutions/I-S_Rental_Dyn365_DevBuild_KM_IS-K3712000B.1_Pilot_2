@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTWMSJournalTable_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tableStr(WMSJournalTable))]
+final class ITVTWMSJournalTable_Extension
+{
+}
+
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>canTransTypeBeHandled</Name>
+				<Source><![CDATA[
+    public static NoYes canTransTypeBeHandled(InventTransType _inventTransType)
+    {
+        NoYes ret = next canTransTypeBeHandled(_inventTransType);
+
+        switch (_inventTransType)
+        {
+            case InventTransType::RentalLine,
+                InventTransType::RentalLineRented:
+                    ret = NoYes::No;
+                    break;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

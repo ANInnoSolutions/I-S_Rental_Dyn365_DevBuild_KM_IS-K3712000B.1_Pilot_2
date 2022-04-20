@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderConfirmContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Data Contract class for ITVTRentalOrderConfirm SSRS report
+/// </summary>
+[DataContract]
+public class ITVTRentalOrderConfirmContract
+{
+    RefRecId                   rentalOrderJourRecId;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmRentalOrderJourRecId</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public RefRecId parmRentalOrderJourRecId(RefRecId _rentalOrderJourRecId = rentalOrderJourRecId)
+    {
+        rentalOrderJourRecId = _rentalOrderJourRecId;
+        return rentalOrderJourRecId;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

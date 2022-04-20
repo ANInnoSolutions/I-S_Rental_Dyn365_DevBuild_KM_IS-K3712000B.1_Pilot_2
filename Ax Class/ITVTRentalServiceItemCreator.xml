@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalServiceItemCreator</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class is used for the creation of a rental service item
+/// </summary>
+class ITVTRentalServiceItemCreator implements EcoResIProductCrossTableData
+{
+    EcoResProductData               ecoResProductData;
+    Set                             allowedEcoResProductSubTypes;
+    WHSReservationHierarchyName     reservationHierarchyName;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>constuct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It creates an instance of the class
+    /// </summary>
+    /// <returns>The instance</returns>
+    public static ITVTRentalServiceItemCreator constuct()
+    {
+        return new ITVTRentalServiceItemCreator();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        ecoResProductData = EcoResProductData::construct(true);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createServiceItem</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It creates a service item from the specific invent item
+    /// </summary>
+    /// <param name = "_originInventTable">The specific invent item</param>
+    public static void createServiceItem(InventTable _originInventTable,
+                                         boolean    _fromDMF = false)
+    {
+        ITVTRentalServiceItemCreator    instance = ITVTRentalServiceItemCreator::constuct();
+        ITVTRentalParameters            rentalParameters = ITVTRentalParameters::find();
+
+        EcoResProductNumber             ecoResProductNumber = strFmt('%1-%2', rentalParameters.RentalServicePrefix, _originInventTable.ItemId);
+        ItemId                          itemId              = ecoResProductNumber;
+
+        EcoResProductName               ecoResProductName   = _originInventTable.NameAlias;
+        
+        instance.productData().identification().parmProductType(EcoResProductType::Service);
+        instance.productData().identification().parmProductSubType(EcoResProductSubtype::Product);
+        instance.productData().identification().parmProductNumber(ecoResProductNumber);
+        instance.productData().identification().parmProductName(ecoResProductName);
+        instance.productData().identification().parmProductSearchName(ecoResProductName);
+
+        instance.productData().identification().companySpecificData().parmItemId(itemId);
+        instance.productData().identification().companySpecificData().parmSearchName(ecoResProductName);
+
+        instance.productData().unitsOfMeasure().parmBOMUnitSymbol(rentalParameters.RentalServiceInventoryUnit);
+        instance.productData().unitsOfMeasure().parmInventoryUnitSymbol(rentalParameters.RentalServiceInventoryUnit);
+        instance.productData().unitsOfMeasure().parmPurchaseUnitSymbol(rentalParameters.RentalServicePurchUnit);
+        instance.productData().unitsOfMeasure().parmSalesUnitSymbol(rentalParameters.RentalServiceSalesUnit);
+
+        instance.productData().taxation().parmPurchaseTaxItemGroupId(rentalParameters.TaxItemGroupIdPurch);
+        instance.productData().taxation().parmSalesTaxItemGroupId(rentalParameters.TaxItemGroupIdSales);
+
+        ttsbegin;
+
+        EcoResProduct createdEcoResProduct = EcoResProductCrossTableManager::makeProductRecord(instance);
+        EcoResProductCrossTableManager::insert(instance, createdEcoResProduct);
+
+        EcoResProductReleaseManager::releaseProductWithLegalEntityData(createdEcoResProduct.RecId,
+                                                                       CompanyInfo::findDataArea(curext()).RecId,
+                                                                       instance.productData().identification().companySpecificData().parmItemId(),
+                                                                       instance.productData().identification().companySpecificData().parmSearchName(),
+                                                                       instance.productData().taxation().parmPurchaseTaxItemGroupId(),
+                                                                       instance.productData().taxation().parmSalesTaxItemGroupId());
+
+        InventTable rentalServiceItemTable = InventTable::findByProduct(createdEcoResProduct.RecId, true);
+
+        if (rentalServiceItemTable)
+        {
+            rentalServiceItemTable.ITVTIsRentalItem     = NoYes::No;
+            rentalServiceItemTable.projCategoryId       = rentalParameters.ProjCategory;
+            rentalServiceItemTable.DefaultDimension     = _originInventTable.DefaultDimension;
+            rentalServiceItemTable.update();
+
+            InventItemGroupItem::updateItemGroupForItem(rentalServiceItemTable.ItemId,
+                                                        curExt(),
+                                                        rentalParameters.ItemGroupId,
+                                                        curExt());
+
+            InventModelGroupItem::updateModelGroupForItem(rentalServiceItemTable.ItemId,
+                                                          curExt(),
+                                                          rentalParameters.ItemModelGroup,
+                                                          curExt());
+
+            if (rentalParameters.RentalServiceStorageDimensionGroup)
+            {
+                EcoResStorageDimensionGroupItem     ecoResStorageDimGroupItem;
+
+                ecoResStorageDimGroupItem.ItemDataAreaId            = curExt();
+                ecoResStorageDimGroupItem.ItemId                    = rentalServiceItemTable.ItemId;
+                ecoResStorageDimGroupItem.StorageDimensionGroup     = EcoResStorageDimensionGroup::findByDimensionGroupName(rentalParameters.RentalServiceStorageDimensionGroup).RecId;
+
+                if (ecoResStorageDimGroupItem.validateWrite())
+                {
+                    ecoResStorageDimGroupItem.insert();
+                }
+            }
+            if (rentalParameters.RentalServiceTrackingDimensionGroup)
+            {
+                EcoResTrackingDimensionGroupItem    ecoResTrackingDimensionGroup;
+
+                ecoResTrackingDimensionGroup.ItemDataAreaId             = curExt();
+                ecoResTrackingDimensionGroup.ItemId                     = rentalServiceItemTable.ItemId;
+                ecoResTrackingDimensionGroup.TrackingDimensionGroup     = EcoResTrackingDimensionGroup::findByDimensionGroupName(rentalParameters.RentalServiceTrackingDimensionGroup).RecId;
+
+                if (ecoResTrackingDimensionGroup.validateWrite())
+                {
+                    ecoResTrackingDimensionGroup.insert();
+                }
+            }
+
+            _originInventTable.selectForUpdate(true);
+            _originInventTable.ITVTRentalService = rentalServiceItemTable.ItemId;
+            _originInventTable.ITVTIsFixedAsset = _fromDMF ? _originInventTable.ITVTIsFixedAsset : rentalParameters.DefaultIsFixedAsset;
+            _originInventTable.update();
+        }
+
+        ttscommit;
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>productData</Name>
+				<Source><![CDATA[
+    public EcoResProductData productData()
+    {
+        return ecoResProductData;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAllowedProductSubTypes</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets allowed product sub-types.
+    /// </summary>
+    /// <returns>A set of allowed product sub-types.</returns>
+    public Set parmAllowedProductSubTypes()
+    {
+        return allowedEcoResProductSubTypes;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmIsUpdateOfExistingProduct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Is it an update of existing product.
+    /// </summary>
+    /// <returns>true if it is an existing product update scenario; otherwise, false.</returns>
+    public boolean parmIsUpdateOfExistingProduct()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmIsReleased</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public boolean parmIsReleased()
+    {
+        return this.productData().identification().isReleasedProduct();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmLegalEntityId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public LegalEntityDataAreaId parmLegalEntityId()
+    {
+        return this.productData().identification().companySpecificData().legalEntityId();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProductType</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResProductType parmProductType(EcoResProductType _productType = EcoResProductType::Item)
+    {
+        return this.productData().identification().parmProductType(_productType);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProductSubType</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResProductSubType parmProductSubType(EcoResProductSubType _productSubType = EcoResProductSubType::Product)
+    {
+        return this.productData().identification().parmProductSubType(_productSubType);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProductNumber</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResProductNumber parmProductNumber(EcoResProductNumber _productNumber = '')
+    {
+        return this.productData().identification().parmProductNumber(_productNumber);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProductName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResProductName parmProductName(EcoResProductName _productName = '')
+    {
+        return this.productData().identification().parmProductName(_productName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProductSearchName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResProductSearchName parmProductSearchName(EcoResProductSearchName _productSearchName = '')
+    {
+        return this.productData().identification().parmProductSearchName(_productSearchName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmItemId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public ItemId parmItemId(ItemId _itemId = '')
+    {
+        return this.productData().identification().companySpecificData().parmItemId(_itemId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSearchName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public ItemId parmSearchName(ItemNameAlias _searchName = '')
+    {
+        return this.productData().identification().companySpecificData().parmSearchName(_searchName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmVariantConfigurationTechnology</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResVariantConfigurationTechnologyType parmVariantConfigurationTechnology(
+        EcoResVariantConfigurationTechnologyType _configurationTechnology = EcoResVariantConfigurationTechnologyType::PredefinedVariants)
+    {
+        return this.productData().variant().parmConfigurationTechnology(_configurationTechnology);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmIsCatchWeightProduct</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public PdsCWProduct parmIsCatchWeightProduct(PdsCWProduct _isCatchWeightProduct = NoYes::No)
+    {
+        return this.productData().identification().parmIsCatchWeightProduct(_isCatchWeightProduct);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmItemGroupId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public ItemGroupId parmItemGroupId(ItemGroupId _itemGroupId = '')
+    {
+        return this.productData().referenceGroups().parmItemGroupId(_itemGroupId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmItemModelGroupId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public InventModelGroupId parmItemModelGroupId(InventModelGroupId _itemModelGroupId = '')
+    {
+        return this.productData().referenceGroups().parmItemModelGroupId(_itemModelGroupId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProductDimensionGroupName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResProductDimensionGroupName parmProductDimensionGroupName(EcoResProductDimensionGroupName _productDimGroupName = '')
+    {
+        return this.productData().variant().parmProductDimensionGroupName(_productDimGroupName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProductDimensionGroupRecId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public RecId parmProductDimensionGroupRecId(RecId _productDimGroupRecId = 0)
+    {
+        return this.productData().variant().parmProductDimensionGroupRecId(_productDimGroupRecId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmGlobalStorageDimensionGroupName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResStorageDimensionGroupName parmGlobalStorageDimensionGroupName(EcoResStorageDimensionGroupName _storageDimGroupName = '')
+    {
+        return this.productData().referenceGroups().parmGlobalStorageDimensionGroupName(_storageDimGroupName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmGlobalStorageDimensionGroupRecId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public RecId parmGlobalStorageDimensionGroupRecId(RecId _storageDimGroupRecId = 0)
+    {
+        return this.productData().referenceGroups().parmGlobalStorageDimensionGroupRecId(_storageDimGroupRecId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmGlobalTrackingDimensionGroupName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResTrackingDimensionGroupName parmGlobalTrackingDimensionGroupName(EcoResStorageDimensionGroupName _trackingDimGroupName = '')
+    {
+        return this.productData().referenceGroups().parmGlobalTrackingDimensionGroupName(_trackingDimGroupName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmGlobalTrackingDimensionGroupRecId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public RecId parmGlobalTrackingDimensionGroupRecId(RecId _trackingDimGroupRecId = 0)
+    {
+        return this.productData().referenceGroups().parmGlobalTrackingDimensionGroupRecId(_trackingDimGroupRecId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmStorageDimensionGroupName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResStorageDimensionGroupName parmStorageDimensionGroupName(EcoResStorageDimensionGroupName _storageDimGroupName = '')
+    {
+        return this.productData().referenceGroups().parmStorageDimensionGroupName(_storageDimGroupName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmStorageDimensionGroupRecId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public RecId parmStorageDimensionGroupRecId(RecId _storageDimGroupRecId = 0)
+    {
+        return this.productData().referenceGroups().parmStorageDimensionGroupRecId(_storageDimGroupRecId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmTrackingDimensionGroupName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResTrackingDimensionGroupName parmTrackingDimensionGroupName(EcoResStorageDimensionGroupName _trackingDimGroupName = '')
+    {
+        return this.productData().referenceGroups().parmTrackingDimensionGroupName(_trackingDimGroupName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmTrackingDimensionGroupRecId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public RecId parmTrackingDimensionGroupRecId(RecId _trackingDimGroupRecId = 0)
+    {
+        return this.productData().referenceGroups().parmTrackingDimensionGroupRecId(_trackingDimGroupRecId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmReservationHierarchyName</Name>
+				<Source><![CDATA[
+    // This method is not used. Keeping it only for backward compability, but not moving it to productData().
+    [SysObsolete('', false, 30\11\2017)]
+    public WHSReservationHierarchyName parmReservationHierarchyName(WHSReservationHierarchyName _reservationHierarchyName = '')
+    {
+        reservationHierarchyName = _reservationHierarchyName;
+        return reservationHierarchyName;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmIsRetailKit</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public boolean parmIsRetailKit(boolean _isRetailKit = false)
+    {
+        return this.productData().retail().parmIsRetailKit(_isRetailKit);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmRetailCategoryName</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public EcoResCategoryName parmRetailCategoryName(EcoResCategoryName _retailCategoryName = '')
+    {
+        return this.productData().retail().parmRetailCategoryName(_retailCategoryName);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventoryUnitSymbol</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public UnitOfMeasureSymbol parmInventoryUnitSymbol(UnitOfMeasureSymbol _unitSymbol = '')
+    {
+        return this.productData().unitsOfMeasure().parmInventoryUnitSymbol(_unitSymbol);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPurchaseUnitSymbol</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public UnitOfMeasureSymbol parmPurchaseUnitSymbol(UnitOfMeasureSymbol _unitSymbol = '')
+    {
+        return this.productData().unitsOfMeasure().parmPurchaseUnitSymbol(_unitSymbol);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSalesUnitSymbol</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public UnitOfMeasureSymbol parmSalesUnitSymbol(UnitOfMeasureSymbol _unitSymbol = '')
+    {
+        return this.productData().unitsOfMeasure().parmSalesUnitSymbol(_unitSymbol);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmBOMUnitSymbol</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public UnitOfMeasureSymbol parmBOMUnitSymbol(UnitOfMeasureSymbol _unitSymbol = '')
+    {
+        return this.productData().unitsOfMeasure().parmBOMUnitSymbol(_unitSymbol);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSalesTaxItemGroupId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public TaxItemGroup parmSalesTaxItemGroupId(TaxItemGroup _taxItemGroupId = '')
+    {
+        return this.productData().taxation().parmSalesTaxItemGroupId(_taxItemGroupId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPurchaseTaxItemGroupId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public TaxItemGroup parmPurchaseTaxItemGroupId(TaxItemGroup _taxItemGroupId = '')
+    {
+        return this.productData().taxation().parmPurchaseTaxItemGroupId(_taxItemGroupId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmColorGroupId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public RetailColorGroupId parmColorGroupId(RetailColorGroupId _colorGroupId = '')
+    {
+        return this.productData().variant().parmColorGroupId(_colorGroupId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSizeGroupId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public RetailSizeGroupId parmSizeGroupId(RetailSizeGroupId _sizeGroupId = '')
+    {
+        return this.productData().variant().parmSizeGroupId(_sizeGroupId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmStyleGroupId</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use productData() instead.', false, 30\11\2017)]
+    public RetailStyleGroupId parmStyleGroupId(RetailStyleGroupId _styleGroupId = '')
+    {
+        return this.productData().variant().parmStyleGroupId(_styleGroupId);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

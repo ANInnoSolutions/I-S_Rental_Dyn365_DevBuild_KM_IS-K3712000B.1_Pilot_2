@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderConfirmationContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The contract for the <c>ITVTRentalOrderConfirmationService</c> class
+/// </summary>
+[DataContract]
+class ITVTRentalOrderConfirmationContract
+{
+    NoYes           printConfirmation;
+    str             packedQuery;
+    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmPrintConfirmation</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationLabel("@SYS920")]
+    public NoYes parmPrintConfirmation(NoYes _printConfirmation = printConfirmation)
+    {
+        printConfirmation = _printConfirmation;
+        return printConfirmation;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPackedQuery</Name>
+				<Source><![CDATA[
+    [DataMember,
+    AifQueryType('_packedQuery', '')]
+    public str parmPackedQuery(str _packedQuery = packedQuery)
+    {
+        packedQuery = _packedQuery;
+        return packedQuery;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getQuery</Name>
+				<Source><![CDATA[
+    public Query getQuery()
+    {
+        return new Query(SysOperationHelper::base64Decode(packedQuery));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setQuery</Name>
+				<Source><![CDATA[
+    public void setQuery(Query _query)
+    {
+        packedQuery = SysOperationHelper::base64Encode(_query.pack());
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

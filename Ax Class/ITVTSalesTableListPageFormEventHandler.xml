@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableListPageFormEventHandler</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Event handler class for form sales table list page
+/// </summary>
+public class ITVTSalesTableListPageFormEventHandler
+{    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>SalesTable_OnQueryExecuting</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// On form query executing
+    /// </summary>
+    /// <param name="sender">FormDataSource</param>
+    /// <param name="e">FormDataSourceEventArgs</param>
+    [FormDataSourceEventHandler(formDataSourceStr(SalesTableListPage, SalesTable), FormDataSourceEventType::QueryExecuting),
+    SuppressBPWarningAttribute('BPParameterNotUsed', 'Parameter e is passed from framework and is not used in this code')]
+    public static void SalesTable_OnQueryExecuting(FormDataSource sender, FormDataSourceEventArgs e)
+    {
+        FormRun fr = sender.formRun();
+       
+		/*
+        Args args = fr.args();
+
+        if (args.menuItemName() == menuItemDisplayStr(ITVTRentalTableListPage))
+		*/
+
+        if (fr.isRental())
+        {
+            QueryBuildDataSource qbds = sender.queryBuildDataSource();
+
+            QueryBuildRange qbr = SysQuery::findOrCreateRange(qbds, fieldNum(SalesTable, ITVTIsRental));
+            qbr.value(SysQuery::value(NoYes::Yes));
+        }
+
+        if (fr.openRentalOrders())
+        {
+            QueryBuildDataSource qbds = sender.queryBuildDataSource();
+
+            QueryBuildRange qbrSalesType = SysQuery::findOrCreateRange(qbds, fieldNum(SalesTable, SalesType));
+            qbrSalesType.value(SysQuery::valueNot(SalesType::Journal));
+
+            QueryBuildRange qbrSalesStatus = SysQuery::findOrCreateRange(qbds, fieldNum(SalesTable, SalesStatus));
+            qbrSalesStatus.value(strFmt('((%1.%2 == %3) || (%1.%4 == %5) || (%1.%4 == 6))',
+                qbds.name(),
+                fieldStr(SalesTable, ITVTRentalIsFulfilled),
+                enum2int(NoYes::No),
+                fieldStr(SalesTable, SalesStatus),
+                enum2int(SalesStatus::Backorder),
+                enum2int(SalesStatus::Delivered)));
+        }
+
+        if (fr.projectRentalOrders())
+        {
+            QueryBuildDataSource qbds = sender.queryBuildDataSource();
+
+            QueryBuildRange qbr = SysQuery::findOrCreateRange(qbds, fieldNum(SalesTable, ProjId));
+            qbr.value(SysQuery::valueNotEmptyString());
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

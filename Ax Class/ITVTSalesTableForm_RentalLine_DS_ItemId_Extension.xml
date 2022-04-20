@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableForm_RentalLine_DS_ItemId_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Class extension for datasource field ITVTRentalLine.ItemId on SalesTable form
+/// </summary>
+[ExtensionOf(formDataFieldStr(SalesTable, ITVTRentalLine, ItemId))]
+final class ITVTSalesTableForm_RentalLine_DS_ItemId_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>modified</Name>
+				<Source><![CDATA[
+    public void modified()
+    {
+        next modified();
+
+        element.refreshRentalInventDimDatasource();
+        element.updateRentalInventDimAllowEdit();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

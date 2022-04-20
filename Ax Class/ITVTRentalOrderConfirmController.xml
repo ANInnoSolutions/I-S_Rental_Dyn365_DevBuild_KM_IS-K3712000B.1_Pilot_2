@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderConfirmController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalOrderConfirmController</c> class is the helper class for the associated SRS Report.
+/// </summary>
+class ITVTRentalOrderConfirmController extends SrsReportRunController
+{
+    ITVTRentalOrderConfirmContract contract;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>preRunModifyContract</Name>
+				<Source><![CDATA[
+    protected void preRunModifyContract()
+    {
+        contract = this.parmReportContract().parmRdpContract();
+        contract.parmRentalOrderJourRecId(args.record().RecId);
+
+        super();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalOrderConfirmController controller = new ITVTRentalOrderConfirmController();
+        controller.initArgs(_args);
+        controller.startOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initArgs</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes controller parameters from args
+    /// </summary>
+    /// <param name = "_args">An instance of Args</param>
+    protected void initArgs(Args _args)
+    {
+        this.parmArgs(_args);
+        this.parmReportName(ssrsReportStr(ITVTRentalOrderConfirm, PrecisionDesign));
+        this.parmShowDialog(false);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

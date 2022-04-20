@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalStatusInventTrackingDimensionDim1</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+final class ITVTRentalStatusInventTrackingDimensionDim1 extends InventTrackingDimension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>indexHintForTable</Name>
+				<Source><![CDATA[
+    public IndexId indexHintForTable(TableId _tableId)
+    {
+        switch (_tableId)
+        {
+            case tableNum(InventDim):
+                return IndexNum(InventDim, InventDimension1Idx);
+        }
+        return 0;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInstance</Name>
+				<Source><![CDATA[
+    public static ITVTRentalStatusInventTrackingDimensionDim1 getInstance()
+    {
+        return InventDimension::singletonFromInventDimFieldId(fieldNum(InventDim, InventDimension1)) as ITVTRentalStatusInventTrackingDimensionDim1;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>checkExistsValueForItem</Name>
+				<Source><![CDATA[
+    public boolean checkExistsValueForItem(InventTable _inventTable, anytype _value)
+    {
+        return ITVTRentalStatus::checkExist(_value);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isAffectingPrice</Name>
+				<Source><![CDATA[
+    public boolean isAffectingPrice()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isSelective</Name>
+				<Source><![CDATA[
+    public boolean isSelective()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isTransferReceiptMergeable</Name>
+				<Source><![CDATA[
+    public boolean isTransferReceiptMergeable()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isTransferTransitReceiptMergeable</Name>
+				<Source><![CDATA[
+    public boolean isTransferTransitReceiptMergeable()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

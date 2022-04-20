@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableListPage_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(formStr(SalesTableListPage))]
+final class ITVTSalesTableListPage_Extension
+{
+    private ITVTIsRental isRental;
+    private NoYes openRentalOrders;
+    private NoYes projectRentalOrders;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>isRental</Name>
+				<Source><![CDATA[
+    public ITVTIsRental isRental()
+    {
+        return isRental;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>openRentalOrders</Name>
+				<Source><![CDATA[
+    public NoYes openRentalOrders()
+    {
+        return openRentalOrders;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>projectRentalOrders</Name>
+				<Source><![CDATA[
+    public NoYes projectRentalOrders()
+    {
+        return projectRentalOrders;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// on form init
+    /// </summary>
+    public void init()
+    {
+        Args args = this.args();
+
+        if (args.menuItemName() == menuItemDisplayStr(ITVTRentalTableListPage)
+            || args.menuItemName() == menuItemDisplayStr(ITVTRentalTableListPageOpen)
+            || args.menuItemName() == menuItemDisplayStr(ITVTRentalTableListPageProject))
+        {
+            isRental = true;
+        }
+
+        if (args.menuItemName() == menuItemDisplayStr(ITVTRentalTableListPageOpen))
+        {
+            openRentalOrders = true;
+        }
+
+        if (args.menuItemName() == menuItemDisplayStr(ITVTRentalTableListPageProject))
+        {
+            projectRentalOrders = true;
+        }
+
+        next init();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

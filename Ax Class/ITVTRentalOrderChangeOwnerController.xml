@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderChangeOwnerController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+// TODO: The ITVTRentalOrderChangeOwnerService should be changed to be called from ITVTRentalLineStartRentalService
+
+/// <summary>
+/// The service operation controller of the <c>ITVTRentalOrderChangeOwnerService</c> service
+/// </summary>
+class ITVTRentalOrderChangeOwnerController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalOrderChangeOwnerController controller = ITVTRentalOrderChangeOwnerController::construct();
+
+        controller.initFromArgs(_args);
+        controller.parmShowDialog(false);
+        controller.parmShowProgressForm(false);
+
+        controller.startOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mainFromStartRental</Name>
+				<Source><![CDATA[
+    public static void mainFromStartRental(Args _args, TransDate _postingDate)
+    {
+        ITVTRentalOrderChangeOwnerController controller = ITVTRentalOrderChangeOwnerController::construct();
+
+        controller.initFromArgs(_args);
+        controller.parmShowDialog(false);
+        controller.parmShowProgressForm(false);
+        controller.setPostingDate(_postingDate);
+
+        controller.startOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTRentalOrderChangeOwnerService));
+        this.parmMethodName(methodStr(ITVTRentalOrderChangeOwnerService, changeRentalOrderOwner));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It contsructs a new class instance
+    /// </summary>
+    /// <returns>The created controller instance</returns>
+    public static ITVTRentalOrderChangeOwnerController construct()
+    {
+        return new ITVTRentalOrderChangeOwnerController();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canGoBatch</Name>
+				<Source><![CDATA[
+    public boolean canGoBatch()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canRunInNewSession</Name>
+				<Source><![CDATA[
+    protected boolean canRunInNewSession()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromArgs</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes controller from args
+    /// </summary>
+    /// <param name = "a">Parameters with which controller was called</param>
+    public void initFromArgs(Args a)
+    {
+        if (a.record() &&
+            a.dataset() == tableNum(InventTrans))
+        {
+            InventTrans  inventTrans = a.record();
+
+            ITVTRentalOrderChangeOwnerContract contract = this.getDataContractObject();
+            contract.parmInventTransRecId(inventTrans.RecId);
+        }
+        else
+        {
+            throw Error(Error::missingRecord(tableId2PName(tableNum(InventTrans))));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setPostingDate</Name>
+				<Source><![CDATA[
+    public void setPostingDate(TransDate _postingDate)
+    {
+        ITVTRentalOrderChangeOwnerContract contract = this.getDataContractObject();
+        contract.parmPostingDate(_postingDate);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

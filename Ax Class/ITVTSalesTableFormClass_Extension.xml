@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTSalesTableFormClass_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for class SalesTableForm
+/// </summary>
+[ExtensionOf(classstr(SalesTableForm))]
+final class ITVTSalesTableFormClass_Extension
+{
+	private ITVTIsRental	            isRental;
+    private ProjId			            fromProjId;
+    private ITVTProjInventLocationId    projInventLocationId;
+    private CustAccount                 projCustAccount;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmIsRental</Name>
+				<Source><![CDATA[
+    public ITVTIsRental parmIsRental(ITVTIsRental _isRental = isRental)
+    {
+        isRental = _isRental;
+        return isRental;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProjInventLocationId</Name>
+				<Source><![CDATA[
+    public ITVTProjInventLocationId parmProjInventLocationId(ITVTProjInventLocationId _projInventLocationId = projInventLocationId)
+    {
+        projInventLocationId = _projInventLocationId;
+        return projInventLocationId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmProjCustAccount</Name>
+				<Source><![CDATA[
+    public CustAccount parmProjCustAccount(CustAccount _projCustAccount = projCustAccount)
+    {
+        projCustAccount = _projCustAccount;
+        return projCustAccount;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
