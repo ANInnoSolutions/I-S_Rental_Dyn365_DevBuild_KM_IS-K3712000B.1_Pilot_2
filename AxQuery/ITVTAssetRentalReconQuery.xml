@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxQuery xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxQuerySimple">
+	<Name>ITVTAssetRentalReconQuery</Name>
+	<SourceCode>
+		<Methods>
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Query]
+public class ITVTAssetRentalReconQuery extends QueryRun
+{
+}
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DataSources>
+		<AxQuerySimpleRootDataSource>
+			<Name>InventTrans</Name>
+			<DynamicFields>Yes</DynamicFields>
+			<Table>InventTrans</Table>
+			<DataSources>
+				<AxQuerySimpleEmbeddedDataSource>
+					<Name>InventTransOrigin</Name>
+					<DynamicFields>Yes</DynamicFields>
+					<Table>InventTransOrigin</Table>
+					<DataSources>
+						<AxQuerySimpleEmbeddedDataSource>
+							<Name>AssetTableInventTransId</Name>
+							<DynamicFields>Yes</DynamicFields>
+							<Table>AssetTable</Table>
+							<DataSources />
+							<DerivedDataSources />
+							<Fields />
+							<Ranges />
+							<JoinMode>NoExistsJoin</JoinMode>
+							<Relations>
+								<AxQuerySimpleDataSourceRelation>
+									<Name>QueryDataSourceRelation1</Name>
+									<Field>InventTransId</Field>
+									<JoinDataSource>InventTransOrigin</JoinDataSource>
+									<RelatedField>ITVTAssetInventTransId</RelatedField>
+								</AxQuerySimpleDataSourceRelation>
+							</Relations>
+						</AxQuerySimpleEmbeddedDataSource>
+						<AxQuerySimpleEmbeddedDataSource>
+							<Name>AssetTableIssueTransId</Name>
+							<DynamicFields>Yes</DynamicFields>
+							<Table>AssetTable</Table>
+							<DataSources />
+							<DerivedDataSources />
+							<Fields />
+							<Ranges />
+							<JoinMode>NoExistsJoin</JoinMode>
+							<Relations>
+								<AxQuerySimpleDataSourceRelation>
+									<Name>QueryDataSourceRelation2</Name>
+									<Field>InventTransId</Field>
+									<JoinDataSource>InventTransOrigin</JoinDataSource>
+									<RelatedField>ITVTAssetIssueTransId</RelatedField>
+								</AxQuerySimpleDataSourceRelation>
+							</Relations>
+						</AxQuerySimpleEmbeddedDataSource>
+					</DataSources>
+					<DerivedDataSources />
+					<Fields />
+					<Ranges>
+						<AxQuerySimpleDataSourceRange>
+							<Name>ReferenceCategory</Name>
+							<Field>ReferenceCategory</Field>
+							<Value>!InventTransfer, !QuarantineOrder, !TransferOrderShip, !TransferOrderReceive, !QualityOrder, !WHSWork, !WHSQuarantine, !WHSContainer, !RentalLine, !RentalLineRented</Value>
+						</AxQuerySimpleDataSourceRange>
+					</Ranges>
+					<Relations>
+						<AxQuerySimpleDataSourceRelation>
+							<Name>QueryDataSourceRelation1</Name>
+							<Field>InventTransOrigin</Field>
+							<JoinDataSource>InventTrans</JoinDataSource>
+							<RelatedField>RecId</RelatedField>
+						</AxQuerySimpleDataSourceRelation>
+					</Relations>
+				</AxQuerySimpleEmbeddedDataSource>
+				<AxQuerySimpleEmbeddedDataSource>
+					<Name>InventDim</Name>
+					<DynamicFields>Yes</DynamicFields>
+					<Table>InventDim</Table>
+					<DataSources />
+					<DerivedDataSources />
+					<Fields />
+					<Ranges />
+					<Relations>
+						<AxQuerySimpleDataSourceRelation>
+							<Name>QueryDataSourceRelation1</Name>
+							<Field>inventDimId</Field>
+							<JoinDataSource>InventTrans</JoinDataSource>
+							<RelatedField>inventDimId</RelatedField>
+						</AxQuerySimpleDataSourceRelation>
+					</Relations>
+				</AxQuerySimpleEmbeddedDataSource>
+				<AxQuerySimpleEmbeddedDataSource>
+					<Name>InventTable</Name>
+					<DynamicFields>Yes</DynamicFields>
+					<Table>InventTable</Table>
+					<DataSources />
+					<DerivedDataSources />
+					<Fields />
+					<Ranges>
+						<AxQuerySimpleDataSourceRange>
+							<Name>ITVTIsRentalItem</Name>
+							<Field>ITVTIsRentalItem</Field>
+							<Value>Yes</Value>
+						</AxQuerySimpleDataSourceRange>
+						<AxQuerySimpleDataSourceRange>
+							<Name>ITVTIsFixedAsset</Name>
+							<Field>ITVTIsFixedAsset</Field>
+							<Value>Yes</Value>
+						</AxQuerySimpleDataSourceRange>
+					</Ranges>
+					<Relations>
+						<AxQuerySimpleDataSourceRelation>
+							<Name>QueryDataSourceRelation1</Name>
+							<Field>ItemId</Field>
+							<JoinDataSource>InventTrans</JoinDataSource>
+							<RelatedField>ItemId</RelatedField>
+						</AxQuerySimpleDataSourceRelation>
+					</Relations>
+				</AxQuerySimpleEmbeddedDataSource>
+			</DataSources>
+			<DerivedDataSources />
+			<Fields />
+			<Ranges />
+			<GroupBy />
+			<Having />
+			<OrderBy />
+		</AxQuerySimpleRootDataSource>
+	</DataSources>
+</AxQuery>

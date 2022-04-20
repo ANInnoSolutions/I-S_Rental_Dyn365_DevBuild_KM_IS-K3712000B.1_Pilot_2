@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxQuery xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxQuerySimple">
+	<Name>ITVTRentalDepreciationQuery</Name>
+	<SourceCode>
+		<Methods>
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Query]
+public class ITVTRentalDepreciationQuery extends QueryRun
+{
+}
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DataSources>
+		<AxQuerySimpleRootDataSource>
+			<Name>InventTrans</Name>
+			<DynamicFields>Yes</DynamicFields>
+			<Table>InventTrans</Table>
+			<DataSources>
+				<AxQuerySimpleEmbeddedDataSource>
+					<Name>InventTransOrigin</Name>
+					<DynamicFields>Yes</DynamicFields>
+					<Table>InventTransOrigin</Table>
+					<DataSources>
+						<AxQuerySimpleEmbeddedDataSource>
+							<Name>SalesLine</Name>
+							<Table>SalesLine</Table>
+							<DataSources>
+								<AxQuerySimpleEmbeddedDataSource>
+									<Name>CustInvoiceTrans</Name>
+									<Table>CustInvoiceTrans</Table>
+									<DataSources />
+									<DerivedDataSources />
+									<Fields>
+										<AxQuerySimpleDataSourceField>
+											<Name>ITVTDepreciationAdjustVoucher</Name>
+											<Field>ITVTDepreciationAdjustVoucher</Field>
+										</AxQuerySimpleDataSourceField>
+										<AxQuerySimpleDataSourceField>
+											<Name>InventTransId</Name>
+											<Field>InventTransId</Field>
+										</AxQuerySimpleDataSourceField>
+										<AxQuerySimpleDataSourceField>
+											<Name>InvoiceID</Name>
+											<Field>InvoiceID</Field>
+										</AxQuerySimpleDataSourceField>
+									</Fields>
+									<Ranges>
+										<AxQuerySimpleDataSourceRange>
+											<Name>ITVTDepreciationAdjustVoucher</Name>
+											<Field>ITVTDepreciationAdjustVoucher</Field>
+											<Status>Hidden</Status>
+											<Value>""</Value>
+										</AxQuerySimpleDataSourceRange>
+									</Ranges>
+									<JoinMode>ExistsJoin</JoinMode>
+									<Relations>
+										<AxQuerySimpleDataSourceRelation>
+											<Name>QueryDataSourceRelation1</Name>
+											<Field>InventTransId</Field>
+											<JoinDataSource>SalesLine</JoinDataSource>
+											<RelatedField>InventTransId</RelatedField>
+										</AxQuerySimpleDataSourceRelation>
+									</Relations>
+								</AxQuerySimpleEmbeddedDataSource>
+							</DataSources>
+							<DerivedDataSources />
+							<Fields>
+								<AxQuerySimpleDataSourceField>
+									<Name>ItemId</Name>
+									<Field>ItemId</Field>
+								</AxQuerySimpleDataSourceField>
+								<AxQuerySimpleDataSourceField>
+									<Name>ITVTOriginInventTransId</Name>
+									<Field>ITVTOriginInventTransId</Field>
+								</AxQuerySimpleDataSourceField>
+								<AxQuerySimpleDataSourceField>
+									<Name>InventTransId</Name>
+									<Field>InventTransId</Field>
+								</AxQuerySimpleDataSourceField>
+							</Fields>
+							<Ranges />
+							<JoinMode>ExistsJoin</JoinMode>
+							<Relations>
+								<AxQuerySimpleDataSourceRelation>
+									<Name>QueryDataSourceRelation1</Name>
+									<Field>InventTransId</Field>
+									<JoinDataSource>InventTransOrigin</JoinDataSource>
+									<RelatedField>ITVTOriginInventTransId</RelatedField>
+								</AxQuerySimpleDataSourceRelation>
+							</Relations>
+						</AxQuerySimpleEmbeddedDataSource>
+					</DataSources>
+					<DerivedDataSources />
+					<Fields />
+					<Ranges>
+						<AxQuerySimpleDataSourceRange>
+							<Name>ReferenceCategory</Name>
+							<Field>ReferenceCategory</Field>
+							<Status>Locked</Status>
+							<Value>RentalLine</Value>
+						</AxQuerySimpleDataSourceRange>
+					</Ranges>
+					<Relations>
+						<AxQuerySimpleDataSourceRelation>
+							<Name>QueryDataSourceRelation1</Name>
+							<Field>InventTransOrigin</Field>
+							<JoinDataSource>InventTrans</JoinDataSource>
+							<RelatedField>RecId</RelatedField>
+						</AxQuerySimpleDataSourceRelation>
+					</Relations>
+				</AxQuerySimpleEmbeddedDataSource>
+				<AxQuerySimpleEmbeddedDataSource>
+					<Name>InventDim</Name>
+					<DynamicFields>Yes</DynamicFields>
+					<Table>InventDim</Table>
+					<DataSources />
+					<DerivedDataSources />
+					<Fields />
+					<Ranges />
+					<Relations>
+						<AxQuerySimpleDataSourceRelation>
+							<Name>QueryDataSourceRelation1</Name>
+							<Field>inventDimId</Field>
+							<JoinDataSource>InventTrans</JoinDataSource>
+							<RelatedField>inventDimId</RelatedField>
+						</AxQuerySimpleDataSourceRelation>
+					</Relations>
+				</AxQuerySimpleEmbeddedDataSource>
+				<AxQuerySimpleEmbeddedDataSource>
+					<Name>InventTable</Name>
+					<DynamicFields>Yes</DynamicFields>
+					<Table>InventTable</Table>
+					<DataSources />
+					<DerivedDataSources />
+					<Fields />
+					<Ranges>
+						<AxQuerySimpleDataSourceRange>
+							<Name>ITVTIsRentalItem</Name>
+							<Field>ITVTIsRentalItem</Field>
+							<Status>Locked</Status>
+							<Value>Yes</Value>
+						</AxQuerySimpleDataSourceRange>
+						<AxQuerySimpleDataSourceRange>
+							<Name>ITVTIsFixedAsset</Name>
+							<Field>ITVTIsFixedAsset</Field>
+							<Status>Locked</Status>
+							<Value>No</Value>
+						</AxQuerySimpleDataSourceRange>
+						<AxQuerySimpleDataSourceRange>
+							<Name>ITVTFixedAssetHGBPct</Name>
+							<Field>ITVTFixedAssetHGBPct</Field>
+							<Status>Locked</Status>
+							<Value>&gt;0</Value>
+						</AxQuerySimpleDataSourceRange>
+						<AxQuerySimpleDataSourceRange>
+							<Name>ITVTRentalService</Name>
+							<Field>ITVTRentalService</Field>
+							<Status>Hidden</Status>
+							<Value>!""</Value>
+						</AxQuerySimpleDataSourceRange>
+					</Ranges>
+					<Relations>
+						<AxQuerySimpleDataSourceRelation>
+							<Name>QueryDataSourceRelation1</Name>
+							<Field>ItemId</Field>
+							<JoinDataSource>InventTrans</JoinDataSource>
+							<RelatedField>ItemId</RelatedField>
+						</AxQuerySimpleDataSourceRelation>
+					</Relations>
+				</AxQuerySimpleEmbeddedDataSource>
+			</DataSources>
+			<DerivedDataSources />
+			<Fields />
+			<Ranges>
+				<AxQuerySimpleDataSourceRange>
+					<Name>StatusReceipt</Name>
+					<Field>StatusReceipt</Field>
+					<Status>Locked</Status>
+					<Value>Purchased</Value>
+				</AxQuerySimpleDataSourceRange>
+			</Ranges>
+			<GroupBy />
+			<Having />
+			<OrderBy />
+		</AxQuerySimpleRootDataSource>
+	</DataSources>
+</AxQuery>
