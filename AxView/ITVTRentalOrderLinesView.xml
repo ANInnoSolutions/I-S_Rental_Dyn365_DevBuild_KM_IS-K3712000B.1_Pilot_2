@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxView xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderLinesView</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ITVTRentalOrderLinesView extends common
+{
+}
+]]></Declaration>
+		<Methods />
+	</SourceCode>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>SalesId</Name>
+			<DataField>SalesId</DataField>
+			<DataSource>SalesTable</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>InventTransId</Name>
+			<DataField>InventTransId</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>ReturnDate</Name>
+			<DataField>ReturnDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>ItemId</Name>
+			<DataField>ItemId</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>InventLocationId</Name>
+			<DataField>InventLocationId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>PostedRentalFromDate</Name>
+			<DataField>PostedRentalFromDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>PendingReturnQuantity</Name>
+			<DataField>PendingReturnQuantity</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxViewField>
+	</Fields>
+	<Indexes />
+	<Mappings />
+	<Relations />
+	<StateMachines />
+	<ViewMetadata>
+		<Name>Metadata</Name>
+		<SourceCode>
+			<Methods />
+		</SourceCode>
+		<DataSources>
+			<AxQuerySimpleRootDataSource>
+				<Name>SalesTable</Name>
+				<DynamicFields>Yes</DynamicFields>
+				<Table>SalesTable</Table>
+				<DataSources>
+					<AxQuerySimpleEmbeddedDataSource>
+						<Name>ITVTRentalLine</Name>
+						<DynamicFields>Yes</DynamicFields>
+						<Table>ITVTRentalLine</Table>
+						<DataSources>
+							<AxQuerySimpleEmbeddedDataSource>
+								<Name>InventDim</Name>
+								<DynamicFields>Yes</DynamicFields>
+								<Table>InventDim</Table>
+								<DataSources />
+								<DerivedDataSources />
+								<Fields />
+								<Ranges />
+								<UseRelations>Yes</UseRelations>
+								<Relations />
+							</AxQuerySimpleEmbeddedDataSource>
+						</DataSources>
+						<DerivedDataSources />
+						<Fields />
+						<Ranges />
+						<UseRelations>Yes</UseRelations>
+						<Relations />
+					</AxQuerySimpleEmbeddedDataSource>
+				</DataSources>
+				<DerivedDataSources />
+				<Fields />
+				<Ranges />
+				<GroupBy />
+				<Having />
+				<OrderBy />
+			</AxQuerySimpleRootDataSource>
+		</DataSources>
+	</ViewMetadata>
+</AxView>
