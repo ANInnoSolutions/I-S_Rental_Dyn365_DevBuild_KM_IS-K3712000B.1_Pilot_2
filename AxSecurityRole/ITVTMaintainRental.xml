@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxSecurityRole xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTMaintainRental</Name>
+	<Description>@ITVTRental:MaintainRentalDescription</Description>
+	<Label>@ITVTRental:MaintainRental</Label>
+	<DirectAccessPermissions />
+	<Duties />
+	<Privileges>
+		<AxSecurityPrivilegeReference>
+			<Name>ITVTProjInventLocationCreatorPrivilege</Name>
+		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>ITVTRentalEditLine</Name>
+		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>ITVTRentalOrderMaintain</Name>
+		</AxSecurityPrivilegeReference>
+	</Privileges>
+	<SubRoles />
+</AxSecurityRole>
