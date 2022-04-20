@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineStartRentalController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The class controller for operating with the <c>ITVTRentalLineStartRentalService</c> class
+/// </summary>
+class ITVTRentalLineStartRentalController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTRentalLineStartRentalService));
+        this.parmMethodName(methodStr(ITVTRentalLineStartRentalService, runStartRental));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalLineStartRentalController controller = new ITVTRentalLineStartRentalController();
+
+        controller.initContract(_args);
+        controller.parmShowDialog(true);
+        controller.startOperation();
+
+        if (!controller.isInBatch()
+            && _args.caller()
+            && _args.caller() is FormRun
+            && _args.record())
+        {
+            FormObjectSet ds = FormDataUtil::getFormDataSource(_args.record());
+
+            if (ds)
+            {
+                ds.research(true);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract(Args _args)
+    {
+        ITVTRentalLineStartRentalContract contract = this.getDataContractObject();
+        Query query = new Query();
+        QueryBuildDataSource qbdsRentalLine = query.addDataSource(tableNum(ITVTRentalLine));
+
+        if (_args
+            && _args.caller() is FormRun
+            && _args.record())
+        {
+            switch (_args.dataset())
+            {
+                case tableNum(ITVTRentalLine):
+                    MultiSelectionHelper multiselectionHelper = MultiSelectionHelper::createFromCaller(_args.caller());
+                    ITVTRentalLine       rentalLine = multiselectionHelper.getFirst();
+
+                    while (rentalLine)
+                    {
+                        qbdsRentalLine.addRange(fieldNum(ITVTRentalLine, RecId)).value(queryValue(rentalLine.RecId));
+                        rentalLine = multiselectionHelper.getNext();
+                    }
+
+                    break;
+
+                case tableNum(SalesTable):
+                    SalesTable salesTable = _args.record();
+
+                    qbdsRentalLine.addRange(fieldNum(ITVTRentalLine, SalesId)).value(salesTable.SalesId);
+                    qbdsRentalLine.addRange(fieldNum(ITVTRentalLine, PostedRentalFromDate)).value(queryValue(dateNull()));
+
+                    break;
+            }
+        }
+
+        contract.setQuery(query);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:StartRental";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runStartRentalFromContainer</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs operation for Rental lines without dialog
+    /// </summary>
+    /// <param name = "_rentalLines">Packed list of ITVTRentalLine records</param>
+    /// <param name = "_postingDate">Posting date</param>
+    public static void runStartRentalFromContainer(
+        container _rentalLines,
+        TransDate _postingDate)
+    {
+        ITVTRentalLineStartRentalController controller = new ITVTRentalLineStartRentalController();
+        
+        controller.initContractFromContainer(_rentalLines, _postingDate);
+        controller.parmShowDialog(false);
+        controller.runOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContractFromContainer</Name>
+				<Source><![CDATA[
+    private void initContractFromContainer(
+        container _rentalLines,
+        TransDate _postingDate)
+    {
+        ITVTRentalLineStartRentalContract contract = this.getDataContractObject();
+        Query query = new Query();
+        QueryBuildDataSource qdbsRentalLine = query.addDataSource(tableNum(ITVTRentalLine));
+
+        List rentaLines = List::create(_rentalLines);
+        ListEnumerator rentaLinesEnumerator = rentaLines.getEnumerator();
+
+        while (rentaLinesEnumerator.moveNext())
+        {
+            ITVTRentalLine rentalLine = rentaLinesEnumerator.current();
+            qdbsRentalLine.addRange(fieldNum(ITVTRentalLine, RecId)).value(queryValue(rentalLine.RecId));
+        }
+
+        contract.setQuery(query);
+        contract.parmPostingDate(_postingDate);
+        contract.parmRentalQtyToAvailQty(false);
+        contract.parmNewRentalLineForUnavailQty(false);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTrans_EventHandler</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+class ITVTInventTrans_EventHandler
+{
+    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>InventTrans_constructingInventMovementFromInventTrans</Name>
+				<Source><![CDATA[
+    [SubscribesTo(tableStr(InventTrans), delegateStr(InventTrans, constructingInventMovementFromInventTrans))]
+    public static void InventTrans_constructingInventMovementFromInventTrans(InventTrans _inventTrans, boolean _noThrow, EventHandlerResult _result)
+    {
+        InventDirection direction = _inventTrans.direction();
+        InventTransOrigin inventTransOrigin = _inventTrans.inventTransOrigin();
+
+        switch (inventTransOrigin.ReferenceCategory)
+        {
+            case InventTransType::RentalLine:
+                {
+                    ITVTInventMov_RentalLine mov = ITVTInventMov_RentalLine::newFromRentalLine(inventTransOrigin.originator(),direction);
+                    mov.setTransQty(_inventTrans.Qty);
+                    mov.setInventDimId(_inventTrans.inventDimId);
+                    _result.result(mov);
+                }
+                break;
+            case InventTransType::RentalLineRented:
+                {
+                    ITVTInventMov_RentalLineRented mov = ITVTInventMov_RentalLineRented::newFromRentalLine(inventTransOrigin.originator(),direction);
+                    mov.setTransQty(_inventTrans.Qty);
+                    mov.setInventDimId(_inventTrans.inventDimId);
+                    _result.result(mov);
+                }
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

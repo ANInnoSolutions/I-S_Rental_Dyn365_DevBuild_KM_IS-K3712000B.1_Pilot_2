@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventMov_RentalLineRented</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class is used for onhand of <c>ITVTRentalLine</c>
+/// </summary>
+[InventMovementFactoryAttribute(tableStr(ITVTRentalLine),InventMovSubType::TransferReceipt)]
+class ITVTInventMov_RentalLineRented extends ITVTInventMov_RentalLine
+{
+
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>newFromRentalLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Initializes a new instance of the <c>ITVTInventMov_RentalLine</c> class based on the specified record.
+    /// </summary>
+    /// <param name="_rentalLine">
+    ///    The record in the <c>ITVTRentalLine</c> table for which the class is instantiated.
+    /// </param>
+    /// <returns>
+    ///    An instance of the <c>ITVTInventMov_RentalLine</c> class.
+    /// </returns>
+    public static ITVTInventMov_RentalLineRented newFromRentalLine(ITVTRentalLine _rentalLine, InventDirection _inventDirection)
+    {
+        ITVTInventMov_RentalLineRented mov = new ITVTInventMov_RentalLineRented(_rentalLine);
+        mov.parmInventDirection(_inventDirection);
+        return mov; 
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transType</Name>
+				<Source><![CDATA[
+    public InventTransType transType()
+    {
+        return InventTransType::RentalLineRented;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transDate</Name>
+				<Source><![CDATA[
+    public TransDate transDate()
+    {
+        TransDate ret;
+
+        switch (inventDirection)
+        {
+            case InventDirection::Receipt:
+                ret = rentalLine.ConfirmedRentalFromDate? rentalLine.ConfirmedRentalFromDate : rentalLine.RentalFromDate;
+                break;
+            case InventDirection::Issue:
+                ret = rentalLine.ConfirmedRentalToDate? rentalLine.ConfirmedRentalToDate : rentalLine.RentalToDate;
+                break;
+        }
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new(
+        ITVTRentalLine   _rentalLine,
+        InventType       _inventType = new InventType(_rentalLine))
+    {
+        rentalLine = _rentalLine;
+
+        super(_rentalLine, _inventType);
+
+        switch (rentalLine.Status)
+        {
+            case ITVTRentalLineStatus::Created:
+                inventDirection = InventDirection::Receipt;
+                break;
+            case ITVTRentalLineStatus::Started:
+                inventDirection = InventDirection::Issue;
+                break;
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newMovement_Orig</Name>
+				<Source><![CDATA[
+    public InventMovement newMovement_Orig()
+    {
+        if (!rentalLine.RecId || rentalLine.Status == ITVTRentalLineStatus::Created)
+        {
+            return null;
+        }
+
+        return ITVTInventMov_RentalLineRented::newFromRentalLine(rentalLine.orig(),inventDirection);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canReservationFormBeEdited</Name>
+				<Source><![CDATA[
+    /*
+    public void setPreTransEstimated(
+        InventMovement        _this_Orig,
+        InventUpd_Estimated   _updateNow)
+    {
+        super(_this_Orig,_updateNow);
+
+        if (rentalLine.Status            == ITVTRentalLineStatus::Started &&
+            rentalLine.orig().Status     == ITVTRentalLineStatus::Created)
+        {
+            _updateNow.parmPreEstimated(0);
+        }
+    }
+    */
+
+    public boolean canReservationFormBeEdited()
+    {
+        return (rentalLine.Status == ITVTRentalLineStatus::Started);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustBeAutoReserved</Name>
+				<Source><![CDATA[
+    public boolean mustBeAutoReserved()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transId</Name>
+				<Source><![CDATA[
+    public InventTransId transId()
+    {
+        return rentalLine.InventTransIdRented;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transSign</Name>
+				<Source><![CDATA[
+    public Integer transSign()
+    {
+        return inventDirection == InventDirection::Receipt ? 1 : -1;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventDimId</Name>
+				<Source><![CDATA[
+    public InventDimId inventDimId()
+    {
+        /*
+        InventDim           dimLocal;//  = rentalLine.inventDim();
+
+        InventLocation inventLocation = InventLocation::find(rentalLine.salesTable().ITVTProjInventLocationId);
+
+        if (inventLocation)
+        {
+            dimLocal.InventLocationId =  rentalLine.salesTable().ITVTProjInventLocationId;
+            dimLocal.initFromInventLocation(inventLocation);
+
+            if (inventLocation.WMSLocationIdDefaultReceipt)
+            {
+                dimLocal.wMSLocationId = inventLocation.WMSLocationIdDefaultReceipt;
+            }
+
+            dimLocal = InventDim::findOrCreate(dimLocal);
+        }
+        else
+        {
+            dimLocal = rentalLine.inventDim();
+        }
+        */        
+
+        return this.getInventDimIdRentalStatus(inventDimId, ITVTRentalParameters::find().InventDimValueStatusRented);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventTransOriginId</Name>
+				<Source><![CDATA[
+    public InventTransOriginId inventTransOriginId(InventTransOriginId _inventTransOriginId = inventTransOriginId)
+    {
+        if (_inventTransOriginId != inventTransOriginId)
+        {
+            inventTransOriginId = _inventTransOriginId;
+        }
+        else
+        {
+            if (!inventTransOriginId)
+            {
+                inventTransOriginId = ITVTInventTransOriginRentalLineRented::findInventTransOriginId(rentalLine.DataAreaId, rentalLine.InventTransIdRented);
+            }
+        }
+
+        return inventTransOriginId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createOriginOwnerRelationship</Name>
+				<Source><![CDATA[
+    public void createOriginOwnerRelationship()
+    {
+        InventTransOriginId originId = this.inventTransOriginId();
+
+        if (originId && rentalLine)
+        {
+            ITVTInventTransOriginRentalLineRented::writeOriginOwnerRelationship(rentalLine.DataAreaId, rentalLine.InventTransIdRented, originId);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deleteOriginOwnerRelationship</Name>
+				<Source><![CDATA[
+    public void deleteOriginOwnerRelationship()
+    {
+        if (rentalLine)
+        {
+            ITVTInventTransOriginRentalLineRented::deleteOwnerRelationship(rentalLine.DataAreaId, rentalLine.InventTransIdRented);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newMovement_TransferIssue</Name>
+				<Source><![CDATA[
+    public InventMovement  newMovement_TransferIssue()
+    {
+        if (inventDirection == InventDirection::Issue)
+        {
+            return this;
+        }
+
+        return ITVTInventMov_RentalLineRented::newFromRentalLine(rentalLine,InventDirection::Issue);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newMovement_TransferReceipt</Name>
+				<Source><![CDATA[
+    public InventMovement  newMovement_TransferReceipt()
+    {
+        if (inventDirection == InventDirection::Receipt)
+        {
+            return this;
+        }
+
+        return null; //ITVTInventMov_RentalLine::newFromRentalLine(rentalLine,InventDirection::Receipt);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mergeTransDimTransferReceipt</Name>
+				<Source><![CDATA[
+    public InventDim mergeTransDimTransferReceipt(
+        InventDim       _toInventDim,
+        InventDim       _fromInventDim          = this.inventdim(),
+        InventDim       _origFromDim            = _fromInventDim)
+    {
+        
+        return InventDim::find(this.getInventDimIdRentalStatus(_toInventDim.inventDimId, ITVTRentalParameters::find().InventDimValueStatusRented));
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

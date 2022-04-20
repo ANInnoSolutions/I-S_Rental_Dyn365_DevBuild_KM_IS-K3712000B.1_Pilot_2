@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliveryQtyProcessorUIBuilder</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class creates a UI form for the <c>ITVTRentalLineDeliveryQtyProcessorContract</c> contract class
+/// </summary>
+class ITVTRentalLineDeliveryQtyProcessorUIBuilder extends SysOperationAutomaticUIBuilder
+{
+    DialogField             targetInventLocationIdField;
+
+    DialogField             deliveryQtyField;
+
+    DialogField             returnQty;
+    DialogField             closePendingReturn;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>postBuild</Name>
+				<Source><![CDATA[
+    public void postBuild()
+    {
+        super();
+
+        ITVTRentalLineDeliveryQtyProcessorContract contract = this.dataContractObject();
+
+        targetInventLocationIdField = this.bindInfo().getDialogField(
+            contract,
+            methodStr(ITVTRentalLineDeliveryQtyProcessorContract, parmInventLocationId));
+
+        targetInventLocationIdField.label(contract.parmRentalLineDeliveryOperation() == ITVTRentalLineDeliveryOperation::Delivery ? "@SYS25253" : "@SYS8519");
+    
+        deliveryQtyField = this.bindInfo().getDialogField(
+            contract,
+            methodStr(ITVTRentalLineDeliveryQtyProcessorContract, parmDeliveryQty));
+
+        deliveryQtyField.visible(contract.parmRentalLineDeliveryOperation() == ITVTRentalLineDeliveryOperation::Delivery);
+
+        returnQty = this.bindInfo().getDialogField(
+            contract,
+            methodStr(ITVTRentalLineDeliveryQtyProcessorContract, parmReturnQty));
+
+        closePendingReturn = this.bindInfo().getDialogField(
+            contract,
+            methodStr(ITVTRentalLineDeliveryQtyProcessorContract, parmClosePendingReturn));
+
+        returnQty.visible(contract.parmRentalLineDeliveryOperation() == ITVTRentalLineDeliveryOperation::Return);
+        closePendingReturn.visible(contract.parmRentalLineDeliveryOperation() == ITVTRentalLineDeliveryOperation::Return);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

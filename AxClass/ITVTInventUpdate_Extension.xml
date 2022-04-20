@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventUpdate_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(classstr(InventUpdate))]
+public final class ITVTInventUpdate_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>setParmAllowDefault</Name>
+				<Source><![CDATA[
+    protected void setParmAllowDefault()
+    {
+        next setParmAllowDefault();
+
+        if (movement.TransType() == InventTransType::RentalLine
+            //|| movement.TransType() == InventTransType::RentalLineRented
+            )
+        {
+            this.parmAllowReserveOrdered(false);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

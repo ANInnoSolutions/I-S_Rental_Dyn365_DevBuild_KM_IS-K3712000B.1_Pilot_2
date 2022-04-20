@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetRentalReconGenerateService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The service class which contains logic for generating fixed asset and rental item transaction reconciliation
+/// </summary>
+class ITVTAssetRentalReconGenerateService extends SysOperationServiceBase
+{
+    Query baseQuery;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>runReconGenerate</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the logic to generate fixed asset and rental item transaction reconciliation
+    /// </summary>
+    /// <param name = "_contract">The used contract</param>
+    public void runReconGenerate(ITVTAssetRentalReconGenerateContract _contract)
+    {
+        ttsbegin;
+
+        this.deleteOldRecords();
+
+        this.initBaseQuery(_contract);
+
+        this.processReceipts();
+
+        if (!_contract.parmOnlyReceiptTrans())
+        {
+            this.processIssuesNew(_contract);
+        }
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initBaseQuery</Name>
+				<Source><![CDATA[
+    private void initBaseQuery(ITVTAssetRentalReconGenerateContract _contract)
+    {
+        baseQuery = new Query(queryStr(ITVTAssetRentalReconQuery));
+
+        QueryBuildDataSource qbdsInventTrans = baseQuery.dataSourceTable(tableNum(InventTrans));
+        
+        qbdsInventTrans.addRange(fieldNum(InventTrans, DatePhysical)).value(SysQueryRangeUtil::dateRange(_contract.parmFromDate(), _contract.parmToDate()));
+
+        ITVTRentalParameters rentalParameters = ITVTRentalParameters::find();
+        QueryBuildDataSource qbdsInventDim = baseQuery.dataSourceTable(tableNum(InventDim));
+
+        qbdsInventDim.addRange(fieldNum(InventDim, InventDimension1)).value(
+                strFmt('((%1.%2 != "%3") && (%1.%2 != "%4"))',
+                qbdsInventDim.name(),
+                fieldStr(InventDim, InventDimension1),
+                queryValue(rentalParameters.InventDimValueStatusNew),
+                queryValue(rentalParameters.InventDimValueStatusInterimFAPurch)));      
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deleteOldRecords</Name>
+				<Source><![CDATA[
+    private void deleteOldRecords()
+    {
+        ITVTAssetRentalRecon assetRentalRecon;
+
+        delete_from assetRentalRecon;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initQuery</Name>
+				<Source><![CDATA[
+    private Query initQuery(str _statusReceiptRange)
+    {
+        Query query = new Query(baseQuery);
+
+        QueryBuildDataSource qbdsInventTrans = query.dataSourceTable(tableNum(InventTrans));
+        qbdsInventTrans.addRange(fieldNum(InventTrans, StatusReceipt)).value(_statusReceiptRange);
+
+        return query;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processReceipts</Name>
+				<Source><![CDATA[
+    private void processReceipts()
+    {
+        Query                       query = this.initQuery(SysQuery::valueNot(StatusReceipt::None));
+        QueryRun                    queryRun = new QueryRun(query);
+        ITVTRentalParameters        itvtRentalParameters = ITVTRentalParameters::find();
+
+        while (queryRun.next())
+        {
+            try 
+            {
+                InventTrans             inventTrans = queryRun.get(tableNum(InventTrans));
+                InventTransOrigin       inventTransOrigin = queryRun.get(tableNum(InventTransOrigin));
+                InventDim               inventDim = queryRun.get(tableNum(InventDim));
+                InventTable             inventTable = queryRun.get(tableNum(InventTable));
+
+                ITVTAssetRentalRecon    assetRentalRecon;
+
+                assetRentalRecon.ItemId = inventTrans.ItemId;
+                assetRentalRecon.InventSerialId = inventDim.inventSerialId;
+                assetRentalRecon.TransDate = inventTrans.DatePhysical;
+                assetRentalRecon.Qty = inventTrans.Qty;
+                assetRentalRecon.InventTransQty = inventTrans.Qty;
+                assetRentalRecon.InventTransId = inventTransOrigin.InventTransId;
+                assetRentalRecon.IsReceiptTrans = NoYes::Yes;
+                assetRentalRecon.InventTransRefRecId = inventTrans.RecId;
+
+                // get for New status(cost value in inventory)
+                InventDim       inventDimOnHand = this.receiptInventDim(inventTable, inventDim, itvtRentalParameters.InventDimValueStatusNew);            
+                InventDimParm   inventDimParm; 
+                inventDimParm.initFromInventDim(inventDimOnHand);
+            
+                InventOnhand inventOnHand = InventOnhand::newParameters(inventTable.ItemId, inventDimOnHand, inventDimParm);
+            
+                if (!inventOnHand.postedQty() || !inventOnHand.postedValue())
+                {
+                    // get for Interim status for fixed asset purchase
+                    inventDimOnHand = this.receiptInventDim(inventTable, inventDim, itvtRentalParameters.InventDimValueStatusInterimFAPurch);                    
+                    inventDimParm.initFromInventDim(inventDimOnHand);            
+                    inventOnHand = InventOnhand::newParameters(inventTable.ItemId, inventDimOnHand, inventDimParm);
+                }
+
+                if (inventOnHand.postedQty())
+                {
+                    assetRentalRecon.ReceiptAmount = inventOnHand.postedValue() / inventOnHand.postedQty();
+                }
+
+                assetRentalRecon.insert();
+            }
+            catch (Exception::DuplicateKeyException)
+            {
+                continue;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>receiptInventDim</Name>
+				<Source><![CDATA[
+    private InventDim receiptInventDim(
+        InventTable     _inventTable,
+        InventDim       _inventDim,
+        ITVTInventDimValueDefault _rentalStatus)
+    {
+        EcoResStorageDimensionGroupItem storageDimensionGroupItem = EcoResStorageDimensionGroupItem::findByItem(
+            _inventTable.DataAreaId, 
+            _inventTable.ItemId);
+
+        EcoResStorageDimensionGroupFldSetup setupInventLocation = EcoResStorageDimensionGroupFldSetup::findByDimensionGroupFieldId(
+            storageDimensionGroupItem.StorageDimensionGroup, 
+            fieldNum(InventDim, InventLocationId));
+
+        EcoResStorageDimensionGroupFldSetup setupInventSerial = EcoResStorageDimensionGroupFldSetup::findByDimensionGroupFieldId(
+            storageDimensionGroupItem.StorageDimensionGroup,
+            fieldNum(InventDim, InventSerialId));
+
+        EcoResStorageDimensionGroupFldSetup setupInventBatch = EcoResStorageDimensionGroupFldSetup::findByDimensionGroupFieldId(
+            storageDimensionGroupItem.StorageDimensionGroup,
+            fieldNum(InventDim, InventBatchId));
+        
+        InventDim inventDim;
+        InventDim inventDimEmpty;
+        ITVTRentalParameters itvtRentalParameters = ITVTRentalParameters::find();
+        
+        inventDim = ITVTRentalParameters::setRentalInventDimStatus(inventDimEmpty,_rentalStatus);
+        
+        /*
+        inventDim.InventSiteId = _inventDim.InventSiteId;
+        inventDim.InventLocationId = setupInventLocation.IsFinancialInventoryEnabled ? _inventDim.InventLocationId : inventDim.InventLocationId;
+        inventDim.InventSerialId = setupInventSerial.IsFinancialInventoryEnabled ? _inventDim.InventSerialId : inventDim.InventSerialId;
+        inventDim.InventBatchId = setupInventBatch.IsFinancialInventoryEnabled ? _inventDim.InventBatchId : inventDim.InventBatchId;
+        */
+
+        inventDim = InventDim::findOrCreate(inventDim);
+
+        return inventDim;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processIssues</Name>
+				<Source><![CDATA[
+    [SysObsolete('Use ITVTAssetRentalReconGenerateService.processIssuesNew instead', false, 02\02\2022)]
+    private void processIssues(ITVTAssetRentalReconGenerateContract _contract)
+    {
+        Query                       query = this.initQuery(SysQuery::value(StatusReceipt::None));
+        QueryRun                    queryRun = new QueryRun(query);
+
+        while (queryRun.next())
+        {
+            try
+            {
+                InventTrans             inventTrans = queryRun.get(tableNum(InventTrans));
+                InventTransOrigin       inventTransOrigin = queryRun.get(tableNum(InventTransOrigin));
+                InventDim               inventDim = queryRun.get(tableNum(InventDim));
+                InventTable             inventTable = queryRun.get(tableNum(InventTable));
+
+                Qty                     calcRemainingQty = inventTrans.Qty;
+
+                AssetTable              assetTable;
+                AssetBook               assetBook;
+                
+
+                while select AssetId, Quantity from assetTable
+                    order by assetBook.AcquisitionDate asc
+                    where assetTable.ITVTItemId == inventTrans.ItemId
+                        && (assetTable.SerialNum == inventDim.inventSerialId
+                            || !inventDim.inventSerialId)
+                    join assetBook                    
+                        where assetBook.AssetId == assetTable.AssetId
+                            && assetBook.BookId == _contract.parmAssetBookId()
+                            && assetBook.DisposalDate == dateNull()
+                {
+                    ITVTAssetRentalRecon assetRentalRecon;
+
+                    assetRentalRecon.ItemId = inventTrans.ItemId;
+                    assetRentalRecon.InventSerialId = inventDim.inventSerialId;
+                    assetRentalRecon.AssetId = assetTable.AssetId;
+
+                    assetRentalRecon.TransDate = inventTrans.DatePhysical;
+                    assetRentalRecon.Qty = inventTrans.Qty;
+                    assetRentalRecon.InventTransId = inventTransOrigin.InventTransId;
+                
+                    assetRentalRecon.AssetQty = assetTable.Quantity;
+                    assetRentalRecon.AssetRemainingQty = max(0, assetRentalRecon.AssetQty + calcRemainingQty);
+
+                    assetRentalRecon.write();
+                                        
+                    calcRemainingQty = calcRemainingQty + assetTable.Quantity;
+
+                    if (calcRemainingQty >= 0)
+                    {
+                        break;
+                    }
+                }
+
+                if (calcRemainingQty < 0)
+                {
+                    ITVTAssetRentalRecon assetRentalRecon;
+
+                    assetRentalRecon.ItemId = inventTrans.ItemId;
+                    assetRentalRecon.InventSerialId = inventDim.inventSerialId;
+                    assetRentalRecon.TransDate = inventTrans.DatePhysical;
+                    assetRentalRecon.Qty = inventTrans.Qty;
+                    assetRentalRecon.InventTransId = inventTransOrigin.InventTransId;
+                    
+                    assetRentalRecon.write();
+                }
+
+            }
+            catch (Exception::DuplicateKeyException)
+            {
+                continue;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processIssuesNew</Name>
+				<Source><![CDATA[
+    private void processIssuesNew(ITVTAssetRentalReconGenerateContract _contract)
+    {
+        Query                       query = this.initQuery(SysQuery::value(StatusReceipt::None));
+        QueryRun                    queryRun = new QueryRun(query);
+
+        while (queryRun.next())
+        {
+            try
+            {
+                InventTrans             inventTrans = queryRun.get(tableNum(InventTrans));
+                InventTransOrigin       inventTransOrigin = queryRun.get(tableNum(InventTransOrigin));
+                InventDim               inventDim = queryRun.get(tableNum(InventDim));
+                InventTable             inventTable = queryRun.get(tableNum(InventTable));
+                boolean                 inventTransProcessed;
+                AssetTable              assetTable;
+                AssetBook               assetBook;
+                Qty                     qty = inventTrans.Qty;
+
+                while select AssetId, Quantity from assetTable                    
+                    where !assetTable.ITVTAssetIssueTransId
+                        && assetTable.ITVTItemId == inventTrans.ItemId
+                        && (assetTable.SerialNum == inventDim.inventSerialId
+                            || !inventDim.inventSerialId)
+                        && assetTable.Quantity > 0
+                    join assetBook
+                        order by assetBook.AcquisitionDate asc
+                        where assetBook.AssetId == assetTable.AssetId
+                            && assetBook.BookId == _contract.parmAssetBookId()
+                            && assetBook.DisposalDate == dateNull()
+                {
+                    if (inventTransProcessed)
+                        break;
+
+                    inventTransProcessed = true;
+
+                    ITVTAssetRentalRecon    assetRentalReconSum;  
+                    
+                    select sum(Qty), sum(RecId) from assetRentalReconSum
+                        where assetRentalReconSum.ItemId == inventTrans.ItemId
+                            && assetRentalReconSum.AssetId == assetTable.AssetId;
+                    
+                    Qty qtyAssetCurrent = assetTable.Quantity + assetRentalReconSum.Qty;
+
+                    if (assetRentalReconSum.RecId && qtyAssetCurrent <= 0)
+                    {                           
+                        inventTransProcessed = false;
+                        continue;
+                    }
+
+                    ITVTAssetRentalRecon assetRentalRecon;
+
+                    assetRentalRecon.ItemId = inventTrans.ItemId;
+                    assetRentalRecon.InventSerialId = inventDim.inventSerialId;
+                    assetRentalRecon.AssetId = assetTable.AssetId;
+                    assetRentalRecon.TransDate = inventTrans.DatePhysical;  
+                    assetRentalRecon.InventTransQty = inventTrans.Qty;
+
+                    if (qtyAssetCurrent + qty < 0)
+                    {
+                        assetRentalRecon.Qty = qtyAssetCurrent * (-1);
+                        qty = qtyAssetCurrent + qty;
+
+                        inventTransProcessed = false;
+                    }
+                    else 
+                    {
+                        assetRentalRecon.Qty = qty;
+                    }
+                    assetRentalRecon.InventTransId = inventTransOrigin.InventTransId;
+                    assetRentalRecon.InventTransRefRecId = inventTrans.RecId;
+                
+                    assetRentalRecon.AssetQty = qtyAssetCurrent;
+                    assetRentalRecon.AssetRemainingQty = assetRentalRecon.AssetQty + assetRentalRecon.Qty;
+
+                    assetRentalRecon.write();
+                   
+                }
+
+                if (!inventTransProcessed)
+                {
+                    ITVTAssetRentalRecon assetRentalRecon;
+
+                    assetRentalRecon.ItemId = inventTrans.ItemId;
+                    assetRentalRecon.InventSerialId = inventDim.inventSerialId;
+                    assetRentalRecon.TransDate = inventTrans.DatePhysical;
+                    assetRentalRecon.InventTransQty = inventTrans.Qty;
+                    assetRentalRecon.Qty = qty;
+                    assetRentalRecon.InventTransId = inventTransOrigin.InventTransId;
+                    assetRentalRecon.InventTransRefRecId = inventTrans.RecId;
+
+                    assetRentalRecon.write();
+                }
+
+            }
+            catch (Exception::DuplicateKeyException)
+            {
+                continue;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPurchTableForm_PurchLine_DS_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension class for dataSource PurchLine on PurchTable form
+/// </summary>
+[ExtensionOf(formDataSourceStr(PurchTable, PurchLine))]
+final class ITVTPurchTableForm_PurchLine_DS_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>active</Name>
+				<Source><![CDATA[
+    int active()
+    {
+        int ret = next active();
+
+        PurchLine purchLineLocal = this.cursor();
+        InventTable inventTableLocal = purchLineLocal.inventTable();
+        FormDataSource purchLineDS = this;
+
+        purchLineDS.object(fieldNum(PurchLine, ITVTPostRentalItem)).allowEdit(inventTableLocal.ITVTIsRentalItem && inventTableLocal.ITVTIsFixedAsset);
+  
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

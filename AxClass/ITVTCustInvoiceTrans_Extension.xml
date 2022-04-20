@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTCustInvoiceTrans_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Class extension for table <c>CustInvoiceTrans</c>
+/// </summary>
+[ExtensionOf(tableStr(CustInvoiceTrans))]
+final class ITVTCustInvoiceTrans_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initFromSalesLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes values from Sales line
+    /// </summary>
+    /// <param name = "_salesLine">A buffer of SalesLine</param>
+    /// <param name = "_salesParmLine">A buffer of SalesParmLine, optional</param>
+    void initFromSalesLine(SalesLine _salesLine, SalesParmLine _salesParmLine)
+    {
+        next initFromSalesLine(_salesLine, _salesParmLine);
+
+        this.ITVTRentalTimeUnitId       = _salesLine.ITVTRentalTimeUnitId;
+        this.ITVTRentalFromDate         = _salesLine.ITVTRentalFromDate;
+        this.ITVTRentalToDate           = _salesLine.ITVTRentalToDate;
+        this.ITVTRentalPrice            = _salesLine.ITVTRentalPrice;
+        this.ITVTTimeUnitCount          = _salesLine.ITVTTimeUnitCount;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

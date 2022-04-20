@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTransferUpdShip_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension for class <c>InventTransferUpdShip</c>
+/// </summary>
+[ExtensionOf(classStr(InventTransferUpdShip))]
+final class ITVTInventTransferUpdShip_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs End rental before the standard process
+    /// </summary>
+    void run()
+    {
+        if (this.mustEndRentalLines())
+        {
+            this.runEndRentalLines();
+        }
+
+        next run();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustEndRentalLines</Name>
+				<Source><![CDATA[
+    private boolean mustEndRentalLines()
+    {
+        InventTransferTable inventTransferTableFromParmTable = InventTransferTable::find(inventTransferParmTable.TransferId);
+        
+        return inventTransferTableFromParmTable.ITVTRentalPostStartEnd
+            && inventTransferTableFromParmTable.ITVTOriginSalesId
+            && InventLocation::find(inventTransferTableFromParmTable.InventLocationIdFrom).ITVTIsRentalInventLocation;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runEndRentalLines</Name>
+				<Source><![CDATA[
+    private void runEndRentalLines()
+    {
+        InventTransferLine inventTransferLineLocal;
+        InventTransferParmLine inventTransferParmLineLocal;
+        ITVTRentalLine rentalLine;
+        List rentalLines = new List(Types::Record);
+
+        while select inventTransferLineLocal
+            where inventTransferLineLocal.TransferId == inventTransferParmTable.TransferId
+            join inventTransferParmLineLocal
+                where inventTransferParmLineLocal.InventTransId == inventTransferLineLocal.InventTransId
+                    && inventTransferParmLineLocal.TransferId == inventTransferParmTable.TransferId
+                    && inventTransferParmLineLocal.ParmId == inventTransferParmTable.ParmId
+                join rentalLine
+                    where rentalLine.InventTransId == inventTransferLineLocal.ITVTOriginInventTransId
+        {
+            if (inventTransferParmLineLocal.QtyShipNow == rentalLine.Qty)
+            {
+                rentalLines.addEnd(rentalLine);
+            }
+            else
+            {
+                Message::Add(MessageSeverity::Warning, 
+                    strFmt("@ITVTRental:EndRentalNotPossibleForTOLine", inventTransferLineLocal.LineNum, inventTransferLineLocal.ItemId));
+            }
+        }
+        
+        if (rentalLines.elements())
+        {
+            ITVTRentalLineEndRentalController::runEndRentalFromContainer(rentalLines.pack(), inventTransferParmTable.TransDate);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

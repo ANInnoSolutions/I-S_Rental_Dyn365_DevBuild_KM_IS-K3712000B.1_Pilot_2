@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderChangeOwnerContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The data contract for the <c>ITVTRentalOrderChangeOwnerService</c>
+/// </summary>
+[DataContract]
+class ITVTRentalOrderChangeOwnerContract
+{
+    InventTransRefRecId                 inventTransRecId;
+    ITVTRentalOrderChangeOwnerMode      changeOwnerMode;
+    TransDate                           postingDate;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmInventTransRecId</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public InventTransRefRecId parmInventTransRecId(InventTransRefRecId _inventTransRecId = inventTransRecId)
+    {
+        inventTransRecId = _inventTransRecId;
+        return inventTransRecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPostingDate</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public TransDate parmPostingDate(TransDate _postingDate = postingDate)
+    {
+        postingDate = _postingDate;
+        return postingDate;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

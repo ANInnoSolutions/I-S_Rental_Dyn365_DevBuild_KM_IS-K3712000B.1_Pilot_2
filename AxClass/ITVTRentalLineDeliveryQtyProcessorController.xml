@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliveryQtyProcessorController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalLineDeliveryQtyProcessorController</c> class is the controller class for the <c>ITVTRentalLineDeliveryQtyProcessorService</c> service.
+/// </summary>
+class ITVTRentalLineDeliveryQtyProcessorController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+    
+        this.parmClassName(classStr(ITVTRentalLineDeliveryQtyProcessorService));
+        this.parmMethodName(methodStr(ITVTRentalLineDeliveryQtyProcessorService, processOperation));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canGoBatch</Name>
+				<Source><![CDATA[
+    public boolean canGoBatch()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        if (_args.parmEnumType() == enumNum(ITVTRentalLineDeliveryOperation))
+        {
+            ITVTRentalLineDeliveryQtyProcessorController controller = new ITVTRentalLineDeliveryQtyProcessorController();
+            controller.initContract(_args);
+            controller.initDialogCaption(_args.parmEnum());
+
+            if (_args.menuItemName() == menuItemActionStr(ITVTRentalLineDeliveryQtyUnspecificReturn))
+            {
+                controller.runOperation();
+            }
+            else
+            {
+                controller.startOperation();
+            }
+
+            if (!controller.isInBatch()
+                && _args.caller() is FormRun
+                && _args.callerName() == formStr(ITVTRentalLineOpenDelivery))
+            {
+                FormObjectSet ds = FormDataUtil::getFormDataSource(_args.record());
+                FormObjectSet dsMaster = ds.masterObjectSet();
+
+                if (dsMaster)
+                {
+                    dsMaster.research(true);
+                }
+                else
+                {
+                    ds.research(true);
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract(Args _args)
+    {
+        ITVTRentalLineDeliveryQtyProcessorContract contract = this.getDataContractObject() as ITVTRentalLineDeliveryQtyProcessorContract;      
+        
+        Query query = new Query();
+        QueryBuildDataSource qbdsRentalLine = query.addDataSource(tableNum(ITVTRentalLine));
+        qbdsRentalLine.addOrderByField(fieldNum(ITVTRentalLine, SalesId));
+
+        InventLocationIdReqMain inventLocationIdReqMain;
+        ITVTRentalFromDate      rentalFromDate;
+        ITVTRentalLine          rentalLine;
+
+        if (_args.record())
+        {
+            switch (_args.dataset())
+            {
+                case tableNum(ITVTRentalLine):
+                    MultiSelectionHelper multiSelectionHelper = MultiSelectionHelper::createFromCaller(_args.caller());
+                    rentalLine = multiSelectionHelper.getFirst();
+
+                    inventLocationIdReqMain = rentalLine.inventDim().inventLocation().InventLocationIdReqMain;
+                    rentalFromDate = rentalLine.RentalFromDate;
+
+                    while (rentalLine)
+                    {
+                        qbdsRentalLine.addRange(fieldNum(ITVTRentalLine, RecId)).value(queryValue(rentalLine.RecId));
+                        rentalLine = multiSelectionHelper.getNext();
+                    }
+
+                    break;
+
+                case tableNum(SalesTable):
+                    SalesTable salesTable = _args.record();
+                    qbdsRentalLine.addRange(fieldNum(ITVTRentalLine, SalesId)).value(salesTable.SalesId);
+
+                    select firstonly rentalLine 
+                        where rentalLine.SalesId == salesTable.SalesId;
+
+                    inventLocationIdReqMain = rentalLine.inventDim().inventLocation().InventLocationIdReqMain;
+                    rentalFromDate = rentalLine.RentalFromDate;
+
+                    break;
+            }
+        }
+
+        contract.setQuery(query);
+
+        contract.parmRentalLineDeliveryOperation(_args.parmEnum());
+        contract.parmInventLocationId(inventLocationIdReqMain);
+
+        if (_args.menuItemName() == menuItemActionStr(ITVTRentalLineDeliveryQtyUnspecificReturn))
+        {
+            contract.parmOnlyHeader(true);
+            contract.parmClosePendingReturn(true);
+        }
+        else
+        {
+            contract.parmOnlyHeader(false);
+        }
+
+        switch (_args.parmEnum())
+        {
+            case ITVTRentalLineDeliveryOperation::Delivery:
+                contract.parmShipDate(rentalFromDate);
+                break;
+
+            case ITVTRentalLineDeliveryOperation::Return:
+                contract.parmShipDate(DateTimeUtil::getToday(DateTimeUtil::getUserPreferredTimeZone()));
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initDialogCaption</Name>
+				<Source><![CDATA[
+    private void initDialogCaption(ITVTRentalLineDeliveryOperation _rentalLineDeliveryOperation)
+    {
+        switch (_rentalLineDeliveryOperation)
+        {
+            case ITVTRentalLineDeliveryOperation::Delivery:
+                this.parmDialogCaption("@ITVTRental:Delivery");
+                break;
+            case ITVTRentalLineDeliveryOperation::Return:
+                this.parmDialogCaption("@ITVTRental:Return");
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

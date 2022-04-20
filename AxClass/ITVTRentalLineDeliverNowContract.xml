@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliverNowContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalLineDeliverNowContract</c> class is the data contract class for the <c>ITVTRentalLineDeliverNowService</c> service.
+/// </summary>
+[DataContract]
+class ITVTRentalLineDeliverNowContract
+{
+    str                                 packedQuery;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmPackedQuery</Name>
+				<Source><![CDATA[
+    [
+        DataMember,
+        AifQueryType('_packedQuery', '')
+    ]
+    public str parmPackedQuery(str _packedQuery = packedQuery)
+    {
+        packedQuery = _packedQuery;
+        return packedQuery;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getQuery</Name>
+				<Source><![CDATA[
+    public Query getQuery()
+    {
+        return new Query(SysOperationHelper::base64Decode(packedQuery));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setQuery</Name>
+				<Source><![CDATA[
+    public void setQuery(Query _query)
+    {
+        packedQuery = SysOperationHelper::base64Encode(_query.pack());
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

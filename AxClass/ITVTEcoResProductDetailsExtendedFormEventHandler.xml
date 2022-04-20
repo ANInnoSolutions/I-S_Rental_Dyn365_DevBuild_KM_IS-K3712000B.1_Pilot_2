@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTEcoResProductDetailsExtendedFormEventHandler</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// An event handler class for the <c>EcoResProductDetailsExtended</c> form
+/// </summary>
+class ITVTEcoResProductDetailsExtendedFormEventHandler
+{
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>InventTable_OnActivated</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    [FormDataSourceEventHandler(formDataSourceStr(EcoResProductDetailsExtended, InventTable), FormDataSourceEventType::Activated)]
+    public static void InventTable_OnActivated(FormDataSource sender, FormDataSourceEventArgs e)
+    {
+        FormDataSource inventTable_ds	= sender;
+        InventTable inventTable			= inventTable_ds.cursor();
+
+        InventTrans	inventTrans;
+ 
+        select firstonly inventTrans
+            where inventTrans.ItemId == inventTable.ItemId;
+
+        inventTable_ds.object(fieldNum(InventTable, ITVTIsRentalItem)).enabled(inventTrans.RecId == 0);
+        inventTable_ds.object(fieldNum(InventTable, ITVTIsFixedAsset)).enabled(inventTrans.RecId == 0);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ITVTIsRentalItem_OnModified</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It applies new logic to create and release a new rental service item
+    /// </summary>
+    /// <param name = "sender">The control sender</param>
+    /// <param name = "e">The event args</param>
+    [
+        FormDataFieldEventHandler(formDataFieldStr(EcoResProductDetailsExtended, InventTable, ITVTIsRentalItem), FormDataFieldEventType::Modified),
+        SuppressBPWarning('BPParameterNotUsed', 'The parameters are used only for interface implementation')
+    ]
+    public static void ITVTIsRentalItem_OnModified(FormDataObject sender, FormDataFieldEventArgs e)
+    {
+        InventTable inventTable = sender.datasource().cursor();
+
+        boolean     changedValue = sender.getValue();
+
+        if (changedValue)
+        {
+            InventTable rentalServiceItem = InventTable::find(strFmt('%1-%2', ITVTRentalParameters::find().RentalServicePrefix, inventTable.ItemId));
+
+            if (rentalServiceItem)
+            {
+                if (rentalServiceItem.ItemType != ItemType::Service)
+                {
+                    throw error(strFmt("@ITVTRental:RentalServiceAlreadyExists", rentalServiceItem.ItemId));
+                }
+            }
+            else
+            {
+                ITVTRentalServiceItemCreator::createServiceItem(inventTable);
+
+                FormDataSource senderFds = sender.datasource();
+
+                senderFds.reread();
+                senderFds.refresh();
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

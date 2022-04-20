@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTEcoResReleasedProductV2Entity_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tableStr(EcoResReleasedProductV2Entity))]
+final class ITVTEcoResReleasedProductV2Entity_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>persistEntity</Name>
+				<Source><![CDATA[
+    public void persistEntity(DataEntityRuntimeContext entityCtx)
+    {
+        this.skipDataSourceValidateField(fieldNum(EcoResReleasedProductV2Entity, ITVTIsRentalItem) ,true);
+        
+        next persistEntity(entityCtx);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postTargetProcess</Name>
+				<Source><![CDATA[
+    public static void postTargetProcess(DMFDefinitionGroupExecution _dmfDefinitionGroupExecution)
+    {
+
+        if (_dmfDefinitionGroupExecution.StagingStatus == DMFBatchJobStatus::Finished)
+        {
+            EcoResReleasedProductV2Staging     staging, stagingLocal;
+            InventTable                        inventTable;
+                       
+            while select inventTable
+                where inventTable.ITVTIsRentalItem
+                join forupdate staging
+                    where staging.DefinitionGroup == _dmfDefinitionGroupExecution.DefinitionGroup
+                    && staging.ExecutionId     == _dmfDefinitionGroupExecution.ExecutionId
+                    && staging.TransferStatus  == DMFTransferStatus::Completed
+                    && staging.ItemNumber == inventTable.ItemId
+                    
+            {
+                ItemId itemIdService = strFmt('%1-%2', ITVTRentalParameters::find().RentalServicePrefix, inventTable.ItemId);
+                InventTable rentalServiceItem = InventTable::find(itemIdService);
+                EcoResProduct ecoResProduct = EcoResProduct::findByProductNumber(itemIdService);
+
+                if (rentalServiceItem || ecoResProduct)
+                {                       
+                    FieldName               fieldName = fieldStr(EcoResReleasedProductV2Entity, ItemNumber);    
+                    DMFEntity               entity = DMFEntity::find(_dmfDefinitionGroupExecution.Entity);
+                    str                     error = strFmt("@ITVTRental:RentalServiceAlreadyExists", itemIdService);
+
+                    DMFStagingValidationLog::insertLogs(staging.DefinitionGroup,staging.ExecutionId, entity,
+                                                        staging.RecId, fieldName, error, DMFSourceTarget::Target);                    
+                }
+                else
+                {
+                    ITVTRentalServiceItemCreator::createServiceItem(inventTable, true);
+                }
+            }            
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

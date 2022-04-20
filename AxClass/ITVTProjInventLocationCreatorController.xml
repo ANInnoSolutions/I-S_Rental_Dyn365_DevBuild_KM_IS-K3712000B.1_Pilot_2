@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTProjInventLocationCreatorController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Controller class for the ITVT ProjInventLocationCreator system operaation
+/// </summary>
+class ITVTProjInventLocationCreatorController extends SysOperationServiceController
+{
+    internal ITVTProjInventLocationCreatorContract contract;
+    internal FormDataSource formDS;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super(classStr(ITVTProjInventLocationCreatorService), methodStr(ITVTProjInventLocationCreatorService, create), SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>defaultCaption</Name>
+				<Source><![CDATA[
+    public ClassDescription defaultCaption()
+    {
+        return "@ITVTRental:ProjInventLocationCreate";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    public static ITVTProjInventLocationCreatorController construct(SysOperationExecutionMode _executionMode = SysOperationExecutionMode::Synchronous)
+    {
+        ITVTProjInventLocationCreatorController controller;
+        controller = new ITVTProjInventLocationCreatorController();
+        controller.parmExecutionMode(_executionMode);
+        return controller;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTProjInventLocationCreatorController controller = ITVTProjInventLocationCreatorController::construct();
+        controller.initFromCaller(_args);
+        controller.parmShowDialog(true);
+        controller.startOperation();
+        controller.refreshCaller();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runNoDialog</Name>
+				<Source><![CDATA[
+    public static void runNoDialog(
+        Common              _record,
+        InventLocationId    _inventLocationId)
+    {
+        ITVTProjInventLocationCreatorController controller = ITVTProjInventLocationCreatorController::construct();
+        controller.initContract(_record, _inventLocationId);
+        controller.parmShowDialog(false);
+        controller.startOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromCaller</Name>
+				<Source><![CDATA[
+    internal void initFromCaller(Args _args)
+    {
+        if(_args.record())
+        {
+            this.initContract(_args.record());
+            formDS = FormDataUtil::getFormDataSource(_args.record());
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract(
+        Common           _buffer,
+        InventLocationId _inventLocationId = InventParameters::find().FallbackInventLocationId)
+    {
+        contract = this.getDataContractObject() as ITVTProjInventLocationCreatorContract;
+        this.initParm(_buffer, _inventLocationId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initParm</Name>
+				<Source><![CDATA[
+    private void initParm(
+        Common           _buffer,
+        InventLocationId _inventLocationId)
+    {
+        switch(_buffer.tableId)
+        {
+            case tableNum(ProjTable):   contract.parmProjTable(_buffer);
+                break;
+            case tableNum(SalesTable):  contract.parmSalesTable(_buffer);
+                break;
+            default: throw error(Error::wrongUseOfFunction(funcName()));
+        }
+        
+        contract.parmInventLocationIdReqMain(_inventLocationId);
+        contract.parmInventSiteId(InventLocation::find(_inventLocationId).InventSiteId);
+        contract.parmCopyAddress(true);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>refreshCaller</Name>
+				<Source><![CDATA[
+    private void refreshCaller()
+    {
+        if (formDS)
+        {
+            formDS.research(true);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

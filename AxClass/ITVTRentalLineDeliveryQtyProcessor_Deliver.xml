@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliveryQtyProcessor_Deliver</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The "Delivery" command processor
+/// </summary>
+[ITVTRentalLineDeliveryQtyProcessorAttribute(ITVTRentalLineDeliveryOperation::Delivery)]
+class ITVTRentalLineDeliveryQtyProcessor_Deliver extends ITVTRentalLineDeliveryQtyProcessorBase
+{
+    Set         inventTransIdProcessed;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>getInventTransferOrderType</Name>
+				<Source><![CDATA[
+    protected ITVTTransferOrderType getInventTransferOrderType()
+    {
+        return ITVTTransferOrderType::Delivery;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInventTransferOrderWarehouses</Name>
+				<Source><![CDATA[
+    protected container getInventTransferOrderWarehouses(ITVTRentalLine _rentalLine)
+    {
+        return [warehouseIdMain, _rentalLine.inventDim().inventLocationId];
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validatePostedRentalFromDate</Name>
+				<Source><![CDATA[
+    protected void validatePostedRentalFromDate(ITVTPostedRentalFromDate _postedRentalFromDate)
+    {
+        if (_postedRentalFromDate)
+        {
+            throw error("@ITVTRental:RentalLineIsAlreadyRented");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateShippingDate</Name>
+				<Source><![CDATA[
+    protected void validateShippingDate(ITVTRentalLine _rentalLine)
+    {
+        if (_rentalLine.RentalFromDate < shipDate)
+        {
+            Message::Add(MessageSeverity::Warning, "@ITVTRental:ShippingDateIsDifferent");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateMainWarehouse</Name>
+				<Source><![CDATA[
+    protected void validateMainWarehouse()
+    {
+		// Code deactivated based on customer's requirement 16.9.2021:
+		/*
+        if (fromWarehouseId != warehouseIdMain)
+        {
+            throw error("@ITVTRental:RentalLineMainWarehouseIsDifferent");
+        }
+		*/
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transferedQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Calculates the quantity that was already included in Transfered orders for the specified Rental line
+    /// </summary>
+    /// <param name = "_rentalLine">A buffer of <c>ITVTRentalLine</c></param>
+    /// <returns>Quantity included in Transfered orders</returns>
+    protected Qty transferedQty(ITVTRentalLine _rentalLine)
+    {
+        InventTransferLine inventTransferLineLocal;
+        InventTransferTable inventTransferTableLocal;
+
+        select sum(QtyTransfer) from inventTransferLineLocal
+            where inventTransferLineLocal.ITVTOriginInventTransId == _rentalLine.InventTransId
+            join inventTransferTableLocal
+                where inventTransferTableLocal.TransferId == inventTransferLineLocal.TransferId
+                    && inventTransferTableLocal.InventLocationIdTo == toWarehouseId;
+
+        return inventTransferLineLocal.QtyTransfer;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalLineWarehouseIdSplitBy</Name>
+				<Source><![CDATA[
+    protected InventLocationId rentalLineWarehouseIdSplitBy()
+    {
+        return toWarehouseId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transferOrderTableWarehouseIdSplitBy</Name>
+				<Source><![CDATA[
+    protected InventLocationId transferOrderTableWarehouseIdSplitBy()
+    {
+        return inventTransferTable.InventLocationIdTo;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getWmsLocationId</Name>
+				<Source><![CDATA[
+    protected WmsLocationId getWmsLocationId(ITVTRentalLine _rentalLine)
+    {
+        return InventLocation::find(fromWarehouseId).WMSlocationIdDefaultIssue;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initInventDim</Name>
+				<Source><![CDATA[
+    protected InventDim initInventDim(
+        InventTransferLine  _inventTransferLine,
+        ITVTRentalLine      _rentalLine)
+    {
+        InventDim inventDim = super(_inventTransferLine, _rentalLine);
+
+        inventDim = ITVTRentalParameters::setRentalInventDimStatus(inventDim, ITVTRentalParameters::getRentalInventDimStatus(_rentalLine.inventDim()));
+
+        return inventDim;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalLinePartialQty</Name>
+				<Source><![CDATA[
+    protected Qty rentalLinePartialQty(ITVTRentalLine _rentalLine)
+    {
+        return _rentalLine.DeliverNow;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isPartialTransfer</Name>
+				<Source><![CDATA[
+    protected boolean isPartialTransfer()
+    {
+        return (deliveryQty == ITVTRentalDeliveryQty::DeliverNow);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventTransferLine</Name>
+				<Source><![CDATA[
+    protected Qty createInventTransferLine(ITVTRentalLine _rentalLine)
+    {
+        Qty qty = super(_rentalLine);
+
+        inventTransIdProcessed.add(_rentalLine.InventTransId);
+
+        return qty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deliverQty</Name>
+				<Source><![CDATA[
+    public void deliverQty()
+    {
+        inventTransIdProcessed = new Set(Types::String);
+
+        super();
+
+        if (inventTransIdProcessed.elements())
+        {
+            ITVTRentalLineOpenDeliveryController::runSet(inventTransIdProcessed);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustCreateTransferLine</Name>
+				<Source><![CDATA[
+    protected boolean mustCreateTransferLine()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

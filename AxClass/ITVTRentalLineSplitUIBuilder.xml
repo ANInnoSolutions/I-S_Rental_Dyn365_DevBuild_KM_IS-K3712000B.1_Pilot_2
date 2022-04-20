@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineSplitUIBuilder</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class creates a UI form for the <c>ITVTRentalLineSplitContract</c> contract class
+/// </summary>
+class ITVTRentalLineSplitUIBuilder extends SysOperationAutomaticUIBuilder
+{
+    DialogField inventTransIdField;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>postBuild</Name>
+				<Source><![CDATA[
+    public void postBuild()
+    {
+        super();
+
+        ITVTRentalLineSplitContract contract = this.dataContractObject();
+
+        inventTransIdField = this.bindInfo().getDialogField(
+            contract,
+            methodStr(ITVTRentalLineSplitContract, parmInventTransId));
+
+        inventTransIdField.enabled(false);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliveryQtyProcessorService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalLineDeliveryQtyProcessorService</c> is used to process Rental lines
+/// </summary>
+class ITVTRentalLineDeliveryQtyProcessorService extends SysOperationServiceBase
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>processOperation</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Entry point for service
+    /// </summary>
+    /// <param name = "_contract">Data contract for operation</param>
+    public void processOperation(ITVTRentalLineDeliveryQtyProcessorContract _contract)
+    {
+        ITVTRentalLineDeliveryQtyProcessorBase::constructFromContract(_contract).deliverQty();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

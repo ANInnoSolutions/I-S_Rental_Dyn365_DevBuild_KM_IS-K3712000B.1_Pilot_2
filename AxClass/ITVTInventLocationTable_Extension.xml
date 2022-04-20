@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventLocationTable_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tableStr(InventLocation))]
+final class ITVTInventLocationTable_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>copyAddressForProjInventLocation</Name>
+				<Source><![CDATA[
+    public void copyAddressForProjInventLocation(Common _bufferFrom)
+    {
+        ProjTable                   projTableFrom;
+        SalesTable                  salesTableFrom;
+
+        LogisticsPostalAddress      logisticsPostalAddress;
+        
+        switch(_bufferFrom.TableId)
+        {
+            case tableNum(ProjTable):   
+				projTableFrom = _bufferFrom;
+                logisticsPostalAddress.data(projTableFrom.postalAddress());
+                break;
+            case tableNum(SalesTable):  
+				salesTableFrom = _bufferFrom;
+                logisticsPostalAddress.data(salesTableFrom.deliveryAddress());
+                break;
+        }
+        
+        this.createInventLocationAddress(logisticsPostalAddress);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventLocationAddress</Name>
+				<Source><![CDATA[
+    public Addressing inventLocationAddress()
+    {
+        return LogisticsLocationEntity::findPostalAddress(this, LogisticsLocationRoleType::None).Address;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventLocationAddress</Name>
+				<Source><![CDATA[
+    private void createInventLocationAddress(LogisticsPostalAddress _addressFrom)
+    {
+        LogisticsPostalAddressEntity    postalAddressEntity  = new LogisticsPostalAddressEntity();
+        LogisticsPostalAddressView      postalAddressView;
+        LogisticsPostalAddress          postalAddress;
+        LogisticsEntityLocationMap      locationMap;
+        
+        container                       role, roleMap;
+        Map                             LocationRoleMap;
+        
+        postalAddressView.Street            = _addressFrom.Street;
+        postalAddressView.City              = _addressFrom.City;
+        postalAddressView.State             = _addressFrom.State;
+        postalAddressView.ZipCode           = _addressFrom.ZipCode;
+        postalAddressView.CountryRegionId   = _addressFrom.CountryRegionId;
+        postalAddressView.County            = _addressFrom.County;
+        postalAddressView.LocationName      = this.Name;
+
+        postalAddress = postalAddressEntity.createPostalAddress(postalAddressView);
+        locationMap   = LogisticsEntityLocationMap::find(tableNum(InventLocationLogisticsLocation), 
+                                                         this.RecId, 
+                                                         postalAddress.Location);
+
+        locationMap.Entity                  = this.RecId;
+        locationMap.Location                = postalAddress.Location;
+        locationMap.IsPostalAddress         = true;
+        locationMap.IsPrimary               = true;
+        locationMap.IsPrivate               = false;
+        LocationRoleMap = LogisticsLocationEntity::getDefaultLocationRoleFromEntity(tableNum(InventLocation));
+
+        roleMap                             = map2Con(LocationRoleMap);
+        role                                = conpeek(roleMap, 1);
+
+        locationMap.addEntityLocation(role ,true);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

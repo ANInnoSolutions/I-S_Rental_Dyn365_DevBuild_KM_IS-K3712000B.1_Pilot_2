@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventCostTrans_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tablestr(InventCostTrans))]
+final public class ITVTInventCostTrans_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>costTransRefTypeFromInventTransType</Name>
+				<Source><![CDATA[
+    protected InventCostTransRefType costTransRefTypeFromInventTransType(InventTransType _inventTransType)
+    {
+        InventCostTransRefType ret = next costTransRefTypeFromInventTransType(_inventTransType);
+        switch (_inventTransType)
+        {
+            case InventTransType::RentalLine :
+            case InventTransType::RentalLineRented :
+                ret = InventCostTransRefType::Transfer;
+                break;
+        }
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

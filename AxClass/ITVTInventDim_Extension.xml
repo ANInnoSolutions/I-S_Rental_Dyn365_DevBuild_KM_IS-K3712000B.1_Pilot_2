@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventDim_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tablestr(InventDim))]
+final public class ITVTInventDim_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>validateField</Name>
+				<Source><![CDATA[
+    public boolean validateField(FieldId _p1)
+    {
+        boolean             ret = next validateField(_p1);
+        FormDataSource      parentDatasource;
+        Common              parentBuffer;
+        InventTrans         inventTrans;
+        InventTable         inventTable;
+        ITVTRentalParameters rentalParameters = ITVTRentalParameters::find();
+
+        InventTable getInventTable()
+        {
+            FieldId             itemFieldId;
+            InventTable         inventTableLocal;
+
+            parentDatasource = formGetParentDatasource(FormDataUtil::getFormDataSource(this));
+            if (parentDatasource)
+            {
+                // Could return zero
+                itemFieldId = fieldName2id(parentDatasource.table(),fieldStr(InventTable,ItemId));
+                if (itemFieldId)
+                {
+                    inventTableLocal = InventTable::find(parentDatasource.cursor().(itemFieldId));
+                }
+                else if (parentDatasource.table())
+                {
+                    parentBuffer = parentDatasource.cursor();
+                    if (parentBuffer.TableId && tableHasInstanceMethod(new DictTable(parentBuffer.TableId),identifierStr(ItemId))) // method Name
+                    {
+                        inventTableLocal = InventTable::find(parentBuffer.itemId());
+                    }
+                }
+            }
+            return inventTableLocal;
+        }
+
+        FieldId dimStatusFieldId = ITVTRentalParameters::getRentalInventDimStatusFieldId();
+
+        if (ret 
+            && this.(_p1) 
+            && dimStatusFieldId
+            && _p1 == dimStatusFieldId
+            && FormDataUtil::isFormDataSource(this)
+           )
+        {
+            inventTable = getInventTable();
+            if (inventTable && inventTable.ItemId && !inventTable.ITVTIsRentalItem)
+            {
+                ret = checkFailed("@SYS335265");
+            }
+            else if ( this.(_p1) == rentalParameters.InventDimValueStatusRented)
+            {
+                parentDatasource = formGetParentDatasource(FormDataUtil::getFormDataSource(this));
+                if (parentDatasource)
+                {
+                    parentBuffer = parentDatasource.cursor();
+                    if (parentBuffer.TableId == tableNum(InventTrans))
+                    {
+                        inventTrans = parentBuffer;
+                        if (inventTrans.inventMovement().transType() != InventTransType::RentalLineRented)
+                        {
+                            ret = checkFailed(strFmt("@SYS341789",rentalParameters.InventDimValueStatusRented));
+                        }
+                    }
+                    else
+                    {
+                        ret = checkFailed(strFmt("@SYS341789",rentalParameters.InventDimValueStatusRented));
+                    }
+                }
+            }
+            else if ( this.(_p1) == rentalParameters.InventDimValueStatusInterimFAPurch)
+            {
+                parentDatasource = formGetParentDatasource(FormDataUtil::getFormDataSource(this));
+                if (parentDatasource)
+                {
+                    parentBuffer = parentDatasource.cursor();
+                    if (parentBuffer.TableId != tableNum(PurchLine))
+                    {
+                        ret = checkFailed(strFmt("@SYS341789",rentalParameters.InventDimValueStatusInterimFAPurch));
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

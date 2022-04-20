@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineStartRentalUIBuilder</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class creates a UI form for the <c>ITVTRentalLineStartRentalContract</c> contract class
+/// </summary>
+class ITVTRentalLineStartRentalUIBuilder extends SysOperationAutomaticUIBuilder
+{
+    DialogField rentalQtyToAvailQtyField;
+    DialogField newRentalLineForUnavailQtyField;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>postBuild</Name>
+				<Source><![CDATA[
+    public void postBuild()
+    {
+        super();
+
+        rentalQtyToAvailQtyField = this.bindInfo().getDialogField(
+            this.dataContractObject(), 
+            methodStr(ITVTRentalLineStartRentalContract, parmRentalQtyToAvailQty));
+
+        newRentalLineForUnavailQtyField = this.bindInfo().getDialogField(
+            this.dataContractObject(),
+            methodStr(ITVTRentalLineStartRentalContract, parmNewRentalLineForUnavailQty));
+
+        this.relatedFieldSetAllowEdit(rentalQtyToAvailQtyField.value(), newRentalLineForUnavailQtyField);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>relatedFieldSetAllowEdit</Name>
+				<Source><![CDATA[
+    private void relatedFieldSetAllowEdit(
+        int _value,
+        DialogField _dialogField)
+    {
+        if (_value)
+        {
+            _dialogField.allowEdit(true);
+        }
+        else
+        {
+            _dialogField.allowEdit(false);
+            _dialogField.value(0);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postRun</Name>
+				<Source><![CDATA[
+    public void postRun()
+    {
+        super();
+        
+        rentalQtyToAvailQtyField.registerOverrideMethod(
+            methodstr(FormCheckBoxControl, modified),
+            methodstr(ITVTRentalLineStartRentalUIBuilder, rentalQtyToAvailQtyField_modified),
+            this);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalQtyToAvailQtyField_modified</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Overriden modified method for Adjust the rental quantity to the available quantity
+    /// </summary>
+    /// <param name = "_control">An instance of form control</param>
+    /// <returns>Result of non-overriden modified method</returns>
+    public boolean rentalQtyToAvailQtyField_modified(FormCheckBoxControl _control)
+    {
+        this.relatedFieldSetAllowEdit(_control.value(), newRentalLineForUnavailQtyField);
+        return _control.modified();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

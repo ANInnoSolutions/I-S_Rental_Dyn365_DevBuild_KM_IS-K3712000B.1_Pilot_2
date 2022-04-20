@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliveryQtyProcessor_Return</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The "Return" command processor
+/// </summary>
+[ITVTRentalLineDeliveryQtyProcessorAttribute(ITVTRentalLineDeliveryOperation::Return)]
+class ITVTRentalLineDeliveryQtyProcessor_Return extends ITVTRentalLineDeliveryQtyProcessorBase
+{
+    Set salesTableSet;
+    Set rentalLineSet;
+
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>getInventTransferOrderType</Name>
+				<Source><![CDATA[
+    protected ITVTTransferOrderType getInventTransferOrderType()
+    {
+        return ITVTTransferOrderType::Return;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInventTransferOrderWarehouses</Name>
+				<Source><![CDATA[
+    protected container getInventTransferOrderWarehouses(ITVTRentalLine _rentalLine)
+    {
+        return [_rentalLine.inventDim().inventLocationId, warehouseIdMain /*_rentalLine.inventDim().inventLocation().InventLocationIdReqMain*/ ];
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validatePostedRentalFromDate</Name>
+				<Source><![CDATA[
+    protected void validatePostedRentalFromDate(ITVTPostedRentalFromDate _postedRentalFromDate)
+    {
+        if (!_postedRentalFromDate)
+        {
+            throw error("@ITVTRental:RentalLineNotRented");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateShippingDate</Name>
+				<Source><![CDATA[
+    protected void validateShippingDate(ITVTRentalLine _rentalLine)
+    {
+        if (_rentalLine.PostedRentalToDate > shipDate)
+        {
+            throw error("@ITVTRental:ShipDateMustBeAfterPostedRentalEndDate");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateMainWarehouse</Name>
+				<Source><![CDATA[
+    protected void validateMainWarehouse()
+    {
+        // Code deactivated based on customer's requirement 16.9.2021:
+        /*
+        if (toWarehouseId != warehouseIdMain)
+        {
+            throw error("@ITVTRental:RentalLineMainWarehouseHasDifferentToWarehouse");
+        }
+        */
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transferedQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Calculates the quantity that was already included in Transfered orders for the specified Rental line
+    /// </summary>
+    /// <param name = "_rentalLine">A buffer of <c>ITVTRentalLine</c></param>
+    /// <returns>Quantity included in Transfered orders</returns>
+    protected Qty transferedQty(ITVTRentalLine _rentalLine)
+    {
+        InventTransferLine inventTransferLineLocal;
+        InventTransferTable inventTransferTableLocal;
+
+        select sum(QtyTransfer) from inventTransferLineLocal
+            where inventTransferLineLocal.ITVTOriginInventTransId == _rentalLine.InventTransId
+            join inventTransferTableLocal
+                where inventTransferTableLocal.TransferId == inventTransferLineLocal.TransferId
+                    && inventTransferTableLocal.InventLocationIdFrom == fromWarehouseId;
+
+        return inventTransferLineLocal.QtyTransfer;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalLineWarehouseIdSplitBy</Name>
+				<Source><![CDATA[
+    protected InventLocationId rentalLineWarehouseIdSplitBy()
+    {
+        return fromWarehouseId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transferOrderTableWarehouseIdSplitBy</Name>
+				<Source><![CDATA[
+    protected InventLocationId transferOrderTableWarehouseIdSplitBy()
+    {
+        return inventTransferTable.InventLocationIdFrom;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getWmsLocationId</Name>
+				<Source><![CDATA[
+    protected WmsLocationId getWmsLocationId(ITVTRentalLine _rentalLine)
+    {
+        return _rentalLine.inventDim().wMSLocationId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalLinePartialQty</Name>
+				<Source><![CDATA[
+    protected Qty rentalLinePartialQty(ITVTRentalLine _rentalLine)
+    {
+        return _rentalLine.ReturnNow;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isPartialTransfer</Name>
+				<Source><![CDATA[
+    protected boolean isPartialTransfer()
+    {
+        return (returnQty == ITVTRentalReturnQty::ReturnNow);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustCreateTransferLine</Name>
+				<Source><![CDATA[
+    protected boolean mustCreateTransferLine()
+    {
+        return !onlyHeader;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventTransferLine</Name>
+				<Source><![CDATA[
+    protected Qty createInventTransferLine(ITVTRentalLine _rentalLine)
+    {
+        Qty ret = super(_rentalLine);
+
+        if (closePendingReturn)
+        {
+            salesTableSet.add(_rentalLine.SalesId);
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deliverQty</Name>
+				<Source><![CDATA[
+    public void deliverQty()
+    {
+        SalesTable salesTable;
+        salesTableSet = new Set(Types::String);
+
+        super();
+
+        if (salesTableSet.elements())
+        {
+            SetEnumerator se = salesTableSet.getEnumerator();
+            
+            ttsbegin;
+
+            while (se.moveNext())
+            {
+                salesTable = SalesTable::find(se.current(), true);
+
+                salesTable.ITVTIsPendingReturn = NoYes::No;
+                salesTable.update();
+            }
+
+            ttscommit;
+        }
+        else if (closePendingReturn) // in case of onlyHeader = true we will not create lines and thus will not fill salesTableSet
+        {
+            InventTransferTable inventTransferTableLocal;
+
+            update_recordset salesTable
+                setting ITVTIsPendingReturn = NoYes::No
+                join inventTransferTableLocal
+                    where inventTransferTableLocal.ITVTOriginSalesId == salesTable.SalesId
+                join rentalTransferOrderTmp
+                    where rentalTransferOrderTmp.TransferId == inventTransferTableLocal.TransferId;
+        }
+       
+        if (onlyHeader)
+        {
+            select firstonly rentalTransferOrderTmp;
+            Args args = new Args();
+            args.record(InventTransferTable::find(rentalTransferOrderTmp.TransferId));
+
+            new MenuFunction(menuItemDisplayStr(ITVTInventTransferOrderLines), MenuItemType::Display).run(args);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

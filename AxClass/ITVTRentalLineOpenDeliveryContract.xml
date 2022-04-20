@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineOpenDeliveryContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalLineOpenDeliveryContract</c> class is the data contract class for the <c>ITVTRentalLineOpenDeliveryService</c> service.
+/// </summary>
+[DataContract]
+class ITVTRentalLineOpenDeliveryContract
+{
+    container   inventTransIdCon;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmInventTransIdCon</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationControlVisibilityAttribute(false),
+        SysOperationAlwaysInitialize]
+    public container parmInventTransIdCon(container _inventTransIdCon = inventTransIdCon)
+    {
+        inventTransIdCon = _inventTransIdCon;
+        return inventTransIdCon;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

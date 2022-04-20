@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalDepreciationPostContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[
+    DataContract
+]
+class ITVTRentalDepreciationPostContract
+{
+    TransDate   asOfDate;
+    str         packedQuery;    
+    boolean     useRentalDateDate;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmAsOfDate</Name>
+				<Source><![CDATA[
+    [DataMember,
+    SysOperationLabel("@AccountsReceivable:CustDueReportDetailAsOf")
+    ]
+    public TransDate parmAsOfDate(TransDate _asOfDate = asOfDate)
+    {
+        asOfDate = _asOfDate;
+        return asOfDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmUseRentalEndDate</Name>
+				<Source><![CDATA[
+    [DataMember,
+    SysOperationControlVisibility(false)
+    ]
+    public boolean parmUseRentalEndDate(boolean _useRentalDateDate = useRentalDateDate)
+    {
+        useRentalDateDate = _useRentalDateDate;
+        return useRentalDateDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPackedQuery</Name>
+				<Source><![CDATA[
+    [
+        DataMember,
+        AifQueryType('_packedQuery', '')
+    ]
+    public str parmPackedQuery(str _packedQuery = packedQuery)
+    {
+        packedQuery = _packedQuery;
+        return packedQuery;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getQuery</Name>
+				<Source><![CDATA[
+    public Query getQuery()
+    {
+        return new Query(SysOperationHelper::base64Decode(packedQuery));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setQuery</Name>
+				<Source><![CDATA[
+    public void setQuery(Query _query)
+    {
+        packedQuery = SysOperationHelper::base64Encode(_query.pack());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    public boolean validate()
+    {
+        boolean ret = true;
+
+        if (!asOfDate)
+        {
+            ret = checkFailed(strFmt("@SYS84378", "@AccountsReceivable:CustDueReportDetailAsOf"));
+        }
+
+        if (ITVTRentalParameters::find().DepreciateInventory == NoYes::No)
+        {
+            ret = checkFailed(strFmt("@SYS4004557", fieldPName(ITVTRentalParameters, DepreciateInventory)));
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

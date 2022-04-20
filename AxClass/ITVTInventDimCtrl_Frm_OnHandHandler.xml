@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventDimCtrl_Frm_OnHandHandler</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Holds events of <c>InventDimCtrl_Frm_OnHand</c> class
+/// </summary>
+class ITVTInventDimCtrl_Frm_OnHandHandler
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>rentalLine_initializeInventMovementDelegate</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Instantiates an instance of <c>ITVTInventMov_RentalLine</c>
+    /// </summary>
+    /// <param name = "_inventDimCtrl_Frm_OnHand">An instance of <c>InventDimCtrl_Frm_OnHand</c></param>
+    /// <param name = "_movementResult">Handler result with correct instance of InventMovement</param>
+    [SubscribesTo(classStr(InventDimCtrl_Frm_OnHand), delegateStr(InventDimCtrl_Frm_OnHand, initializeInventMovementDelegate))]
+    public static void rentalLine_initializeInventMovementDelegate(InventDimCtrl_Frm_OnHand _inventDimCtrl_Frm_OnHand, EventHandlerResult _movementResult)
+    {
+        switch (_inventDimCtrl_Frm_OnHand.parmCallingElement().args().dataset())
+        {
+            case tableNum(ITVTRentalLine):
+                ITVTRentalLine rentalLine = _inventDimCtrl_Frm_OnHand.parmCallingElement().args().record() as ITVTRentalLine;
+                InventMovement rentalLineMovement = InventMovement::constructNoThrow(rentalLine,rentalLine.getInventMovSubType(InventDirection::Issue));
+                _movementResult.result(rentalLineMovement);
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTransferLine_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension for <c>InventTransferLine</c> table
+/// </summary>
+[ExtensionOf(tableStr(InventTransferLine))]
+final class ITVTInventTransferLine_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>getNextLineNum</Name>
+				<Source><![CDATA[
+    public static LineNum getNextLineNum(InventTransferLine _inventTransferLineFrom)
+    {
+        LineNum nextLineNum = _inventTransferLineFrom.nextLineNum();
+        
+        if (nextLineNum)
+        {
+            nextLineNum = (_inventTransferLineFrom.LineNum + nextLineNum) / 2.0;
+        }
+        else
+        {
+            nextLineNum = _inventTransferLineFrom.LineNum + 1.0;
+        }
+
+        return nextLineNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>nextLineNum</Name>
+				<Source><![CDATA[
+    public LineNum nextLineNum()
+    {
+        return (select firstonly LineNum
+                    from InventTransferLine
+                    order by LineNum
+                    where InventTransferLine.TransferId == this.TransferId
+                       && InventTransferLine.LineNum >  this.LineNum).LineNum;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

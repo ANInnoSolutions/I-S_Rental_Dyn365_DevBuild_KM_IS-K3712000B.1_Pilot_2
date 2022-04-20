@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventMov_RentalLine</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class is used for onhand of <c>ITVTRentalLine</c>
+/// </summary>
+[InventMovementFactoryAttribute(tableStr(ITVTRentalLine))]
+class ITVTInventMov_RentalLine extends InventMovement
+{
+    ITVTRentalLine      rentalLine;
+    InventDirection     inventDirection;
+    InventDimId         inventDimId;
+    Qty                 qty;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>newFromRentalLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Initializes a new instance of the <c>ITVTInventMov_RentalLine</c> class based on the specified record.
+    /// </summary>
+    /// <param name="_rentalLine">
+    ///    The record in the <c>ITVTRentalLine</c> table for which the class is instantiated.
+    /// </param>
+    /// <returns>
+    ///    An instance of the <c>ITVTInventMov_RentalLine</c> class.
+    /// </returns>
+    public static ITVTInventMov_RentalLine newFromRentalLine(ITVTRentalLine _rentalLine, InventDirection _inventDirection)
+    {
+        ITVTInventMov_RentalLine mov = new ITVTInventMov_RentalLine(_rentalLine);
+        mov.parmInventDirection(_inventDirection);
+        return mov;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new(
+        ITVTRentalLine   _rentalLine,
+        InventType       _inventType = new InventType(_rentalLine))
+    {
+        rentalLine = _rentalLine;
+        inventDimId = rentalLine.inventDimId;
+        qty = rentalLine.Qty;
+        
+        super(_rentalLine, _inventType);
+
+        switch (rentalLine.Status)
+        {
+            case ITVTRentalLineStatus::Created:
+                inventDirection = InventDirection::Issue;
+                break;
+            case ITVTRentalLineStatus::Started:
+                inventDirection = InventDirection::Receipt;
+                break;
+        }
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newMovement_Orig</Name>
+				<Source><![CDATA[
+    public InventMovement newMovement_Orig()
+    {
+        if (!rentalLine.RecId)
+        {
+            return null;
+        }
+
+        return ITVTInventMov_RentalLine::newFromRentalLine(rentalLine.orig(),inventDirection);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventDirection</Name>
+				<Source><![CDATA[
+    public InventDirection parmInventDirection(InventDirection _inventDirection = inventDirection)
+    {
+        inventDirection = _inventDirection;
+        return inventDirection;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>accountBalanceSheet</Name>
+				<Source><![CDATA[
+    public LedgerDimensionDefaultAccount accountBalanceSheet()
+    {
+        if (! cacheAccountBalanceSheet)
+        {
+            if (this.transQty() >= 0)
+            {
+                cacheAccountBalanceSheet = InventPosting::itemLedgerDimensionFromParameter(this.createInventPostingItemLedgerDimensionParameters(InventAccountType::InventReceipt));
+            }
+            else
+            {
+                cacheAccountBalanceSheet = InventPosting::itemLedgerDimensionFromParameter(this.createInventPostingItemLedgerDimensionParameters(InventAccountType::InventIssue));
+            }
+        }
+
+        return cacheAccountBalanceSheet;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>accountOperations</Name>
+				<Source><![CDATA[
+    public LedgerDimensionDefaultAccount accountOperations()
+    {
+        if (! cacheAccountOperations)
+        {
+            if (this.transQty() >= 0)
+            {
+                cacheAccountOperations = InventPosting::itemLedgerDimensionFromParameter(this.createInventPostingItemLedgerDimensionParameters(InventAccountType::InventProfit));
+            }
+            else
+            {
+                cacheAccountOperations = InventPosting::itemLedgerDimensionFromParameter(this.createInventPostingItemLedgerDimensionParameters(InventAccountType::InventLoss));
+            }
+        }
+
+        return cacheAccountOperations;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postingBalanceSheet</Name>
+				<Source><![CDATA[
+    public LedgerPostingType postingBalanceSheet()
+    {
+        if (this.transQty() >= 0)
+        {
+            return LedgerPostingType::InventReceipt;
+        }
+
+        return LedgerPostingType::InventIssue;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postingOperations</Name>
+				<Source><![CDATA[
+    public LedgerPostingType postingOperations()
+    {
+        if (this.transQty() >= 0)
+        {
+            return LedgerPostingType::InventProfit;
+        }
+
+        return LedgerPostingType::InventLoss;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canBeAutoRepAsFinished</Name>
+				<Source><![CDATA[
+    public boolean  canBeAutoRepAsFinished()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canBeOnAllInventLocations</Name>
+				<Source><![CDATA[
+    public boolean  canBeOnAllInventLocations()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canBeOnAllInventSites</Name>
+				<Source><![CDATA[
+    public boolean  canBeOnAllInventSites()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canInventTransBeFinancialUpdated</Name>
+				<Source><![CDATA[
+    public boolean canInventTransBeFinancialUpdated(InventTrans _inventTrans)
+    {
+        /*
+        switch (inventDirection)
+        {
+            case InventDirection::Receipt:
+            case InventDirection::Issue:
+                if (ProjWarehousw?)
+                {
+                    return false;
+                }
+                break;
+        }
+        */
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canReservationFormBeEdited</Name>
+				<Source><![CDATA[
+    public boolean canReservationFormBeEdited()
+    {
+        return (rentalLine.Status == ITVTRentalLineStatus::Created);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventTransPosting</Name>
+				<Source><![CDATA[
+    public boolean createInventTransPosting()
+    {
+        //return this.transQty() >= 0 ? true : false;
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>dimAllowBlankIssue</Name>
+				<Source><![CDATA[
+    protected boolean dimAllowBlankIssue(InventDimGroupFieldSetup _inventDimGroupFieldSetup)
+    {
+        return _inventDimGroupFieldSetup.isAllowBlankIssueEnabled() || _inventDimGroupFieldSetup.isAllowBlankReceiptEnabled();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>dimAllowBlankReceipt</Name>
+				<Source><![CDATA[
+    protected boolean dimAllowBlankReceipt(InventDimGroupFieldSetup _inventDimGroupFieldSetup)
+    {
+        return _inventDimGroupFieldSetup.isAllowBlankIssueEnabled() || _inventDimGroupFieldSetup.isAllowBlankReceiptEnabled();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isTransfer</Name>
+				<Source><![CDATA[
+    /*
+    public InventDimParm inventDimParmMatchTransferTrans()
+    {
+        InventDimParm inventDimParmMatchTransferTrans;
+        // we want to search for an exact match on dimensions that are being transferred, which also means match on blank dimensions.
+        inventDimParmMatchTransferTrans.setAllInventDim();
+        //clear non transferable dimensions since we do not need to look for these when we look for related transactions
+        inventDimParmMatchTransferTrans.clearNonTransferReceiptMergeable();
+
+        return inventDimParmMatchTransferTrans;
+    }
+    */    
+    public NoYes isTransfer()
+    {
+        return NoYes::Yes;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustBeAutoReserved</Name>
+				<Source><![CDATA[
+    public boolean mustBeAutoReserved()
+    {
+        return rentalLine.RentalOrderAutoReservation;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canBeReserved</Name>
+				<Source><![CDATA[
+    public boolean canBeReserved()
+    {
+        return inventDirection == InventDirection::Issue;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustBeBookedFinancially</Name>
+				<Source><![CDATA[
+    public boolean  mustBeBookedFinancially()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustBeBookedPhysically</Name>
+				<Source><![CDATA[
+    public boolean  mustBeBookedPhysically()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustBeSameTransSign</Name>
+				<Source><![CDATA[
+    public boolean mustBeSameTransSign()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>defaultDimension</Name>
+				<Source><![CDATA[
+    public DimensionDefault defaultDimension()
+    {
+        return InventSite::changeDimension(this.inventTable().DefaultDimension, this.inventdim().InventSiteId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transQty</Name>
+				<Source><![CDATA[
+    public InventQty  transQty()
+    {
+        if (rentalLine.Status != ITVTRentalLineStatus::None)
+            return qty * this.transSign();
+        else
+            return 0;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setTransQty</Name>
+				<Source><![CDATA[
+    public void setTransQty(InventQty  _qtyInvent)
+    {
+        qty = _qtyInvent;
+
+        if (this.transSign() >= 0)
+        {
+            qty = _qtyInvent;
+        }
+        else
+        {
+            qty = - _qtyInvent;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transId</Name>
+				<Source><![CDATA[
+    public InventTransId transId()
+    {
+        return rentalLine.InventTransId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transType</Name>
+				<Source><![CDATA[
+    public InventTransType transType()
+    {
+        return InventTransType::RentalLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transDate</Name>
+				<Source><![CDATA[
+    public TransDate transDate()
+    {
+        TransDate ret;
+
+        switch (inventDirection) 
+        {
+            case InventDirection::Issue:
+                ret = rentalLine.ProjectLocationReceiptDate ? rentalLine.ProjectLocationReceiptDate : rentalLine.ConfirmedRentalFromDate? rentalLine.ConfirmedRentalFromDate : rentalLine.RentalFromDate;
+                break;
+            case InventDirection::Receipt:
+                ret = rentalLine.ProjectLocationReceiptDate ? rentalLine.ProjectLocationReceiptDate : rentalLine.ConfirmedRentalToDate? rentalLine.ConfirmedRentalToDate : rentalLine.RentalToDate;
+                break;
+        }
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transRefId</Name>
+				<Source><![CDATA[
+    public InventTransRefId transRefId()
+    {
+        return rentalLine.SalesId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transSign</Name>
+				<Source><![CDATA[
+    public Integer transSign()
+    {
+        return inventDirection == InventDirection::Receipt ? 1 : -1;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>remainPhysical</Name>
+				<Source><![CDATA[
+    /*
+    public UnitQty remainFinancialUnit()
+    {
+        if (rentalLine.Status            == ITVTRentalLineStatus::Started &&
+            rentalLine.orig().Status     == ITVTRentalLineStatus::Created)
+        {
+            return 0;   // to allow creation of expected receipts
+        }
+        return super();
+    }
+    */
+
+    public InventQty remainPhysical()
+    {
+        if (rentalLine.Status == ITVTRentalLineStatus::Created
+            || rentalLine.Status == ITVTRentalLineStatus::Started
+            )
+        {
+            return this.transQty();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>reserveQty</Name>
+				<Source><![CDATA[
+    public InventQty reserveQty()
+    {
+        if (inventDirection == InventDirection::Receipt)
+        {
+            return 0;
+        }
+
+        return this.remainPhysical();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>itemId</Name>
+				<Source><![CDATA[
+    public ItemId  itemId()
+    {
+        return rentalLine.ItemId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventDimId</Name>
+				<Source><![CDATA[
+    public InventDimId inventDimId()
+    {
+        if (inventDirection == InventDirection::Receipt)
+        {
+            return this.getInventDimIdRentalStatus(inventDimId, ITVTRentalParameters::find().InventDimValueStatusUsed);
+        }
+
+        return inventDimId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setInventDimId</Name>
+				<Source><![CDATA[
+    public void setInventDimId(InventDimId _dimId)
+    {
+        inventDimId = _dimId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventTransOriginId</Name>
+				<Source><![CDATA[
+    public InventTransOriginId inventTransOriginId(InventTransOriginId _inventTransOriginId = inventTransOriginId)
+    {
+        if (_inventTransOriginId != inventTransOriginId)
+        {
+            inventTransOriginId = _inventTransOriginId;
+        }
+        else
+        {
+            if (!inventTransOriginId)
+            {
+                inventTransOriginId = ITVTInventTransOriginRentalLine::findInventTransOriginId(rentalLine.DataAreaId, rentalLine.InventTransId);
+            }
+        }
+
+        return inventTransOriginId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createOriginOwnerRelationship</Name>
+				<Source><![CDATA[
+    public void createOriginOwnerRelationship()
+    {
+        InventTransOriginId originId = this.inventTransOriginId();
+
+        if (originId && rentalLine)
+        {
+            ITVTInventTransOriginRentalLine::writeOriginOwnerRelationship(rentalLine.DataAreaId, rentalLine.InventTransId, originId);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deleteOriginOwnerRelationship</Name>
+				<Source><![CDATA[
+    public void deleteOriginOwnerRelationship()
+    {
+        if (rentalLine)
+        {
+            ITVTInventTransOriginRentalLine::deleteOwnerRelationship(rentalLine.DataAreaId, rentalLine.InventTransId);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInventDimIdRentalStatus</Name>
+				<Source><![CDATA[
+    /*
+    public void updateAutoPhysical(
+        InventUpd_Physical  _physical,
+        LedgerVoucher       _ledgerVoucher)
+    {
+        InventTransOriginId existingVirtuel_OriginId = InventTransOrigin::findMarkingRefInventTransOrigin(this.inventTransOriginId(), this.itemId(), true);
+        if (existingVirtuel_OriginId)
+        {
+            InventMov_Virtuel movement_Virtuel = InventMov_Virtuel::newAutoLossProfit_Physical(_physical, this, InventTransOrigin::find(existingVirtuel_OriginId).InventTransId);
+
+            InventUpd_Physical physical_Virtuel = InventUpd_Physical::newAutoLossProfit(movement_Virtuel,
+                                                                                           _physical,
+                                                                                           -_physical.parmPhysical(),
+                                                                                           -_physical.parmPhysicalUnit(),
+                                                                                           -_physical.parmProjCostAmountMST());
+
+            physical_Virtuel.updateNow(_ledgerVoucher);
+        }
+    }
+
+    public CostAmount updateLedgerFinancial(
+        LedgerVoucher           _ledgerVoucher,
+        InventUpd_Financial     _updateNow,
+        boolean                 _allowNegative = false)
+    {
+        if (_updateNow.parmFinancial() <= 0)
+        {
+            return 0;
+        }
+
+        if (_updateNow.parmCurrencyCode() != CompanyInfoHelper::standardCurrency())
+        {
+            throw error("@SYS2009");
+        }
+
+        CostAmount costAmountMST = _updateNow.parmCostAmountCur();
+        _updateNow.updOperationsAmountLedger(-_updateNow.parmCostAmountCur());
+
+        return costAmountMST;
+    }
+    */
+
+    protected InventDimId getInventDimIdRentalStatus(InventDimId _inventDimId,ITVTInventDimValueDefault   _rentalStatus)
+    {
+        return ITVTRentalParameters::setRentalInventDimStatus(InventDim::find(_inventDimId), _rentalStatus).inventDimId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newMovement_TransferIssue</Name>
+				<Source><![CDATA[
+    public InventMovement  newMovement_TransferIssue()
+    {
+        if (inventDirection == InventDirection::Issue)
+        {
+            return this;
+        }
+
+        return null; 
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newMovement_TransferReceipt</Name>
+				<Source><![CDATA[
+    public InventMovement  newMovement_TransferReceipt()
+    {
+        if (inventDirection == InventDirection::Receipt)
+        {
+            return this;
+        }
+
+        return ITVTInventMov_RentalLine::newFromRentalLine(rentalLine,InventDirection::Receipt);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mergeTransDimTransferReceipt</Name>
+				<Source><![CDATA[
+    public InventDim mergeTransDimTransferReceipt(
+        InventDim       _toInventDim,
+        InventDim       _fromInventDim          = this.inventdim(),
+        InventDim       _origFromDim            = _fromInventDim)
+    {
+        
+        return InventDim::find(this.getInventDimIdRentalStatus(_toInventDim.inventDimId, ITVTRentalParameters::find().InventDimValueStatusUsed));
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

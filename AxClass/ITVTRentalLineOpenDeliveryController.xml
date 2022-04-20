@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineOpenDeliveryController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalLineOpenDeliveryController</c> class is the controller class for the <c>ITVTRentalLineOpenDeliveryService</c> service.
+/// </summary>
+class ITVTRentalLineOpenDeliveryController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+    
+        this.parmClassName(classStr(ITVTRentalLineOpenDeliveryService));
+        this.parmMethodName(methodStr(ITVTRentalLineOpenDeliveryService, processOperation));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:UpdateRentalLinesOpenDelivery";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canGoBatch</Name>
+				<Source><![CDATA[
+    public boolean canGoBatch()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalLineOpenDeliveryController controller = new ITVTRentalLineOpenDeliveryController();
+
+        controller.parmLoadFromSysLastValue(false);
+
+        if (_args.caller()
+            && _args.caller() is FormRun)
+        {
+            controller.parmShowDialog(false);
+            controller.runOperation();
+            
+            #Task
+            _args.caller().task(#taskRefresh);
+        }
+        else
+        {
+            controller.parmShowDialog(true);
+            controller.startOperation();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromRentalLine</Name>
+				<Source><![CDATA[
+    public void initFromRentalLine(ITVTRentalLine _rentalLine)
+    {
+        Set inventTransIdSet = new Set(Types::String);
+        inventTransIdSet.add(_rentalLine.InventTransId);
+
+        this.initContract(inventTransIdSet);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromSalesTable</Name>
+				<Source><![CDATA[
+    public void initFromSalesTable(SalesTable _salesTable)
+    {
+        Set inventTransIdSet = new Set(Types::String);
+        ITVTRentalLine rentalLine;
+
+        while select rentalLine
+            where rentalLine.SalesId == _salesTable.SalesId
+        {
+            inventTransIdSet.add(rentalLine.InventTransId);
+        }
+
+        this.initContract(inventTransIdSet);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    public void initContract(Set _inventTransIdSet)
+    {
+        ITVTRentalLineOpenDeliveryContract contract = this.getDataContractObject() as ITVTRentalLineOpenDeliveryContract;
+
+        if (_inventTransIdSet.elements() > 0)
+        {
+            contract.parmInventTransIdCon(_inventTransIdSet.pack());
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runSet</Name>
+				<Source><![CDATA[
+    public static void runSet(Set _inventTransIdSet)
+    {
+        ITVTRentalLineOpenDeliveryController controller = new ITVTRentalLineOpenDeliveryController();
+
+        controller.parmLoadFromSysLastValue(false);
+        controller.initContract(_inventTransIdSet);
+        controller.parmShowDialog(false);
+        controller.runOperation();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

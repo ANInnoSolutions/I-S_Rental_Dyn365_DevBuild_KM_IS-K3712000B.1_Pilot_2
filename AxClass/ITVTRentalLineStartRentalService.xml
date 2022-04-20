@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineStartRentalService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The service class which contains logic for Start rental
+/// </summary>
+class ITVTRentalLineStartRentalService extends ITVTRentalLineRentBaseService
+{
+    ITVTRentalParameters                rentalParameters;
+
+    TransDate                           postingDateBase;
+    Query                               query;
+    NoYes                               rentalQtyToAvailQty;
+    NoYes                               newRentalLineForUnavailQty;
+
+    InventQty                           rentalLineQty;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    protected void init(ITVTRentalLineStartRentalContract _contract)
+    {
+        rentalParameters = ITVTRentalParameters::find();
+
+        postingDateBase = _contract.parmPostingDate();
+        query = _contract.getQuery();
+        rentalQtyToAvailQty = _contract.parmRentalQtyToAvailQty();
+        newRentalLineForUnavailQty = _contract.parmNewRentalLineForUnavailQty();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runStartRental</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the logic to start rental lines
+    /// </summary>
+    /// <param name = "_contract">The used contract</param>
+    public void runStartRental(ITVTRentalLineStartRentalContract _contract)
+    {
+        this.init(_contract);
+
+        QueryRun queryRun = new QueryRun(query);
+        
+        while (queryRun.next())
+        {
+            rentalLine = queryRun.get(tableNum(ITVTRentalLine));
+
+            if (rentalLine.PostedRentalFromDate)
+            {
+                throw error("@ITVTRental:RentalLineIsAlreadyRented");
+            }
+
+            postingDate = this.getPostingDate(rentalLine, postingDateBase);
+
+            ttsbegin;
+
+            rentalLine.selectForUpdate(true);
+            rentalLine.reread();
+
+            this.updateRentalLineQty();
+            rentalLine.reread();
+
+            if (this.checkUpdateReservations())
+            {
+                this.changeOwnerNewFixedAssets();
+
+                this.beginLedger();
+
+                this.postTransactions();
+
+                this.commitLedger();
+
+                rentalLine.Status = ITVTRentalLineStatus::Started;
+                rentalLine.PostedRentalFromDate = postingDate;
+                rentalLine.update();
+            }
+
+            ttscommit;
+        }
+
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateRentalLineQty</Name>
+				<Source><![CDATA[
+    private void updateRentalLineQty()
+    {
+        if (rentalQtyToAvailQty)
+        {
+            InventDim inventDim = rentalLine.inventDim();
+            InventDimParm inventDimParm;
+            inventDimParm.initFromInventDim(inventDim);
+
+            InventTrans inventTrans;
+            InventTransOrigin inventTransOrigin;
+
+            select sum(Qty) from inventTrans
+                where inventTrans.StatusIssue == StatusIssue::ReservPhysical
+                join inventTransOrigin
+                    where inventTransOrigin.RecId == inventTrans.InventTransOrigin
+                        && inventTransOrigin.InventTransId == rentalLine.InventTransId;
+
+            InventOnhand inventOnHand = InventOnhand::newItemDim(rentalLine.ItemId, inventDim, inventDimParm);
+            Qty availReserv = inventOnHand.availReservation(false);
+            rentalLineQty = min(availReserv + abs(inventTrans.Qty), rentalLine.Qty);
+
+            if (newRentalLineForUnavailQty
+                && (rentalLine.Qty - rentalLineQty > 0))
+            {
+                ITVTRentalLineSplitController::runRecord(rentalLine.InventTransId, rentalLine.Qty - rentalLineQty);
+            }
+            else if (rentalLineQty)
+            {
+                rentalLine.Qty = rentalLineQty;
+                rentalLine.update();
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getPostingDate</Name>
+				<Source><![CDATA[
+    private TransDate getPostingDate(
+        ITVTRentalLine _rentalLine,
+        TransDate _postingDate)
+    {
+        return _postingDate ? _postingDate : _rentalLine.RentalFromDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postTransactions</Name>
+				<Source><![CDATA[
+    private void postTransactions()
+    {
+        InventTrans         inventTrans;
+        InventTransOrigin   inventTransOrigin;
+
+        ITVTInventMov_RentalLine mov = ITVTInventMov_RentalLine::newFromRentalLine(rentalLine,InventDirection::Issue);
+        Qty qty = mov.transQty();
+
+        InventUpd_Physical physical = InventUpd_Physical::newInventMovement(mov);
+        physical.parmPhysical(qty);
+        physical.parmRemainPhysical(qty);
+        physical.parmPhysicalUnit(qty);
+        physical.parmRemainPhysicalUnit(qty);
+        physical.parmAllowReservePhysical(false); 
+        physical.parmAllowAutoReserveDim(false);
+        physical.updateNow(ledgerVoucher);
+
+
+        ITVTInventMov_RentalLineRented  movRented  = ITVTInventMov_RentalLineRented::newFromRentalLine(rentalLine,InventDirection::Receipt);
+
+        InventUpd_Estimated estimatedRented = InventUpd_Estimated::newInventMovement(movRented);
+        estimatedRented.updateNow();
+        estimatedRented.updateOwnerRelationship();
+
+        ITVTInventMov_RentalLineRented  movRentedBack  = ITVTInventMov_RentalLineRented::newFromRentalLine(rentalLine,InventDirection::Issue);
+        movRentedBack.inventTransOriginId(movRented.inventTransOriginId());
+
+        InventUpd_Estimated estimatedRentedBack = InventUpd_Estimated::newInventMovement(movRentedBack);
+        estimatedRentedBack.updateNow();
+        estimatedRentedBack.updateOwnerRelationship();
+
+        // Crossmark rented transactions
+        while select forupdate inventTrans
+            exists join inventTransOrigin
+            where inventTransOrigin.RecId == inventTrans.InventTransOrigin
+               && inventTransOrigin.InventTransId == rentalLine.InventTransIdRented
+        {
+            inventTrans.setMarking(inventTrans.InventTransOrigin);
+            inventTrans.update();
+        }
+
+        InventDimParm inventDimParm;
+        mov.inventDimGroupSetup().inventDimParmActive(inventDimParm);
+        
+        InventDim inventDimReceiptOrig = InventDim::find(movRented.inventDimId());
+        while select inventTransOrigin
+            where inventTransOrigin.InventTransId == rentalLine.InventTransId
+            join inventTrans
+            where inventTrans.InventTransOrigin == inventTransOrigin.RecId
+                && inventTrans.StatusIssue == StatusIssue::Deducted
+        {
+            InventDim inventDimReceiptNew = movRented.mergeTransDimTransferReceipt(inventTrans.inventDim());
+
+            ITVTRentalLineRentBaseService::processReceiptTransactionsForTransIssueQty(  movRented,
+                                                                                        inventDimReceiptOrig,
+                                                                                        inventDimParm,
+                                                                                        inventDimReceiptNew,
+                                                                                        -inventTrans.Qty);
+        }
+        
+        Qty qtyRented = movRented.transQty();
+        InventUpd_Physical physicalRented = InventUpd_Physical::newInventMovement(movRented);
+        physicalRented.parmPhysical(qtyRented);
+        physicalRented.parmRemainPhysical(qtyRented);
+        physicalRented.parmPhysicalUnit(qtyRented);
+        physicalRented.parmRemainPhysicalUnit(qtyRented);
+        physicalRented.parmCostInputAmount(InventCostInputAmount::construct(qtyRented, -physical.updCostAmountInvent()));
+        physicalRented.updateNow(ledgerVoucher);
+
+        InventUpd_Reservation reserverRentedBack = InventUpd_Reservation::newMovement(movRentedBack,movRentedBack.transQty(),false);
+        reserverRentedBack.updateNow();
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>changeOwnerNewFixedAssets</Name>
+				<Source><![CDATA[
+    private void changeOwnerNewFixedAssets()
+    {
+        InventTrans         inventTrans;
+        InventTransOrigin   inventTransOrigin;
+        InventDim           inventDim;
+        InventTable         inventTable;
+        FieldId             RentalStatusDimFieldId = ITVTRentalParameters::getRentalInventDimStatusFieldId();
+        
+        while select inventTransOrigin
+            where inventTransOrigin.InventTransId == rentalLine.InventTransId
+            join inventTrans
+            where inventTrans.InventTransOrigin == inventTransOrigin.RecId
+               && inventTrans.StatusIssue == StatusIssue::ReservPhysical
+            join inventDim
+            where inventDim.inventDimId == inventTrans.inventDimId
+               && inventDim.(RentalStatusDimFieldId) == rentalParameters.InventDimValueStatusNew
+            join inventTable
+            where inventTable.ItemId == inventTrans.ItemId
+               && inventTable.ITVTIsFixedAsset
+        {
+            ITVTRentalOrderChangeOwnerService::ChangeOwnerNewFixedAsset(inventTrans, postingDate);
+        }
+        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>checkUpdateReservations</Name>
+				<Source><![CDATA[
+    private boolean checkUpdateReservations()
+    {
+        ITVTInventMov_RentalLine mov = ITVTInventMov_RentalLine::newFromRentalLine(rentalLine, InventDirection::Issue);
+        InventUpd_Reservation reserver = InventUpd_Reservation::newMovement(mov, mov.transIdSum().onOrder(), false, true, true);
+        reserver.updateNow();
+
+        InventQty reservedQty = - mov.transIdSum(true).reservPhysical();        
+        
+        boolean ret = (reservedQty == rentalLine.Qty);
+        
+        if (!ret)
+        {
+            error(strFmt("@SYS54028", StatusIssue::ReservPhysical));
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

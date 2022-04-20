@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventDimPhysContext</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Class for passing parameter in ITVTInventDimPhys report
+/// </summary>
+class ITVTInventDimPhysContext implements System.IDisposable
+{
+    static ITVTInventDimPhysContext context;
+
+    public  boolean onlyRentalFixedAssets;
+  
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    public void new()
+    {
+        if (context)
+        {
+            throw error("@ITVTRental:NestingIsNotSupported");
+
+        }
+
+        context = this;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>dispose</Name>
+				<Source><![CDATA[
+    public void dispose()
+    {
+        context = null;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>current</Name>
+				<Source><![CDATA[
+    static public ITVTInventDimPhysContext current()
+    {
+        return context;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

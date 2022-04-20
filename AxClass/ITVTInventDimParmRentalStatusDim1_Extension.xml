@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventDimParmRentalStatusDim1_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tableStr(InventDimParm))]
+final class ITVTInventDimParmRentalStatusDim1_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmRentalStatusFlag</Name>
+				<Source><![CDATA[
+    public NoYes parmRentalStatusFlag(NoYes _RentalStatusFlag = this.getValueForDimension(classStr(ITVTRentalStatusInventTrackingDimensionDim1)))
+    {
+        this.setValueForDimension(classStr(ITVTRentalStatusInventTrackingDimensionDim1),_RentalStatusFlag);
+        return _RentalStatusFlag;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>fieldIdRentalStatus</Name>
+				<Source><![CDATA[
+    public static FieldId fieldIdRentalStatus()
+    {
+        return InventDimParm::fieldIdForDimension(classStr(ITVTRentalStatusInventTrackingDimensionDim1));
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

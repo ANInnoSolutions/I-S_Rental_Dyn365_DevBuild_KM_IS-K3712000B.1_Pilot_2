@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTFixedAssetSplit</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal class ITVTFixedAssetSplit
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>split</Name>
+				<Source><![CDATA[
+    public static AssetTable split(
+        AssetId                 _assetId, 
+        Qty                     _splitQty, 
+        LedgerJournalNameId     _journalNameId, 
+        date                    _date)
+    {
+        AssetTable assetTableOld = AssetTable::find(_assetId);
+        Qty oldQty = assetTableOld.Quantity;
+        
+        if (oldQty == 0)
+        {
+            return null;
+        }
+
+        ttsbegin;
+
+        AssetCopy assetCopy = new AssetCopy(assetTableOld);
+        assetCopy.run();
+
+        AssetTable assetTableNew = assetCopy.assetTableNew();
+        
+        assetTableNew.selectForUpdate(true);
+        assetTableNew.Quantity = _splitQty;
+        assetTableNew.update();
+
+        assetTableOld.selectForUpdate(true);
+        assetTableOld.Quantity = assetTableOld.Quantity - _splitQty;
+        assetTableOld.update();
+
+        AssetBook assetBookOld;        
+
+        while select assetBookOld
+            where assetBookOld.AssetId == assetTableOld.AssetId
+            && assetBookOld.Status != AssetStatus::Sold
+            && assetBookOld.Status != AssetStatus::Scrapped
+        {
+
+            AssetSumCalc_Trans  assetSumCalc_Trans = AssetSumCalc_Trans::newAssetYear(assetBookOld.AssetId, assetBookOld.BookId);
+            Percent             percent = _splitQty / oldQty * 100;
+            Amount              acquisitionValue = ((assetSumCalc_Trans.acquisitionValue() + assetSumCalc_Trans.acquisitionAdjValue()) * percent / 100);
+            AssetSplit          assetSplit = AssetSplit::construct();
+
+            assetSplit.initAssetBookFrom(assetBookOld);
+            assetSplit.parmAssetId(assetTableNew.AssetId);
+            assetSplit.parmBookId(assetBookOld.BookId);
+            assetSplit.parmTransDate(_date);
+            assetSplit.parmPercent(percent);
+            assetSplit.parmJournalName(_journalNameId);
+
+            if (assetSplit.validate() && acquisitionValue)
+            {
+                assetSplit.run();
+
+                LedgerJournalTable ledgerJournalTable = LedgerJournalTable::find(assetSplit.journalNum());
+                LedgerJournalCheckPost ledgerJournalPost = LedgerJournalCheckPost::construct(ledgerJournalTable.JournalType);
+
+                ledgerJournalPost.parmJournalNum(ledgerJournalTable.JournalNum);
+                ledgerJournalPost.parmPost(true);
+                ledgerJournalPost.parmTransferErrors(false);
+                ledgerJournalPost.runOperation();
+            }
+        }
+
+        ttscommit;
+
+        return assetTableNew;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

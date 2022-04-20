@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalDepreciationPostController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+class ITVTRentalDepreciationPostController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTRentalDepreciationPostService));
+        this.parmMethodName(methodStr(ITVTRentalDepreciationPostService, runPostDepreciation));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalDepreciationPostController controller = new ITVTRentalDepreciationPostController();
+
+        controller.initContract(_args);
+        controller.parmShowDialog(true);
+        controller.startOperation();
+
+        if (!controller.isInBatch()
+            && _args.caller()
+            && _args.caller() is FormRun
+            && _args.record())
+        {
+            FormObjectSet ds = FormDataUtil::getFormDataSource(_args.record());
+
+            if (ds)
+            {
+                ds.research(true);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    void initContract(Args _args)
+    {
+        ITVTRentalDepreciationPostContract contract = this.getDataContractObject();
+        Query query = new Query(queryStr(ITVTRentalDepreciationQuery));
+
+        QueryBuildDataSource qbds = query.dataSourceTable(tableNum(InventTransOrigin));
+
+        if (_args
+            //&& _args.caller() is FormRun
+            && _args.record())
+        {
+            contract.parmUseRentalEndDate(true);
+            ITVTRentalLine  rentalLine =  _args.record();
+            qbds.addRange(fieldNum(InventTransOrigin, InventTransId)).value(queryValue(rentalLine.InventTransId));
+        }
+
+        contract.setQuery(query);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:UpdateInventDepreciation";
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTReallocateTransferOrderLineService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The service class which contains logic to reallocate transfer order lines
+/// </summary>
+class ITVTReallocateTransferOrderLineService extends SysOperationServiceBase
+{
+    RecordInsertList            inventTransferLinesInsertList;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>runReallocateTransferOrderLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Reallocates transfer order lines to a new or selected transfer order
+    /// </summary>
+    /// <param name = "_contract">The used contract</param>
+    public void runReallocateTransferOrderLine(ITVTReallocateTransferOrderLineContract _contract)
+    {
+        this.init();
+
+        ttsbegin;
+
+        InventTransferTable targetInventTransferTable = this.findOrCreateInventTransferTable(_contract);
+        this.moveInventTransferLines(_contract.parmPackedData(), targetInventTransferTable);
+
+        ttscommit;
+
+        Message::Add(MessageSeverity::Informational, strFmt("@ITVTRental:LinesMovedToTransferOrder", targetInventTransferTable.TransferId));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes internal collections
+    /// </summary>
+    protected void init()
+    {
+        inventTransferLinesInsertList   = new RecordInsertList(tableNum(InventTransferLine));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findOrCreateInventTransferTable</Name>
+				<Source><![CDATA[
+    private InventTransferTable findOrCreateInventTransferTable(ITVTReallocateTransferOrderLineContract _contract)
+    {
+        InventTransferTable targetInventTransferTable = InventTransferTable::find(_contract.parmTargetTransferId());
+
+        if (!targetInventTransferTable.RecId)
+        {
+            InventTransferTable currentInventTransferTable = InventTransferTable::find(_contract.parmTransferId());
+
+            buf2Buf(currentInventTransferTable, targetInventTransferTable);
+            targetInventTransferTable.InventLocationIdFrom = _contract.parmTargetFromInventLocationId();
+            targetInventTransferTable.TransferId = InventTransferTable::numberSeq().num();
+            targetInventTransferTable.insert();
+        }
+
+        return targetInventTransferTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>moveInventTransferLines</Name>
+				<Source><![CDATA[
+    private void moveInventTransferLines(
+        container _packedData,
+        InventTransferTable _inventTransferTable)
+    {
+        InventTransferLine  inventTransferLineOld;
+        LineNum             lineNum = InventTransferLine::lastLineNum(_inventTransferTable.TransferId) + 1;
+
+        List                inventTransferLinesOld = List::create(_packedData);
+        ListEnumerator      le = inventTransferLinesOld.getEnumerator();
+
+        while (le.moveNext())
+        {
+            inventTransferLineOld = le.current();
+            
+            this.createTransferOrderLine(inventTransferLineOld, _inventTransferTable, lineNum);
+
+            inventTransferLineOld.selectForUpdate(true);
+            inventTransferLineOld.delete();
+            
+            lineNum++;
+        }
+
+        inventTransferLinesInsertList.insertDatabase();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createTransferOrderLine</Name>
+				<Source><![CDATA[
+    private void createTransferOrderLine(
+        InventTransferLine      _inventTransferLineOld,
+        InventTransferTable     _inventTransferTable,
+        LineNum                 _lineNum)
+    {
+        InventTransferLine inventTransferLineNew;
+        inventTransferLineNew.selectForUpdate(true);
+
+        buf2Buf(_inventTransferLineOld, inventTransferLineNew);
+        inventTransferLineNew.TransferId = _inventTransferTable.TransferId;
+        inventTransferLineNew.LineNum = _lineNum;
+
+        InventDim inventDimNew = inventTransferLineNew.inventDim();
+        inventDimNew.InventLocationId = _inventTransferTable.InventLocationIdFrom;
+        inventDimNew.InventSiteId = InventLocation::find(_inventTransferTable.InventLocationIdFrom).InventSiteId;
+        inventTransferLineNew.inventDimId = InventDim::findOrCreate(inventDimNew).inventDimId;
+
+        inventTransferLinesInsertList.add(inventTransferLineNew);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

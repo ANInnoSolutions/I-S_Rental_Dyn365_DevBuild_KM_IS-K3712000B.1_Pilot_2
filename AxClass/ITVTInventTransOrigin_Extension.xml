@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTransOrigin_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tablestr(InventTransOrigin))]
+public final class ITVTInventTransOrigin_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>originator</Name>
+				<Source><![CDATA[
+    public Common originator(boolean _forUpdate)
+    {
+        Common  originator = next originator(_forUpdate);
+
+        switch (this.ReferenceCategory)
+        {
+            case InventTransType::RentalLine:
+                originator = ITVTInventTransOriginRentalLine::rentalLine(this.RecId, _forUpdate);
+                if (!originator)
+                    originator = ITVTRentalLine::findInventTransId(this.InventTransId, _forUpdate);
+                break;
+
+            case InventTransType::RentalLineRented:
+                originator = ITVTInventTransOriginRentalLineRented::rentalLine(this.RecId, _forUpdate);
+                if (!originator)
+                    originator = ITVTRentalLine::findInventTransIdRented(this.InventTransId, _forUpdate);
+                break;
+        }
+
+        return originator;
+    }
+    /*
+    public InventMovement inventMovement(
+        InventDirection _direction,
+        boolean         _noThrow)
+    {
+        InventMovement          inventMovement = next inventMovement(_direction,_noThrow);
+        Common                  originator;
+        
+        originator = this.originator(true);
+
+        switch (originator.TableId)
+        {
+            case tableNum(ITVTRentalLine):
+
+                InventMovSubType inventMovSubType = InventMovSubType::None;
+
+                ITVTRentalLine rentalLine = originator as ITVTRentalLine;
+                inventMovSubType = rentalLine.getInventMovSubType(_direction);
+                return InventMovement::construct(originator,inventMovSubType);
+
+                break;
+        }
+        return inventMovement;
+    }
+    */
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

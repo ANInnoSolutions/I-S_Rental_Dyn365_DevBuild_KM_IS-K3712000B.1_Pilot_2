@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTReallocateTransferOrderLineController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The class controller for operating with the <c>ITVTReallocateTransferOrderLineService</c> class
+/// </summary>
+class ITVTReallocateTransferOrderLineController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTReallocateTransferOrderLineService));
+        this.parmMethodName(methodStr(ITVTReallocateTransferOrderLineService, runReallocateTransferOrderLine));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTReallocateTransferOrderLineController controller = new ITVTReallocateTransferOrderLineController();
+
+        if (_args 
+            && _args.caller() is FormRun
+            && _args.record())
+        {
+            controller.initContract(_args);
+
+            controller.parmLoadFromSysLastValue(false);
+            controller.startOperation();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract(Args _args)
+    {
+        MultiSelectionHelper multiselectionHelper = MultiSelectionHelper::createFromCaller(_args.caller());
+        InventTransferLine inventTransferLine = multiselectionHelper.getFirst();
+        FormDataSource     fdsInventTransferLine = FormDataUtil::getFormDataSource(inventTransferLine);
+
+        if (fdsInventTransferLine)
+        {
+            ITVTReallocateTransferOrderLineContract contract = this.getDataContractObject();
+            
+            contract.parmTransferId(inventTransferLine.TransferId);
+
+            List inventTransferLinesOld = new List(Types::Record);
+
+            while (inventTransferLine)
+            {
+                inventTransferLinesOld.addEnd(inventTransferLine);
+                inventTransferLine = multiselectionHelper.getNext();
+            }
+
+            contract.parmPackedData(inventTransferLinesOld.pack());
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:ReallocateTransferOrderLine";
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

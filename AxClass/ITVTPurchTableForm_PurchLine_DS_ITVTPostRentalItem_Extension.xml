@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPurchTableForm_PurchLine_DS_ITVTPostRentalItem_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Class extension for datasource field PurchLine.ITVTPostRentalItem on PurchTable form
+/// </summary>
+[ExtensionOf(formDataFieldStr(PurchTable, PurchLine, ITVTPostRentalItem))]
+final class ITVTPurchTableForm_PurchLine_DS_ITVTPostRentalItem_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>modified</Name>
+				<Source><![CDATA[
+    public void modified()
+    {
+        next modified();
+        
+        FormDataObject  fdo             = any2Object(this) as FormDataObject;
+        FormDataSource  fds             = fdo.Datasource();
+        PurchLine       purchLineLocal  = fds.cursor();
+        PurchTable      purchTableLocal = element.purchTable_ds.cursor();
+
+        purchLineLocal.CreateFixedAsset = purchLineLocal.ITVTPostRentalItem;
+
+        if (purchLineLocal.ITVTPostRentalItem)
+        {
+            purchLineLocal.ITVTToRentalStatus = ITVTRentalParameters::find().InventDimValueDefaultFAPurch;
+            InventDim inventDimLocal = ITVTRentalParameters::setRentalInventDimStatus(purchLineLocal.inventDim(), ITVTRentalParameters::find().InventDimValueStatusInterimFAPurch);
+            purchLineLocal.InventDimId = inventDimLocal.InventDimId;
+            FormDataSource inventDimDS = element.InventDim_DS;
+            InventDim	   inventDimCursor = inventDimDS.cursor();
+
+            inventDimCursor.data(purchLineLocal.inventDim());
+            inventDimDS.setCurrent();
+        }
+        
+        PurchTableForm purchTableForm = element.purchTableForm;
+
+        purchTableForm.purchTable(purchTableLocal);
+        purchTableForm.setAllowEditAssetFields(purchTableLocal, purchLineLocal, fds);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventDimPhysContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Data contract for ITVTInventDimPhys report
+/// </summary>
+[
+    DataContract,
+    SysOperationContractProcessing(classStr(ITVTInventDimPhysUIBuilder)),
+    SysOperationGroup('Parameters', "@SYS28007", '1')
+    //SysOperationGroup('ViewGroup', "@SYS5252", '2')
+]
+class ITVTInventDimPhysContract implements SysOperationValidatable
+{
+    AssetBookId             assetBookId;
+    NoYes                   showOpenRec; 
+    DateOnhand              perDate;
+    boolean                 showZeroLines;
+    InventDimViewContract   inventDimViewContract;
+    ITVTRentalStatusFilter  rentalStatus;
+    
+    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmAssetBook</Name>
+				<Source><![CDATA[
+    [
+        DataMember,
+        SysOperationGroupMember('Parameters')
+    ]
+    public AssetBookId parmAssetBook(AssetBookId _assetBookId = assetBookId)
+    {
+        assetBookId = _assetBookId;
+        return assetBookId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmOpenRec</Name>
+				<Source><![CDATA[
+    [
+        DataMember,
+        SysOperationLabel("@ITVTRental:ShowOpenReconciliation"),
+        SysOperationGroupMember('Parameters')
+    ]
+    public NoYes parmOpenRec(NoYes _showOpenRec = showOpenRec)
+    {
+        showOpenRec = _showOpenRec;
+        return showOpenRec;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmRentalStatus</Name>
+				<Source><![CDATA[
+    [
+        DataMember,
+        SysOperationGroupMember('Parameters')
+    ]
+    public ITVTRentalStatusFilter parmRentalStatus(ITVTRentalStatusFilter _rentalStatus = rentalStatus)
+    {
+        rentalStatus = _rentalStatus;
+        return rentalStatus;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventDimViewContract</Name>
+				<Source><![CDATA[
+    [
+        DataMember('InventDimViewContract')
+    ]
+    public InventDimViewContract parmInventDimViewContract(InventDimViewContract _inventDimViewContract = inventDimViewContract)
+    {
+        inventDimViewContract = _inventDimViewContract;
+
+        return inventDimViewContract;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPerDate</Name>
+				<Source><![CDATA[
+    [
+        DataMember('perDate'),
+        SysOperationLabel(literalStr("@SYS7902")),
+        SysOperationHelpText(literalStr("@SYS28389")),
+        SysOperationDisplayOrder('1'),
+        SysOperationGroupMember('Parameters')
+    ]
+    public DateOnhand parmPerDate(DateOnhand _perDate = perDate)
+    {
+        perDate = _perDate;
+
+        return perDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmShowZeroLines</Name>
+				<Source><![CDATA[
+    [
+        DataMember('showZeroLines'),
+        SysOperationLabel(literalStr("@SYS4978")),
+        SysOperationHelpText(literalStr("@SYS28392")),
+        SysOperationDisplayOrder('2'),
+        SysOperationGroupMember('Parameters')
+    ]
+    public boolean parmShowZeroLines(boolean _showZeroLines = showZeroLines)
+    {
+        showZeroLines = _showZeroLines;
+
+        return showZeroLines;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    public boolean validate()
+    {
+        boolean ret = true;
+
+        if (!rentalStatus)
+        {
+            ret = checkFailed(strFmt("@ITVTRental:ParameterIsMandatory", "@ITVTRental:RentalStatus"));
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

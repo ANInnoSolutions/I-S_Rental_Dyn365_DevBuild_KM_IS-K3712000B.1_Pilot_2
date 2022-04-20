@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventUpd_Physical_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(classstr(InventUpd_Physical))]
+public final class ITVTInventUpd_Physical_Extension
+{
+    /*
+    protected container updatePhysicalQtysBasedOnInventTrans(InventTrans _inventTrans, CostAmount _updCostAmountInvent, InventQty _updPhysical, PdsCWInventQty _cwUpdPhysical)
+    {
+        container ret = next updatePhysicalQtysBasedOnInventTrans(_inventTrans,_updCostAmountInvent,_updPhysical,_cwUpdPhysical);
+
+        if (   !movement.CheckRentalItemNewFixedAssetCost(_inventTrans)
+           )
+        {
+            throw error("@SYS18447");
+        }
+
+        return ret;
+    }
+    */
+}
+]]></Declaration>
+		<Methods />
+	</SourceCode>
+</AxClass>

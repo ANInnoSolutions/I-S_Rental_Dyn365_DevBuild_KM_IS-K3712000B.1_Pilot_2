@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventDimPhysDP</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Data provider for ITVTInventDimPhys report
+/// </summary>
+[
+    SRSReportParameterAttribute(classStr(ITVTInventDimPhysContract)),
+    SRSReportQueryAttribute(queryStr(InventDimPhys))
+]
+class ITVTInventDimPhysDP extends InventDimPhysDP
+{
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>processReport</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Parses the report parameters and inserts data into the temporary table.
+    /// </summary>
+    public void processReport()
+    {
+        ITVTInventDimPhysContract contract        = this.parmDataContract();
+
+        TransDate             perDate             = contract.parmPerDate();
+        NoYes                 showZeroLines       = contract.parmShowZeroLines();
+
+        InventDimParm         inventDimParm       = this.ITVT_initInventDimParm(contract);
+        
+        Query                 query               = this.parmQuery();
+        QueryBuildDataSource  qbdsInventDim       = query.dataSourceTable(tableNum(InventDim));
+        qbdsInventDim.addRange(fieldNum(InventDim, InventDimension1)).value(contract.parmRentalStatus());
+
+        using (ITVTInventDimPhysContext context = new ITVTInventDimPhysContext())
+        {
+            context.onlyRentalFixedAssets = true;
+
+            InventSumDateEngine inventSumDateEngine = InventSumDateEngine::newParameters(perDate, inventDimParm, !showZeroLines, this.parmQuery());
+            inventSumDateEngine.parmUserConnection(this.parmUserConnection());
+            inventSumDateEngine.parmInventSumDateTransReport(inventSumDateTransReport);
+            inventSumDateEngine.calcData();
+        }
+
+        this.postCalc(contract);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ITVT_initInventDimParm</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///     Initializes the inventory dimension parameters used to generate the report.
+    /// </summary>
+    /// <param name = "_contract">
+    ///     The data provider contract.
+    /// </param>
+    /// <returns>
+    ///     Inventory dimension parameters.
+    /// </returns>
+    protected InventDimParm ITVT_initInventDimParm(ITVTInventDimPhysContract _contract)
+    {
+        InventDimParm         inventDimParm;
+
+        InventDimViewContract inventDimViewContract = _contract.parmInventDimViewContract();
+        
+        inventDimViewContract.parmInventDimParm().InventDimension1Flag = NoYes::Yes;
+		inventDimViewContract.parmInventDimParm().InventSerialIdFlag = NoYes::Yes;
+        inventDimParm.data(inventDimViewContract.parmInventDimParm());
+
+        return inventDimParm;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postCalc</Name>
+				<Source><![CDATA[
+    private void postCalc(ITVTInventDimPhysContract _contract)
+    {
+        AssetTable  assetTable;
+        AssetBook   assetBook;
+
+        while select forupdate inventSumDateTransReport
+        {
+            select count(RecId), sum(Quantity) from assetTable
+                where assetTable.ITVTItemId == inventSumDateTransReport.ItemId
+                    && (assetTable.SerialNum == inventSumDateTransReport.InventSerialId
+                        || !inventSumDateTransReport.InventSerialId)
+            exists join assetBook
+                where assetBook.AssetId == assetTable.AssetId
+                    && assetBook.BookId == _contract.parmAssetBook()
+                    && assetBook.AcquisitionDate <= _contract.parmPerDate()
+                    && (assetBook.DisposalDate >= _contract.parmPerDate()
+                        || !assetBook.DisposalDate);
+
+            inventSumDateTransReport.ITVTNumOfFixedAssets = assetTable.RecId;
+            inventSumDateTransReport.ITVTFixedAssetQty = assetTable.Quantity;
+
+            inventSumDateTransReport.update();
+        }
+
+        if (_contract.parmOpenRec())
+        {
+            ITVTAssetRentalRecon assetRentalRecon;
+
+            update_recordset inventSumDateTransReport
+                setting ITVTReconQty = assetRentalRecon.Qty
+                join sum(Qty) from assetRentalRecon
+                    where assetRentalRecon.ItemId == inventSumDateTransReport.ItemId
+                        && assetRentalRecon.InventSerialId == inventSumDateTransReport.InventSerialId;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

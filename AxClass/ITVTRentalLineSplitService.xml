@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineSplitService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The service class which contains logic for Split rental line
+/// </summary>
+class ITVTRentalLineSplitService extends SysOperationServiceBase
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>runSplit</Name>
+				<Source><![CDATA[
+        /// <summary>
+    /// Runs the logic to start rental lines
+    /// </summary>
+    /// <param name = "_contract">The used contract</param>
+    public void runSplit(ITVTRentalLineSplitContract _contract)
+    {
+        ttsbegin;
+
+        ITVTRentalLine rentalLineOld = ITVTRentalLine::findInventTransId(_contract.parmInventTransId(), true);
+        
+        rentalLineOld.Qty -= _contract.parmSplitQty();
+        rentalLineOld.modifiedField(fieldNum(ITVTRentalLine, Qty));
+        rentalLineOld.update();
+        
+        ITVTRentalLine rentalLineNew;
+
+        buf2Buf(rentalLineOld, rentalLineNew);
+        rentalLineNew.selectForUpdate(true);
+        rentalLineNew.Qty = _contract.parmSplitQty();
+        rentalLineNew.LineNum = ITVTRentalLine::getNextLineNum(rentalLineOld);
+        rentalLineNew.modifiedField(fieldNum(ITVTRentalLine, Qty));
+        rentalLineNew.insert();
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

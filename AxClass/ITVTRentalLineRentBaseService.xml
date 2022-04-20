@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineRentBaseService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+class ITVTRentalLineRentBaseService extends SysOperationServiceBase
+{
+    TransDate                   postingDate;
+    ITVTRentalLine              rentalLine;
+    Voucher                     voucher;
+    NumberSeq                   numberSeq;
+    LedgerVoucher               ledgerVoucher;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>beginLedger</Name>
+				<Source><![CDATA[
+    void beginLedger()
+    {
+        TransactionTxt      transactionTxt = TransactionTxt::construct();
+
+        numberSeq           = NumberSeq::newGetNum(InventParameters::numRefInventJournalVoucherId());
+        voucher             = numberSeq.num();
+
+        ledgerVoucher = LedgerVoucher::newLedgerPost(DetailSummary::Summary,
+                                                             SysModule::Invent,
+                                                             numberSeq.parmNumberSequenceCode());
+
+        transactionTxt.setType(LedgerTransTxt::InventQuarantineOrder);
+        transactionTxt.setDate(postingDate);
+        transactionTxt.setVoucher(voucher);
+        transactionTxt.setKey1(rentalLine.SalesId);
+        transactionTxt.setKey2(rentalLine.ItemId);
+
+        LedgerVoucherObject ledgerVoucherObject = LedgerVoucherObject::newVoucher(voucher,
+                                                                                  postingDate,
+                                                                                  SysModule::Invent,
+                                                                                  LedgerTransType::Invent);
+        ledgerVoucherObject.lastTransTxt(transactionTxt.txt());
+        ledgerVoucher.addVoucher(ledgerVoucherObject);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>commitLedger</Name>
+				<Source><![CDATA[
+    void commitLedger()
+    {
+        ledgerVoucher.end();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>processReceiptTransactionsForTransIssueQty</Name>
+				<Source><![CDATA[
+    public static InventQty processReceiptTransactionsForTransIssueQty( InventMovement _movementReceipt,
+                                                                        InventDim _inventDimReceiptOrig,
+                                                                        InventDimParm _inventDimParm,
+                                                                        InventDim _inventDimReceiptNew,
+                                                                        InventQty _qtyRemain)
+    {
+        InventTrans inventTransReceipt;
+        InventUpd_Estimated inventUpdate;
+        InventDim inventDimReceipt;
+        InventQty tmpQty;
+        PdsCWInventQty cwTmpQty;
+
+        while (_qtyRemain > 0)
+        {
+            select forupdate inventTransReceipt
+                    where inventTransReceipt.InventTransOrigin  == _movementReceipt.inventTransOriginId()
+                       && inventTransReceipt.StatusIssue        == StatusIssue::None
+                       && inventTransReceipt.StatusReceipt      == StatusReceipt::Ordered
+                       && inventTransReceipt.TransChildType     == InventTransChildType::None
+                #inventDimExistsJoin(inventTransReceipt.inventDimId, inventDimReceipt, _inventDimReceiptOrig, _inventDimParm);
+
+            if (inventTransReceipt.RecId)
+            {
+                if (!inventUpdate)
+                {
+                    inventUpdate = InventUpd_Estimated::newInventMovement(_movementReceipt);
+                    if (!inventUpdate.checkNonChangeableTrans(_inventDimReceiptNew, _inventDimReceiptOrig))
+                    {
+                        throw error("@SYS18447");
+                    }
+                }
+
+                [tmpQty, cwTmpQty] = inventUpdate.updateTransDimReceipt(inventTransReceipt,
+                                                                        _inventDimReceiptOrig,
+                                                                        _inventDimReceiptNew,
+                                                                        _qtyRemain,
+                                                                        false,
+                                                                        false);
+                _qtyRemain -= tmpQty;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return _qtyRemain;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

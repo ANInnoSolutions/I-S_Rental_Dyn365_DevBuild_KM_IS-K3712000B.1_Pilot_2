@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineOpenDeliveryService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Creates records for Rental lines with open delivery
+/// </summary>
+class ITVTRentalLineOpenDeliveryService extends SysOperationServiceBase
+{
+    Set inventTransIdSet;
+    TmpFrmVirtual inventTransTmp;
+    boolean allLines;
+    RecordInsertList recordInsertList;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>processOperation</Name>
+				<Source><![CDATA[
+    public void processOperation(ITVTRentalLineOpenDeliveryContract _contract)
+    {   
+        this.init(_contract);
+
+        ttsbegin;
+
+        this.deleteRentalLineOpenDelivery();
+        this.insertRentalLineOpenDelivery();
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    protected void init(ITVTRentalLineOpenDeliveryContract _contract)
+    {
+        recordInsertList = new RecordInsertList(tableNum(ITVTRentalLineOpenDelivery));
+
+        if (_contract.parmInventTransIdCon())
+        {
+            allLines = false;
+            inventTransIdSet = Set::create(_contract.parmInventTransIdCon());
+            SetEnumerator se = inventTransIdSet.getEnumerator();
+        
+            while (se.moveNext())
+            {
+                inventTransTmp.MCRInventTransId = se.current();
+                inventTransTmp.insert();
+            }
+        }
+        else
+        {
+            allLines = true;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deleteRentalLineOpenDelivery</Name>
+				<Source><![CDATA[
+    protected void deleteRentalLineOpenDelivery()
+    {
+        ITVTRentalLineOpenDelivery rentalLineOpenDelivery;
+
+        if (allLines)
+        {
+            delete_from rentalLineOpenDelivery
+                where rentalLineOpenDelivery.UserId == curUserId();
+        }
+        else
+        {
+            delete_from rentalLineOpenDelivery
+            where rentalLineOpenDelivery.UserId == curUserId()
+            exists join inventTransTmp
+                where inventTransTmp.MCRInventTransId == rentalLineOpenDelivery.InventTransId;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insertRentalLineOpenDelivery</Name>
+				<Source><![CDATA[
+    protected void insertRentalLineOpenDelivery()
+    {
+        ITVTRentalLine rentalLine;
+
+        if (allLines)
+        {
+            while select rentalLine
+                where !rentalLine.PostedRentalFromDate
+            {
+                this.addLine(rentalLine);
+            }
+        }
+        else
+        {
+            while select rentalLine
+                where !rentalLine.PostedRentalFromDate
+                exists join inventTransTmp
+                    where inventTransTmp.MCRInventTransId == rentalLine.InventTransId
+            {
+                this.addLine(rentalLine);
+            }
+        }
+
+        recordInsertList.insertDatabase();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addLine</Name>
+				<Source><![CDATA[
+    protected void addLine(ITVTRentalLine _rentalLine)
+    {
+        ITVTRentalLineOpenDelivery rentalLineOpenDelivery;
+
+        rentalLineOpenDelivery.initFromRentalLine(_rentalLine);
+
+        rentalLineOpenDelivery.UserId = curUserId();
+        rentalLineOpenDelivery.CustAccount = SalesTable::find(rentalLineOpenDelivery.SalesId).CustAccount;
+        rentalLineOpenDelivery.CustomerName = CustTable::find(rentalLineOpenDelivery.CustAccount).name();
+
+        if (rentalLineOpenDelivery.validateWrite())
+        {
+            recordInsertList.add(rentalLineOpenDelivery);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

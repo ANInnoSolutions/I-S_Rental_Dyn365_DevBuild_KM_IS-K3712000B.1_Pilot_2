@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetRentalReconPostContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Data contract for <c>ITVTAssetRentalReconPostService</c> service
+/// </summary>
+[
+    DataContract,
+    SysOperationContractProcessing(classStr(ITVTAssetRentalReconPostUIBuilder))
+]
+class ITVTAssetRentalReconPostContract
+{
+    ITVTFixedAssetJournalName   fixedAssetJournalName;
+    Description                 description;
+    AssetBookId                 assetBookId;
+    ITVTOnlyReceiptTrans        onlyReceiptTrans;
+    str                         packedQuery;
+    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmOnlyReceiptTrans</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public ITVTOnlyReceiptTrans parmOnlyReceiptTrans(ITVTOnlyReceiptTrans _onlyReceiptTrans = onlyReceiptTrans)
+    {
+        onlyReceiptTrans = _onlyReceiptTrans;
+        return onlyReceiptTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmFixedAssetJournalName</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public ITVTFixedAssetJournalName parmFixedAssetJournalName(ITVTFixedAssetJournalName _fixedAssetJournalName = fixedAssetJournalName)
+    {
+        fixedAssetJournalName = _fixedAssetJournalName;
+        return fixedAssetJournalName;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDescription</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public Description parmDescription(Description _description = description)
+    {
+        description = _description;
+        return description;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAssetBookId</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public AssetBookId parmAssetBookId(AssetBookId _assetBookId = assetBookId)
+    {
+        assetBookId = _assetBookId;
+        return assetBookId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPackedQuery</Name>
+				<Source><![CDATA[
+    [
+        DataMember,
+        AifQueryType('_packedQuery', '')
+    ]
+    public str parmPackedQuery(str _packedQuery = packedQuery)
+    {
+        packedQuery = _packedQuery;
+        return packedQuery;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getQuery</Name>
+				<Source><![CDATA[
+    public Query getQuery()
+    {
+        return new Query(SysOperationHelper::base64Decode(packedQuery));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setQuery</Name>
+				<Source><![CDATA[
+    public void setQuery(Query _query)
+    {
+        packedQuery = SysOperationHelper::base64Encode(_query.pack());
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

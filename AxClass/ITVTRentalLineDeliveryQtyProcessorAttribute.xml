@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliveryQtyProcessorAttribute</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class is used as an attribute for <c>ITVTRentalLineDeliveryQtyProcessorBase</c> descendants
+/// </summary>
+class ITVTRentalLineDeliveryQtyProcessorAttribute extends SysAttribute
+{
+    ITVTRentalLineDeliveryOperation        RentalLineDeliveryOperation;
+
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    public void new(ITVTRentalLineDeliveryOperation _RentalLineDeliveryOperation)
+    {
+        super();
+
+        RentalLineDeliveryOperation = _RentalLineDeliveryOperation;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmRentalLineDeliveryOperation</Name>
+				<Source><![CDATA[
+    public ITVTRentalLineDeliveryOperation parmRentalLineDeliveryOperation(ITVTRentalLineDeliveryOperation _RentalLineDeliveryOperation = RentalLineDeliveryOperation)
+    {
+        RentalLineDeliveryOperation = _RentalLineDeliveryOperation;
+        return RentalLineDeliveryOperation;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

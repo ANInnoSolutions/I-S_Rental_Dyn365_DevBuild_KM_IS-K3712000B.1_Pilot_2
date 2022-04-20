@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineSplitController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The class controller for operating with the <c>ITVTRentalLineSplitService</c> class
+/// </summary>
+class ITVTRentalLineSplitController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTRentalLineSplitService));
+        this.parmMethodName(methodStr(ITVTRentalLineSplitService, runSplit));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalLineSplitController controller = new ITVTRentalLineSplitController();
+
+        controller.initFromArgs(_args);
+        controller.startOperation();
+
+        if (!controller.isInBatch()
+            && _args.caller()
+            && _args.caller() is FormRun
+            && _args.record())
+        {
+            FormObjectSet ds = FormDataUtil::getFormDataSource(_args.record());
+
+            if (ds)
+            {
+                ds.research(true);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract(
+        InventTransId _inventTransId,
+        Qty _qty = 0)
+    {
+        ITVTRentalLineSplitContract contract = this.getDataContractObject();
+
+        contract.parmInventTransId(_inventTransId);
+
+        if (_qty)
+        {
+            contract.parmSplitQty(_qty);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromArgs</Name>
+				<Source><![CDATA[
+    private void initFromArgs(Args _args)
+    {
+        if (_args
+            && _args.record()
+            && _args.dataset() == tableNum(ITVTRentalLine))
+        {
+            ITVTRentalLine rentalLine = _args.record();
+            this.initContract(rentalLine.InventTransId);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:Split";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runRecord</Name>
+				<Source><![CDATA[
+    public static void runRecord(
+        InventTransId _inventTransId,
+        Qty _qty)
+    {
+        ITVTRentalLineSplitController controller = new ITVTRentalLineSplitController();
+
+        controller.initContract(_inventTransId, _qty);
+        controller.runOperation();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

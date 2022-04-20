@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTCustTable_CreateRentalOrder_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension of button ITVTCreateRentalOrder on CustTable form
+/// </summary>
+[ExtensionOf(formControlStr(CustTable, ITVTCreateRentalOrder))]
+final class ITVTCustTable_CreateRentalOrder_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>clicked</Name>
+				<Source><![CDATA[
+    public void clicked()
+    {
+        next clicked();
+
+        SalesTableForm salesTableForm = SalesTableForm::construct(SalesTableFormId::None, null);
+        CustTable      custTableLocal = element.custTable_ds.cursor();
+
+        salesTableForm.parmIsRental(NoYes::Yes);
+        salesTableForm.custAccount(custTableLocal.AccountNum);
+
+        boolean created = salesTableForm.create();
+
+        if (created)
+        {
+            Args args = new Args();
+            args.record(salesTableForm.salesTable());
+            args.caller(this);
+
+            new MenuFunction(menuItemDisplayStr(SalesTableForEdit), MenuItemType::Display).run(args);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

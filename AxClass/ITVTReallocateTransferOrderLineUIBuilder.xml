@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTReallocateTransferOrderLineUIBuilder</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class creates a UI form for the <c>ITVTReallocateTransferOrderLineContract</c> contract class
+/// </summary>
+class ITVTReallocateTransferOrderLineUIBuilder extends SysOperationAutomaticUIBuilder
+{
+    DialogField targetTransferIdField;
+    DialogField targetFromInventLocationIdField;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>postBuild</Name>
+				<Source><![CDATA[
+    public void postBuild()
+    {
+        super();
+
+        targetTransferIdField = this.bindInfo().getDialogField(
+            this.dataContractObject(), 
+            methodStr(ITVTReallocateTransferOrderLineContract, parmTargetTransferId));
+
+        targetFromInventLocationIdField = this.bindInfo().getDialogField(
+            this.dataContractObject(),
+            methodStr(ITVTReallocateTransferOrderLineContract, parmTargetFromInventLocationId));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>relatedFieldSetAllowEdit</Name>
+				<Source><![CDATA[
+    private void relatedFieldSetAllowEdit(
+        str _value,
+        DialogField _dialogField)
+    {
+        if (_value)
+        {
+            _dialogField.allowEdit(false);
+            _dialogField.value('');
+        }
+        else
+        {
+            _dialogField.allowEdit(true);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postRun</Name>
+				<Source><![CDATA[
+    public void postRun()
+    {
+        super();
+        
+        targetTransferIdField.registerOverrideMethod(
+            methodstr(FormStringControl, modified),
+            methodstr(ITVTReallocateTransferOrderLineUIBuilder, targetTransferId_modified),
+            this);
+
+        targetTransferIdField.registerOverrideMethod(
+            methodstr(FormStringControl, lookup),
+            methodstr(ITVTReallocateTransferOrderLineUIBuilder, targetTransferId_lookup),
+            this);
+
+        targetFromInventLocationIdField.registerOverrideMethod(
+            methodstr(FormStringControl, modified),
+            methodstr(ITVTReallocateTransferOrderLineUIBuilder, targetFromInventLocationIdField_modified),
+            this);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>targetTransferId_modified</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Overriden modified method for Target transfer id
+    /// </summary>
+    /// <param name = "_control">An instance of form control</param>
+    /// <returns>Result of non-overriden modified method</returns>
+    public boolean targetTransferId_modified(FormStringControl _control)
+    {
+        this.relatedFieldSetAllowEdit(_control.valueStr(), targetFromInventLocationIdField);
+        return _control.modified();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>targetFromInventLocationIdField_modified</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Overriden modified method for New invent location
+    /// </summary>
+    /// <param name = "_control">An instance of form control</param>
+    /// <returns>Result of non-overriden modified method</returns>
+    public boolean targetFromInventLocationIdField_modified(FormStringControl _control)
+    {
+        this.relatedFieldSetAllowEdit(_control.valueStr(), targetTransferIdField);
+        return _control.modified();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>targetTransferId_lookup</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Overriden lookup method for Target transfer id
+    /// </summary>
+    /// <param name = "_control">An instance of form control</param>
+    public void targetTransferId_lookup(FormStringControl _control)
+    {
+        SysTableLookup              sysTableLookup = SysTableLookup::newParameters(tableNum(InventTransferTable), _control);
+        Query                       query = new Query();
+        QueryBuildDataSource        queryBuildDataSource;
+        QueryBuildRange             queryBuildRange;
+
+        sysTableLookup.addLookupfield(fieldNum(InventTransferTable, TransferId));
+        sysTableLookup.addLookupfield(fieldNum(InventTransferTable, TransferStatus));
+        sysTableLookup.addLookupfield(fieldNum(InventTransferTable, InventLocationIdFrom));
+        sysTableLookup.addLookupfield(fieldNum(InventTransferTable, InventLocationIdTo));
+        sysTableLookup.addLookupfield(fieldNum(InventTransferTable, ReceiveDate));
+
+        queryBuildDataSource = query.addDataSource(tableNum(InventTransferTable));
+
+        ITVTReallocateTransferOrderLineContract contract = this.dataContractObject();
+
+        queryBuildRange = queryBuildDataSource.addRange(fieldNum(InventTransferTable, InventLocationIdTo));
+        queryBuildRange.value(queryValue(InventTransferTable::find(contract.parmTransferId()).InventLocationIdTo));
+
+        queryBuildRange = queryBuildDataSource.addRange(fieldNum(InventTransferTable, TransferId));
+        queryBuildRange.value(SysQuery::valueNot(contract.parmTransferId()));
+
+        queryBuildRange = queryBuildDataSource.addRange(fieldNum(InventTransferTable, TransferStatus));
+        queryBuildRange.value(queryValue(InventTransferStatus::Created));
+
+        sysTableLookup.parmQuery(query);
+        sysTableLookup.performFormLookup();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineEndRentalContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The contract for the <c>ITVTRentalLineEndRentalService</c> class
+/// </summary>
+[DataContract]
+class ITVTRentalLineEndRentalContract
+{
+    TransDate                           postingDate;
+    str                                 packedQuery;
+    ITVTRentalReturnQty                 returnQty;
+    ITVTPostRentalReturn                postRentalReturn;
+   
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmPostingDate</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationDisplayOrder('1')]
+    public TransDate parmPostingDate(TransDate _postingDate = postingDate)
+    {
+        postingDate = _postingDate;
+        return postingDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmReturnQty</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationDisplayOrder('2')]
+    public ITVTRentalReturnQty parmReturnQty(ITVTRentalReturnQty _returnQty = returnQty)
+    {
+        returnQty = _returnQty;
+        return returnQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPostRentalReturn</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationControlVisibility(false)]
+    public ITVTPostRentalReturn parmPostRentalReturn(ITVTPostRentalReturn _postRentalReturn = postRentalReturn)
+    {
+        postRentalReturn = _postRentalReturn;
+        return postRentalReturn;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPackedQuery</Name>
+				<Source><![CDATA[
+    [DataMember,
+    AifQueryType('_packedQuery', '')]
+    public str parmPackedQuery(str _packedQuery = packedQuery)
+    {
+        packedQuery = _packedQuery;
+        return packedQuery;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getQuery</Name>
+				<Source><![CDATA[
+    public Query getQuery()
+    {
+        return new Query(SysOperationHelper::base64Decode(packedQuery));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setQuery</Name>
+				<Source><![CDATA[
+    public void setQuery(Query _query)
+    {
+        packedQuery = SysOperationHelper::base64Encode(_query.pack());
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

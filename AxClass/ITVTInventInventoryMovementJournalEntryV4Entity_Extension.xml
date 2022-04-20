@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventInventoryMovementJournalEntryV4Entity_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tableStr(InventInventoryMovementJournalEntryV4Entity))]
+final class ITVTInventInventoryMovementJournalEntryV4Entity_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>mapEntityToDataSource</Name>
+				<Source><![CDATA[
+    public void mapEntityToDataSource(DataEntityRuntimeContext _entityCtx, DataEntityDataSourceRuntimeContext _dataSourceCtx)
+    {
+        next mapEntityToDataSource(_entityCtx, _dataSourceCtx);
+
+        switch (_dataSourceCtx.name())
+        {
+            case dataEntityDataSourceStr(InventInventoryMovementJournalEntryV4Entity, InventDim):
+                switch (_entityCtx.getDatabaseOperation())
+                {
+                    case DataEntityDatabaseOperation::Insert:
+                    case DataEntityDatabaseOperation::Update:
+                        // Set the correct inventDimId on the table buffer.
+                        InventDim inventDim = this.InventInventoryDimensionEntityFieldsMapping::resolveInventDim();
+
+                        inventDim.InventDimension1 = this.ITVTRentalStatus;
+                        inventDim = InventDim::findOrCreate(inventDim);
+                        _dataSourceCtx.setBuffer(inventDim);
+
+                        var journalTransContext = _entityCtx.getRuntimeContextByName(dataEntityDataSourceStr(InventInventoryMovementJournalEntryV4Entity, InventJournalTrans));
+
+                        InventJournalTrans journalTrans = journalTransContext.getBuffer();
+                        this.InventInventoryJournalEntryMap::calculateCostAmount(journalTrans, inventDim);
+                        journalTrans.setInventDimId(inventDim.inventDimId);
+                        break;
+                }
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

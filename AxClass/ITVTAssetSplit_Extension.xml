@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetSplit_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension of class <c>AssetSplit</c>
+/// </summary>
+[ExtensionOf(classStr(AssetSplit))]
+final class ITVTAssetSplit_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initAssetBookFrom</Name>
+				<Source><![CDATA[
+    public void initAssetBookFrom(AssetBook _assetBook)
+    {
+        this.initInstance(_assetBook);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>journalNum</Name>
+				<Source><![CDATA[
+    public LedgerJournalId journalNum()
+    {
+        return journalNum;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

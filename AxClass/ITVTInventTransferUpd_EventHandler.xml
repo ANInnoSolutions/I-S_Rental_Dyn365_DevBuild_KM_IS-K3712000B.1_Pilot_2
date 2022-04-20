@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTransferUpd_EventHandler</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+class ITVTInventTransferUpd_EventHandler
+{
+}
+
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>runDelegateHandler</Name>
+				<Source><![CDATA[
+    [SubscribesTo(classStr(InventTransferUpd), delegateStr(InventTransferUpd, runDelegate))]
+    public static void runDelegateHandler(InventTransferJour _inventTransferJour, InventTransferTable _inventTransferTable)
+    {
+        if (_inventTransferTable.ITVTOriginSalesId
+            && _inventTransferTable.ITVTTransferOrderType == ITVTTransferOrderType::Delivery)
+        {
+            InventTransferLine inventTransferLine;
+
+            while select inventTransferLine
+                where inventTransferLine.TransferId == _inventTransferTable.TransferId
+            {
+                if (inventTransferLine.ITVTOriginInventTransId)
+                {
+                    ITVTRentalLine rentalLine = ITVTRentalLine::findInventTransId(inventTransferLine.ITVTOriginInventTransId);
+                    ITVTInventMov_RentalLine::newFromRentalLine(rentalLine,InventDirection::Issue).updateReservation();
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

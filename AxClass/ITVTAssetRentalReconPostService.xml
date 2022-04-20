@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetRentalReconPostService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Service class which posts Fixed asset journal for reconciliation
+/// </summary>
+class ITVTAssetRentalReconPostService extends SysOperationServiceBase
+{
+    AssetParameters assetParameters;
+    ITVTRentalParameters rentalParameters;
+    TmpFrmVirtual assetRentalReconProcessed;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>runPostFixedAsset</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the logic to post Fixed asset journal for reconciliation
+    /// </summary>
+    /// <param name = "_contract">The used contract</param>
+    public void runPostFixedAsset(ITVTAssetRentalReconPostContract _contract)
+    {
+        this.init();
+
+        QueryRun queryRun = new QueryRun(_contract.getQuery());
+
+        while (queryRun.next())
+        {
+            ITVTAssetRentalRecon assetRentalRecon = queryRun.get(tableNum(ITVTAssetRentalRecon));
+
+            if (_contract.parmOnlyReceiptTrans() && !assetRentalRecon.IsReceiptTrans)
+            {
+                continue;
+            }
+
+			if ((assetRentalRecon.ReceiptAmount > 0) || (assetRentalRecon.Qty < 0))
+            {
+                boolean ret = this.createFixedAssetJournal(_contract, assetRentalRecon);
+                
+                if (ret)
+                {
+                    assetRentalReconProcessed.RefRecId = assetRentalRecon.RecId;
+                    assetRentalReconProcessed.insert();
+                }
+            }
+        }
+
+        this.deleteProcessedLines();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deleteProcessedLines</Name>
+				<Source><![CDATA[
+    private void deleteProcessedLines()
+    {
+        ITVTAssetRentalRecon assetRentalRecon;
+
+        delete_from assetRentalRecon
+            exists join assetRentalReconProcessed
+            where assetRentalReconProcessed.RefRecId == assetRentalRecon.RecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    private void init()
+    {
+        assetParameters = AssetParameters::find();
+        rentalParameters = ITVTRentalParameters::find();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createFixedAsset</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// This method creates the fixed asset
+    /// </summary>
+    /// <param name = "_inventTrans">The <c>InventTrans</c> record which is used for the fixed asset creation</param>
+    protected AssetTable createFixedAsset(InventTrans _inventTrans)
+    {
+        InventTable inventTransInventTable = _inventTrans.inventTable();
+        AssetTable  assetTable;
+
+        ttsbegin; // additional tts to allow continuous number sequence (tts level must be not equal to 1)
+
+        assetTable.AssetGroup               = ITVTRentalItemAssetGroup::findByInventTable(inventTransInventTable).AssetGroupId;
+        assetTable.modifiedField(fieldNum(AssetTable, AssetGroup));
+        assetTable.AssetId                  = NumberSeq::newGetNumFromId(assetTable.assetGroup().AutoNumberSequenceTable).num();
+        assetTable.Name                     = inventTransInventTable.NameAlias;
+        assetTable.modifiedField(fieldNum(AssetTable, Name));
+        assetTable.Quantity                 = _inventTrans.Qty;
+        assetTable.UnitOfMeasure            = InventTableModule::find(_inventTrans.ItemId, ModuleInventPurchSales::Invent).UnitId;
+        assetTable.SerialNum                = _inventTrans.inventDim().inventSerialId;
+        assetTable.DefaultDimension         = InventTable::find(_inventTrans.ItemId).DefaultDimension;
+        assetTable.ITVTAssetInventTransId   = _inventTrans.inventTransOrigin().InventTransId;
+        assetTable.ITVTItemId				= _inventTrans.ItemId;
+        assetTable.insert();
+
+        ttscommit;
+
+        this.setInventFixedAssetFields(assetTable.AssetId, inventTransInventTable);
+
+        inventTransInventTable.reread();
+
+        return assetTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setInventFixedAssetFields</Name>
+				<Source><![CDATA[
+    protected void setInventFixedAssetFields(AssetId _assetId, InventTable _inventTable)
+    {
+        InventTable         inventTableForUpdate = _inventTable;
+
+        inventTableForUpdate.selectForUpdate(true);
+
+        inventTableForUpdate.ITVTFixedAssetHGBSL   = AssetBook::find(_assetId, assetParameters.BookIdDefault).ServiceLife;
+        inventTableForUpdate.ITVTFixedAssetIFRSSL  = AssetBook::find(_assetId, assetParameters.BookIdDefault).ServiceLife;
+
+        inventTableForUpdate.update();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createFixedAssetJournal</Name>
+				<Source><![CDATA[
+    protected boolean createFixedAssetJournal(
+        ITVTAssetRentalReconPostContract    _contract,
+        ITVTAssetRentalRecon                _assetRentalRecon)
+    {
+        boolean ret = true;
+        InventTrans inventTransFrom = InventTrans::findRecId(_assetRentalRecon.InventTransRefRecId);
+        InventTransOrigin inventTransOriginFrom = inventTransFrom.inventTransOrigin();
+
+        //select firstonly inventTransFrom
+        //    join inventTransOriginFrom
+        //        where inventTransOriginFrom.RecId == inventTransFrom.InventTransOrigin
+        //            && inventTransOriginFrom.InventTransId == _assetRentalRecon.InventTransId;
+        
+        if (!this.validate(_contract, _assetRentalRecon))            
+        {
+            ret = false;
+            return ret;
+        }
+
+        LedgerJournalTableData  ledgerJournalTableData = this.createLedgerJournalTable(_contract);
+        LedgerJournalTable      ledgerJournalTable = ledgerJournalTableData.journalTable();
+
+        this.createLedgerJournalTrans(
+            _contract,
+            ledgerJournalTable,
+            inventTransFrom,
+            inventTransOriginFrom,
+            _assetRentalRecon,
+            -inventTransFrom.Qty);
+
+        if (!rentalParameters.ManualPosting)
+        {
+			try
+            {
+				this.postInventJournal(ledgerJournalTable);
+            }
+			catch
+            {
+                Global::exceptionTextFallThrough();
+            }
+			
+            ledgerJournalTable.reread();
+
+			if (!ledgerJournalTable.Posted)
+			{
+				warning("@SYS69433");
+			}
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createLedgerJournalTable</Name>
+				<Source><![CDATA[
+    private LedgerJournalTableData createLedgerJournalTable(ITVTAssetRentalReconPostContract _contract)
+    {
+        ttsbegin; // additional tts is needed for correct JournalNum assignment
+
+        LedgerJournalTable      ledgerJournalTable;
+        LedgerJournalTableData  ledgerJournalTableData = JournalTableData::newTable(ledgerJournalTable);
+
+        if (ledgerJournalTableData)
+        {
+            ledgerJournalTableData.initFromJournalName(LedgerJournalName::find(_contract.parmFixedAssetJournalName()));
+        }
+
+        ledgerJournalTable.JournalNum =  ledgerJournalTableData.nextJournalId(); // assign JournalNum, so Name is not overwritten on insert
+        ledgerJournalTable.Name = _contract.parmDescription();
+        ledgerJournalTable.insert();
+
+        ttscommit;
+
+        return ledgerJournalTableData;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initLedgerJournalTrans_Asset</Name>
+				<Source><![CDATA[
+    private LedgerJournalTrans_Asset initLedgerJournalTrans_Asset(
+        AssetTransTypeJournal   _assetTransType, 
+        AssetBook               _assetBook,
+        LedgerJournalTrans      _ledgerJournalTrans)
+    {
+        // Setup LedgerJournalTrans_Asset
+        LedgerJournalTrans_Asset ledgerJournalTrans_Asset;
+
+        ledgerJournalTrans_Asset.TransType      = _assetTransType;
+        ledgerJournalTrans_Asset.AssetId        = _ledgerJournalTrans.parmAccount();
+        ledgerJournalTrans_Asset.BookId         = _assetBook.BookId;
+        ledgerJournalTrans_Asset.Company        = _ledgerJournalTrans.Company;
+
+        return ledgerJournalTrans_Asset;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createLedgerJournalTrans</Name>
+				<Source><![CDATA[
+    private void createLedgerJournalTrans(
+        ITVTAssetRentalReconPostContract    _contract,
+        LedgerJournalTable                  _ledgerJournalTable,
+        InventTrans                         _inventTrans,
+        InventTransOrigin                   _inventTransOrigin,
+        ITVTAssetRentalRecon                _assetRentalRecon,
+        Qty                                 _journalTransQty)
+    {
+        AssetTable assetTable;
+        AssetTransTypeJournal assetTransType;
+
+        if (_assetRentalRecon.Qty > 0)
+        {
+            assetTable = this.createFixedAsset(_inventTrans);
+            assetTransType = AssetTransTypeJournal::Acquisition;
+        }
+        else 
+        {
+            assetTable = AssetTable::find(_assetRentalRecon.AssetId, true);
+            if (assetTable)
+            {
+				assetTable.ITVTAssetIssueTransId = _assetRentalRecon.InventTransId;
+				assetTable.update();
+            }
+
+			assetTransType = (_inventTransOrigin.ReferenceCategory == InventTransType::Sales) ? AssetTransTypeJournal::DisposalSale : AssetTransTypeJournal::DisposalScrap;
+            
+            if (_assetRentalRecon.AssetRemainingQty > 0)
+            {
+                AssetTable assetTableNew = ITVTFixedAssetSplit::split(
+                _assetRentalRecon.AssetId,
+                _assetRentalRecon.AssetRemainingQty,
+                _contract.parmFixedAssetJournalName(),
+                _assetRentalRecon.TransDate);
+            
+                if (assetTableNew)
+                {
+					assetTableNew.selectForUpdate(true);
+					assetTableNew.ITVTAssetIssueTransId = '';
+					assetTableNew.update();
+                    
+                    ITVTAssetRentalRecon assetRentalReconWithScrappedAssetId;
+
+                    update_recordset assetRentalReconWithScrappedAssetId
+                        setting AssetId = assetTableNew.AssetId
+                        where assetRentalReconWithScrappedAssetId.RecId != _assetRentalRecon.RecId
+                            && assetRentalReconWithScrappedAssetId.AssetId == _assetRentalRecon.AssetId
+                            && assetRentalReconWithScrappedAssetId.Qty < 0;
+                }
+            }
+        }
+
+        AssetBook assetBook = AssetBook::find(assetTable.AssetId, _contract.parmAssetBookId());
+        AssetBookTable assetBookTable = assetBook.assetBookTable();
+        AssetPostToGeneralLedger postToGeneralLedger = assetBookTable.postToGeneralLedger();
+
+        LedgerJournalTrans ledgerJournalTrans = this.initLedgerJournalTrans(
+            _contract,
+            _ledgerJournalTable,
+            _inventTrans,
+            _inventTransOrigin,
+            _assetRentalRecon,
+            assetTable,
+            assetBook,
+            _journalTransQty);
+
+        LedgerJournalTrans_Asset ledgerJournalTrans_Asset = this.initLedgerJournalTrans_Asset(
+            assetTransType, 
+            assetBook,
+            ledgerJournalTrans);
+
+        LedgerJournalEngine ledgerJournalEngine = new LedgerJournalEngine();
+
+        ledgerJournalTrans.OffsetAccountType = LedgerJournalACType::Ledger;
+        ledgerJournalTrans.parmOffsetLedgerDimension(ledgerJournalEngine.findOffsetLedgerDimension(ledgerJournalTrans, ledgerJournalTrans_Asset));
+
+        ledgerJournalTrans.insert();
+        
+        ledgerJournalTrans_Asset.RefRecId = ledgerJournalTrans.RecId;
+        ledgerJournalTrans_Asset.insert();
+
+        LedgerJournalEngine::createDefsForAssetBookTableDerivedJourn(ledgerJournalTrans, ledgerJournalTrans_Asset);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initLedgerJournalTrans</Name>
+				<Source><![CDATA[
+    private LedgerJournalTrans initLedgerJournalTrans(
+        ITVTAssetRentalReconPostContract    _contract,
+        LedgerJournalTable                  _ledgerJournalTable,
+        InventTrans                         _inventTrans,
+        InventTransOrigin                   _inventTransOrigin,
+        ITVTAssetRentalRecon                _assetRentalRecon,
+        AssetTable                          _assetTable,
+        AssetBook                           _assetBook,
+        Qty                                 _journalTransQty)
+    {
+        LedgerJournalTrans ledgerJournalTrans;
+        ledgerJournalTrans.initValue();
+
+        ledgerJournalTrans.JournalNum           = _ledgerJournalTable.JournalNum;
+        ledgerJournalTrans.TransDate            = _assetRentalRecon.TransDate;
+        JournalVoucherNum journalVoucherNum = new JournalVoucherNum(JournalTableData::newTable(_ledgerJournalTable));
+        Voucher voucher = journalVoucherNum.getNew(true);
+
+        ledgerJournalTrans.Voucher              = voucher;
+
+        Amount amountCurDebit;
+
+        if (_assetRentalRecon.Qty > 0)
+        {
+            amountCurDebit = _assetRentalRecon.ReceiptAmount;
+        }
+        else
+        {
+            amountCurDebit = 0;
+        }
+        
+        ledgerJournalTrans.parmAccount(_assetTable.AssetId, LedgerJournalACType::FixedAssets);
+        ledgerJournalTrans.DefaultDimension     = _inventTrans.inventTransPostingFinancial().DefaultDimension;
+        
+        ledgerJournalTrans.PostingProfile       = _assetTable.postingProfile(_assetBook.BookId);
+        ledgerJournalTrans.TransactionType      = LedgerTransType::FixedAssets;
+        ledgerJournalTrans.CurrencyCode         = Ledger::accountingCurrency();
+        ledgerJournalTrans.AmountCurDebit       = CurrencyExchangeHelper::amount(amountCurDebit, ledgerJournalTrans.CurrencyCode);
+        ledgerJournalTrans.ExchRate             = ExchangeRateHelper::exchRate(ledgerJournalTrans.CurrencyCode, ledgerJournalTrans.TransDate);
+        ledgerJournalTrans.Txt                  = strFmt("@ITVTRental:RentalNum", _assetRentalRecon.AssetId);
+        ledgerJournalTrans.Company              = curext();
+
+        return ledgerJournalTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postInventJournal</Name>
+				<Source><![CDATA[
+    private void postInventJournal(LedgerJournalTable _ledgerJournalTable)
+    {
+        LedgerJournalCheckPost ledgerJournalPost = LedgerJournalCheckPost::construct(_ledgerJournalTable.JournalType);
+
+        ledgerJournalPost.parmJournalNum(_ledgerJournalTable.JournalNum);
+        ledgerJournalPost.parmPost(true);
+        ledgerJournalPost.parmTransferErrors(false);
+        ledgerJournalPost.runOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    private boolean validate(ITVTAssetRentalReconPostContract _contract,
+                                ITVTAssetRentalRecon _ITVTAssetRentalRecon)
+    {        
+        _ITVTAssetRentalRecon.reread();
+
+        AssetTable  assetTable = AssetTable::find(_ITVTAssetRentalRecon.AssetId);
+        AssetBook   assetBook = AssetBook::find(assetTable.AssetId, _contract.parmAssetBookId());
+        boolean     ret = true;
+        
+        if (!_ITVTAssetRentalRecon.IsReceiptTrans && 
+            (assetBook.DisposalDate || assetTable.Quantity != _ITVTAssetRentalRecon.AssetQty))
+        {
+            ret = checkFailed(strFmt("@ITVTRental:PostNotAllowed", assetTable.AssetId));
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

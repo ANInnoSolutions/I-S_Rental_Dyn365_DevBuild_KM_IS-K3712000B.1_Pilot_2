@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTransferUpd_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension for class <c>InventTransferUpd</c>
+/// </summary>
+[ExtensionOf(classStr(InventTransferUpd))]
+final class ITVTInventTransferUpd_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs Start rental after the standard process
+    /// </summary>
+    void run()
+    {
+        next run();
+
+        if ((inventTransferParmTable.UpdateType == InventTransferUpdateType::Receive
+            || (inventTransferParmTable.UpdateType == InventTransferUpdateType::Shipment && inventTransferParmTable.AutoReceiveQty))
+           )
+        {
+            ttsbegin;
+
+            if (this.mustStartRentalLines())
+            {
+                this.runStartRentalLines();
+            }
+
+            if (this.mustAddDeliveryQuantity())
+            {
+                this.addDeliveryQuantity();
+            }
+
+            if (this.mustSubtractReturnQuantity())
+            {
+                this.subtractReturnQuantity();
+            }
+
+            ttscommit;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addDeliveryQuantity</Name>
+				<Source><![CDATA[
+    private void addDeliveryQuantity()
+    {
+        InventTransferLine inventTransferLineLocal;
+        InventTransferJourLine inventTransferJourLineLocal;
+        ITVTRentalLine rentalLine;
+        SalesTable salesTable;
+        Set salesTableUpdated = new Set(Types::String);
+
+        while select forupdate rentalLine
+            join inventTransferLineLocal
+                where inventTransferLineLocal.ITVTOriginInventTransId == rentalLine.InventTransId
+                    && inventTransferLineLocal.TransferId == inventTransferJour.TransferId
+            join inventTransferJourLineLocal
+                where ((inventTransferParmTable.UpdateType == InventTransferUpdateType::Receive
+                    && inventTransferJourLineLocal.InventTransId == inventTransferLineLocal.InventTransIdReceive)
+                    || (inventTransferParmTable.UpdateType == InventTransferUpdateType::Shipment
+                        && inventTransferJourLineLocal.InventTransId == inventTransferLineLocal.InventTransId))
+                    && inventTransferJourLineLocal.TransferId == inventTransferJour.TransferId
+                    && inventTransferJourLineLocal.VoucherId == inventTransferJour.VoucherId
+            join forupdate salesTable 
+                where salesTable.SalesId == rentalLine.SalesId
+        {
+            rentalLine.PendingReturnQuantity += inventTransferJourLineLocal.QtyReceived;
+            rentalLine.update();
+
+            if (!salesTableUpdated.in(salesTable.SalesId))
+            {
+                salesTable.ITVTIsPendingReturn = NoYes::Yes;
+                salesTable.update();
+
+                salesTableUpdated.add(salesTable.SalesId);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>subtractReturnQuantity</Name>
+				<Source><![CDATA[
+    private void subtractReturnQuantity()
+    {
+        InventTransferLine inventTransferLineLocal;
+        InventTransferJourLine inventTransferJourLineLocal;
+        ITVTRentalLine rentalLine;
+
+        while select forupdate rentalLine
+            join inventTransferLineLocal
+                where inventTransferLineLocal.ITVTOriginInventTransId == rentalLine.InventTransId
+                    && inventTransferLineLocal.TransferId == inventTransferJour.TransferId
+            join inventTransferJourLineLocal
+                where ((inventTransferParmTable.UpdateType == InventTransferUpdateType::Receive
+                    && inventTransferJourLineLocal.InventTransId == inventTransferLineLocal.InventTransIdReceive)
+                    || (inventTransferParmTable.UpdateType == InventTransferUpdateType::Shipment
+                        && inventTransferJourLineLocal.InventTransId == inventTransferLineLocal.InventTransId))
+                    && inventTransferJourLineLocal.TransferId == inventTransferJour.TransferId
+                    && inventTransferJourLineLocal.VoucherId == inventTransferJour.VoucherId
+        {
+            rentalLine.PendingReturnQuantity = max(0, rentalLine.PendingReturnQuantity - inventTransferJourLineLocal.QtyReceived);
+            rentalLine.update();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustStartRentalLines</Name>
+				<Source><![CDATA[
+    private boolean mustStartRentalLines()
+    {
+        return inventTransferTable.ITVTRentalPostStartEnd
+            && inventTransferTable.ITVTOriginSalesId
+            && InventLocation::find(inventTransferTable.InventLocationIdTo).ITVTIsRentalInventLocation
+            && (inventTransferTable.ITVTTransferOrderType == ITVTTransferOrderType::Delivery);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustAddDeliveryQuantity</Name>
+				<Source><![CDATA[
+    private boolean mustAddDeliveryQuantity()
+    {
+        return inventTransferTable.ITVTOriginSalesId
+            && (inventTransferTable.ITVTTransferOrderType == ITVTTransferOrderType::Delivery);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustSubtractReturnQuantity</Name>
+				<Source><![CDATA[
+    private boolean mustSubtractReturnQuantity()
+    {
+        return inventTransferTable.ITVTOriginSalesId
+            && (inventTransferTable.ITVTTransferOrderType == ITVTTransferOrderType::Return);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runStartRentalLines</Name>
+				<Source><![CDATA[
+    private void runStartRentalLines()
+    {
+        InventTransferLine inventTransferLineLocal;
+        InventTransferJourLine inventTransferJourLineLocal;
+        ITVTRentalLine rentalLine;
+        List rentalLines = new List(Types::Record);
+
+        while select inventTransferLineLocal
+            where inventTransferLineLocal.TransferId == inventTransferJour.TransferId
+            join inventTransferJourLineLocal
+                where ((inventTransferParmTable.UpdateType == InventTransferUpdateType::Receive 
+                    && inventTransferJourLineLocal.InventTransId == inventTransferLineLocal.InventTransIdReceive)
+                    || (inventTransferParmTable.UpdateType == InventTransferUpdateType::Shipment
+                        && inventTransferJourLineLocal.InventTransId == inventTransferLineLocal.InventTransId))
+                    && inventTransferJourLineLocal.TransferId == inventTransferJour.TransferId
+                    && inventTransferJourLineLocal.VoucherId == inventTransferJour.VoucherId
+                join rentalLine
+                    where rentalLine.InventTransId == inventTransferLineLocal.ITVTOriginInventTransId
+        {
+            if (inventTransferJourLineLocal.QtyReceived == rentalLine.Qty)
+            {
+                rentalLines.addEnd(rentalLine);
+            }
+            else
+            {
+                Message::Add(MessageSeverity::Warning,
+                    strFmt("@ITVTRental:StartRentalNotPossibleForTOLine", inventTransferLineLocal.LineNum, inventTransferLineLocal.ItemId));
+            }
+        }
+
+        if (rentalLines.elements())
+        {
+            ITVTRentalLineStartRentalController::runStartRentalFromContainer(rentalLines.pack(), inventTransferJour.TransDate);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

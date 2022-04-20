@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPurchRFQCaseLineTable_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tableStr(PurchRFQCaseLine))]
+final class ITVTPurchRFQCaseLineTable_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initFromInventTable</Name>
+				<Source><![CDATA[
+    public void initFromInventTable(InventTable inventTable, boolean _executeOnlyIfProductIsFullySpecified)
+    {
+        next initFromInventTable(inventTable, _executeOnlyIfProductIsFullySpecified);
+        
+        if (this.rentalDimensionIsActive()
+            && ITVTRentalParameters::getInventDimDefaultValue(tableNum(PurchLine)))
+        {
+            InventDim inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), tableNum(PurchLine));
+            this.InventDimId = inventDim.InventDimId;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateField</Name>
+				<Source><![CDATA[
+    public boolean validateField(FieldId _fieldIdToCheck)
+    {
+        boolean ret;
+
+        ret = next validateField(_fieldIdToCheck);
+
+        switch (_fieldIdToCheck)
+        {
+            case fieldNum(PurchRFQCaseLine, ItemId):
+                // Code disabled based on customer's requirement 16.9.2021:
+                /*
+                if (!this.validateRentalDimension())
+                {
+                    EcoResProductDimGroupSetup productDimSetup = EcoResProductDimGroupSetup::newItemId(this.ItemId);
+                    InventDim inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), tableNum(PurchLine));
+                    ret = checkFailed(strFmt("@SYS73899", inventDim.preFixProductDim(productDimSetup), this.ItemId));
+                }
+				*/
+                break;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateRentalDimension</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates that Rental dimension could be applied for current Item
+    /// </summary>
+    /// <returns>true if Rental dimension could be applied, otherwise false</returns>
+    public boolean validateRentalDimension()
+    {
+        boolean ret = true;
+
+        if (this.rentalDimensionIsActive()
+            && ITVTRentalParameters::getInventDimDefaultValue(tableNum(PurchLine)))
+        {
+            InventDim   inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), tableNum(PurchLine));
+
+            if (!InventDimCombination::existByInventDim(this.ItemId, inventDim))
+            {
+                ret = false;
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalDimensionIsActive</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks whether Rental dimension from Rental parameters is active for Item
+    /// </summary>
+    /// <returns>true if Rental dimension is active, otherwise false</returns>
+    public boolean rentalDimensionIsActive()
+    {
+        return this.ItemId && this.inventTable().ITVTIsRentalItem && ITVTRentalParameters::rentalInventDimFieldActiveForItem(this.ItemId);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

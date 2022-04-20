@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliverNowService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Updates Deliver now quantity in Rental lines
+/// </summary>
+class ITVTRentalLineDeliverNowService extends SysOperationServiceBase
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>deactivateDeliverNow</Name>
+				<Source><![CDATA[
+    public void deactivateDeliverNow(ITVTRentalLineDeliverNowContract _contract)
+    {
+        QueryRun queryRun = new QueryRun(_contract.getQuery());
+
+        ttsbegin;
+
+        while (queryRun.next())
+        {
+            ITVTRentalLine rentalLine = queryRun.get(tableNum(ITVTRentalLine));
+
+            rentalLine.selectForUpdate(true);
+            rentalLine.DeliverNow = 0;
+            rentalLine.update();
+        }
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deliverNowFromQty</Name>
+				<Source><![CDATA[
+    public void deliverNowFromQty(ITVTRentalLineDeliverNowContract _contract)
+    {
+        QueryRun queryRun = new QueryRun(_contract.getQuery());
+
+        ttsbegin;
+
+        while (queryRun.next())
+        {
+            ITVTRentalLine rentalLine = queryRun.get(tableNum(ITVTRentalLine));
+
+            if (rentalLine.DeliverNow == 0)
+            {
+                rentalLine.selectForUpdate(true);
+                rentalLine.DeliverNow = rentalLine.Qty;
+                rentalLine.update();
+            }
+        }
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPostRentalReturnController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The class controller for operating with the <c>ITVTPostRentalReturnService</c> class
+/// </summary>
+class ITVTPostRentalReturnController extends SysOperationServiceController
+{
+    }
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTPostRentalReturnService));
+        this.parmMethodName(methodStr(ITVTPostRentalReturnService, runPostRentalReturn));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:PostRentalReturn";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runSalesOrder</Name>
+				<Source><![CDATA[
+    public static void runSalesOrder(
+        SalesId                                     _salesId,
+        TransDate                                   _postingDate,
+        InventLocationIdTo                          _inventLocationTo,
+        WMSLocationId                               _wmsLocationId,
+        ITVTRentalRunForOpenPeriods                 _rentalRunForOpenPeriods,
+        ITVTUseConfirmedRentalEndDateForEndRental   _useConfirmedRentalEndDateForEndRental)
+    {
+        ITVTPostRentalReturnController controller = new ITVTPostRentalReturnController();
+        
+        controller.initContract(
+             _salesId,
+             _postingDate,
+             _inventLocationTo,
+             _wmsLocationId,
+             _rentalRunForOpenPeriods,
+            _useConfirmedRentalEndDateForEndRental);
+
+        controller.runOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract(
+        SalesId                                     _salesId,
+        TransDate                                   _postingDate,
+        InventLocationIdTo                          _inventLocationTo,
+        WMSLocationId                               _wmsLocationId,
+        ITVTRentalRunForOpenPeriods                 _rentalRunForOpenPeriods,
+        ITVTUseConfirmedRentalEndDateForEndRental   _useConfirmedRentalEndDateForEndRental)
+    {
+        ITVTPostRentalReturnContract contract = this.getDataContractObject() as ITVTPostRentalReturnContract;
+
+        contract.parmSalesId(_salesId);
+        contract.parmPostingDate(_postingDate);
+        contract.parmInventLocationTo(_inventLocationTo);
+        contract.parmWmsLocationId(_wmsLocationId);
+        contract.parmRentalRunForOpenPeriods(_rentalRunForOpenPeriods);
+        contract.parmUseConfirmedRentalEndDateForEndRental(_useConfirmedRentalEndDateForEndRental);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

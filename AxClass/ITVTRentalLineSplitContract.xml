@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineSplitContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The contract for the <c>ITVTRentalLineSplitService</c> class
+/// </summary>
+[DataContract,
+    SysOperationContractProcessing(classStr(ITVTRentalLineSplitUIBuilder)),
+    SysOperationAlwaysInitialize]
+class ITVTRentalLineSplitContract implements SysOperationValidatable, SysOperationInitializable
+{
+    InventTransId               inventTransId;
+    InventQty                   splitQty;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmInventTransId</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationDisplayOrder('1')]
+    public InventTransId parmInventTransId(InventTransId _inventTransId = inventTransId)
+    {
+        inventTransId = _inventTransId;
+        return inventTransId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmSplitQty</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationDisplayOrder('2'),
+        SysOperationLabel("@SYS19602")]
+    public InventQty parmSplitQty(InventQty _splitQty = splitQty)
+    {
+        splitQty = _splitQty;
+        return splitQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    public boolean validate()
+    {
+        boolean ret = true;
+
+        ITVTRentalLine rentalLine = ITVTRentalLine::findInventTransId(inventTransId);
+
+        if (splitQty >= rentalLine.Qty || splitQty <= 0)
+        {
+            ret = checkFailed("@SYS13895");
+        }
+
+        if (rentalLine.PostedRentalFromDate)
+        {
+            ret = checkFailed("@ITVTRental:RentalLineIsAlreadyRented");
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initialize</Name>
+				<Source><![CDATA[
+    public void initialize()
+    {
+        splitQty = 1.0;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

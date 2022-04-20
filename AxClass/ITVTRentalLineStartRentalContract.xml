@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineStartRentalContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The contract for the <c>ITVTRentalLineStartRentalService</c> class
+/// </summary>
+[
+    DataContract,
+    SysOperationContractProcessing(classStr(ITVTRentalLineStartRentalUIBuilder))
+]
+class ITVTRentalLineStartRentalContract
+{
+    TransDate                           postingDate;
+    str                                 packedQuery;
+    NoYes                               rentalQtyToAvailQty;
+    NoYes                               newRentalLineForUnavailQty;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmPostingDate</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationDisplayOrder('1')]
+    public TransDate parmPostingDate(TransDate _postingDate = postingDate)
+    {
+        postingDate = _postingDate;
+        return postingDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmRentalQtyToAvailQty</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationDisplayOrder('2'),
+        SysOperationLabel("@ITVTRental:RentalQtyToAvailQty")]
+    public NoYes parmRentalQtyToAvailQty(NoYes _rentalQtyToAvailQty = rentalQtyToAvailQty)
+    {
+        rentalQtyToAvailQty = _rentalQtyToAvailQty;
+        return rentalQtyToAvailQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmNewRentalLineForUnavailQty</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationDisplayOrder('3'),
+        SysOperationLabel("@ITVTRental:NewRentalLineForUnavailQty")]
+    public NoYes parmNewRentalLineForUnavailQty(NoYes _newRentalLineForUnavailQty = newRentalLineForUnavailQty)
+    {
+        newRentalLineForUnavailQty = _newRentalLineForUnavailQty;
+        return newRentalLineForUnavailQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPackedQuery</Name>
+				<Source><![CDATA[
+    [DataMember,
+    AifQueryType('_packedQuery', '')]
+    public str parmPackedQuery(str _packedQuery = packedQuery)
+    {
+        packedQuery = _packedQuery;
+        return packedQuery;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getQuery</Name>
+				<Source><![CDATA[
+    public Query getQuery()
+    {
+        return new Query(SysOperationHelper::base64Decode(packedQuery));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setQuery</Name>
+				<Source><![CDATA[
+    public void setQuery(Query _query)
+    {
+        packedQuery = SysOperationHelper::base64Encode(_query.pack());
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

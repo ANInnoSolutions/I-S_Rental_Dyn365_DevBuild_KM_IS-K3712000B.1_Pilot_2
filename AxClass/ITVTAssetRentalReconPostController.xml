@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetRentalReconPostController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Controller class for <c>ITVTAssetRentalReconPostService</c> service
+/// </summary>
+class ITVTAssetRentalReconPostController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTAssetRentalReconPostService));
+        this.parmMethodName(methodStr(ITVTAssetRentalReconPostService, runPostFixedAsset));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTAssetRentalReconPostController controller = new ITVTAssetRentalReconPostController();
+
+        controller.initContract(_args);
+        controller.parmShowDialog(true);
+        controller.startOperation();
+
+        if (!controller.isInBatch()
+            && _args.caller()
+            && _args.caller() is FormRun
+            && _args.record())
+        {
+            FormObjectSet ds = FormDataUtil::getFormDataSource(_args.record());
+
+            if (ds)
+            {
+                ds.research(true);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract(Args _args)
+    {
+        ITVTAssetRentalReconPostContract contract = this.getDataContractObject();
+        Query query = new Query();
+        QueryBuildDataSource qbdsAssetRentalRecon = query.addDataSource(tableNum(ITVTAssetRentalRecon));
+
+        if (_args
+            && _args.caller() is FormRun
+            && _args.record())
+        {
+            MultiSelectionHelper multiselectionHelper = MultiSelectionHelper::createFromCaller(_args.caller());
+            ITVTAssetRentalRecon assetRentalRecon = multiselectionHelper.getFirst();
+
+            while (assetRentalRecon)
+            {
+                qbdsAssetRentalRecon.addRange(fieldNum(ITVTAssetRentalRecon, RecId)).value(queryValue(assetRentalRecon.RecId));
+                assetRentalRecon = multiselectionHelper.getNext();
+            }
+        }
+
+        contract.setQuery(query);
+
+        ITVTRentalParameters	itvtRentalParameters	= ITVTRentalParameters::find();
+        AssetParameters			assetParameters			= AssetParameters::find();
+
+        contract.parmFixedAssetJournalName(itvtRentalParameters.RentalDispatchJournalName);
+        contract.parmAssetBookId(assetParameters.BookIdDefault);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:PostFixedAssetJournalRecon";
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

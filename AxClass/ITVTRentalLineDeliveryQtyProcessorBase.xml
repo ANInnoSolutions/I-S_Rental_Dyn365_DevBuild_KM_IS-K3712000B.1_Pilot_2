@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliveryQtyProcessorBase</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Thisabstract class implements common logic for delivery quantites processing
+/// </summary>
+abstract class ITVTRentalLineDeliveryQtyProcessorBase
+{
+    Query                       rentalLinesQuery;
+
+    InventLocationId            fromWarehouseId, toWarehouseId;
+    InventLocationId            warehouseIdMain;
+    InventTransferShipDate      shipDate;
+
+    ITVTRentalDeliveryQty       deliveryQty;
+
+    ITVTRentalReturnQty         returnQty;
+    ITVTClosePendingReturn      closePendingReturn;
+    ITVTOnlyHeader              onlyHeader;
+
+    InventTransferTable         inventTransferTable;
+
+    RecordInsertList            inventTransferLinesInsertList;
+    ITVTRentalTransferOrderTmp  rentalTransferOrderTmp;
+
+    Counter                     inventTransferLineNum;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    public static ITVTRentalLineDeliveryQtyProcessorBase construct(ITVTRentalLineDeliveryOperation _rentalDeliveryOperationName)
+    {
+        ITVTRentalLineDeliveryQtyProcessorAttribute attribute = new ITVTRentalLineDeliveryQtyProcessorAttribute(_rentalDeliveryOperationName);
+
+        ITVTRentalLineDeliveryQtyProcessorBase ret = SysExtensionAppClassFactory::getClassFromSysAttribute(classStr(ITVTRentalLineDeliveryQtyProcessorBase),
+                                                                                                           attribute);
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>constructFromContract</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates and initializes correct instance of <c>ITVTRentalLineDeliveryQtyProcessorBase</c>
+    /// </summary>
+    /// <param name = "_contract">Data contract for operation</param>
+    /// <returns>An instance of <c>ITVTRentalLineDeliveryQtyProcessorBase</c></returns>
+    public static ITVTRentalLineDeliveryQtyProcessorBase constructFromContract(ITVTRentalLineDeliveryQtyProcessorContract _contract)
+    {
+        ITVTRentalLineDeliveryQtyProcessorBase ret = ITVTRentalLineDeliveryQtyProcessorBase::construct(_contract.parmRentalLineDeliveryOperation());
+        ret.initFromContract(_contract);
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromContract</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes variables from data contract
+    /// </summary>
+    /// <param name = "_contract">Data contract for operation</param>
+    protected void initFromContract(ITVTRentalLineDeliveryQtyProcessorContract _contract)
+    {
+        rentalLinesQuery = _contract.getQuery();
+        warehouseIdMain = _contract.parmInventLocationId();
+        shipDate = _contract.parmShipDate();
+        deliveryQty = _contract.parmDeliveryQty();
+        returnQty = _contract.parmReturnQty();
+        closePendingReturn = _contract.parmClosePendingReturn();
+        onlyHeader = _contract.parmOnlyHeader();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It initializes internal collections
+    /// </summary>
+    protected void init()
+    {
+        inventTransferLinesInsertList   = new RecordInsertList(tableNum(InventTransferLine));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deliverQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Deliver the specific quantity to a transfer order
+    /// </summary>
+    [
+        SuppressBPWarning('BPErrorUnknownLabel', 'The label is specified in a label file'),
+        SuppressBPWarning('BPUnusedStrFmtArgument', 'All placeholder have been used')
+    ] 
+    public void deliverQty()
+    {
+        try
+        {
+            this.init();
+
+            ttsbegin;
+
+            ITVTRentalLine              rentalLineLocal;
+            QueryRun                    queryRun = new QueryRun(rentalLinesQuery);
+            SalesId                     currentSalesId;
+
+            while (queryRun.next())
+            {
+                rentalLineLocal = queryRun.get(tableNum(ITVTRentalLine));
+
+                this.validatePostedRentalFromDate(rentalLineLocal.PostedRentalFromDate);
+
+                [fromWarehouseId, toWarehouseId]= this.getInventTransferOrderWarehouses(rentalLineLocal);
+
+                this.validateMainWarehouse();
+
+                if (!toWarehouseId
+                    || !fromWarehouseId)
+                {
+                    Message::Add(MessageSeverity::Warning, strFmt("@ITVTRental:RentalLineMissingLocation", rentalLineLocal.LineNum, rentalLineLocal.ItemId));
+                    continue;
+                }
+
+                if (toWarehouseId == fromWarehouseId)
+                {
+                    Message::Add(MessageSeverity::Warning, strFmt("@ITVTRental:RentalLineWarehouse", rentalLineLocal.LineNum, rentalLineLocal.ItemId, fromWarehouseId));
+                    continue;
+                }
+
+                this.validateShippingDate(rentalLineLocal);
+            
+                if (this.isPartialTransfer()
+                    && this.rentalLinePartialQty(rentalLineLocal) <= 0)
+                {
+                    continue;
+                }
+
+                Qty lineTransferedQty = this.transferedQty(rentalLineLocal);
+
+                if (lineTransferedQty)
+                {
+                    Message::Add(MessageSeverity::Warning, strFmt("@ITVTRental:RentalLineTOExists", rentalLineLocal.SalesId, rentalLineLocal.LineNum));
+                }
+                
+                if (lineTransferedQty < rentalLineLocal.Qty)
+                {
+                    if (this.rentalLineWarehouseIdSplitBy() != this.transferOrderTableWarehouseIdSplitBy()
+                        || rentalLineLocal.SalesId != currentSalesId)
+                    {
+                        inventTransferTable = this.findTransferOrder(rentalLineLocal.SalesId, this.rentalLineWarehouseIdSplitBy());
+
+                        if (!inventTransferTable)
+                        {
+                            this.createInventTransferOrder(rentalLineLocal);
+                            this.insertRentalTransferOrder(rentalLineLocal.SalesId, this.rentalLineWarehouseIdSplitBy(), inventTransferTable.TransferId);
+                        }
+                    }
+  
+                    if (this.mustCreateTransferLine())
+                    {
+                        this.createInventTransferLine(rentalLineLocal);
+                    }
+                }
+
+                currentSalesId = rentalLineLocal.SalesId;
+            }
+
+            inventTransferLinesInsertList.insertDatabase();
+
+            while select rentalTransferOrderTmp
+            {
+                //disable an automatic posting logic
+                //this.postInventTransferOrder(InventTransferTable::find(se.current()));
+                Message::Add(MessageSeverity::Informational, strFmt("@ITVTRental:TransferOrderWasCreated", rentalTransferOrderTmp.TransferId));
+            }
+
+            ttscommit;
+        }
+        catch
+        {
+            throw error("@Customization:ProcessAborted");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findTransferOrder</Name>
+				<Source><![CDATA[
+    private InventTransferTable findTransferOrder(
+        SalesId             _salesId,
+        InventLocationId    _inventLocationId)
+    {
+        select firstonly TransferId from rentalTransferOrderTmp
+            where rentalTransferOrderTmp.SalesId == _salesId
+                && rentalTransferOrderTmp.InventLocationId == _inventLocationId;
+
+        return InventTransferTable::find(rentalTransferOrderTmp.TransferId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insertRentalTransferOrder</Name>
+				<Source><![CDATA[
+    private void insertRentalTransferOrder(
+        SalesId             _salesId,
+        InventLocationId    _inventLocationId,
+        InventTransferId    _transferId)
+    {
+        rentalTransferOrderTmp.clear();
+
+        rentalTransferOrderTmp.SalesId = _salesId;
+        rentalTransferOrderTmp.InventLocationId = _inventLocationId;
+        rentalTransferOrderTmp.TransferId = _transferId;
+
+        rentalTransferOrderTmp.insert();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalLineWarehouseIdSplitBy</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the value of warehouse from rental line by which transfer orders are splitted
+    /// </summary>
+    /// <returns>Warehouse from rental line</returns>
+    abstract protected InventLocationId rentalLineWarehouseIdSplitBy() {}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transferOrderTableWarehouseIdSplitBy</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the value of warehouse from transfer order by which transfer orders are splitted
+    /// </summary>
+    /// <returns>Warehouse from transfer order</returns>
+    abstract protected InventLocationId transferOrderTableWarehouseIdSplitBy() {}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validatePostedRentalFromDate</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates rental from date
+    /// </summary>
+    /// <param name = "_postedRentalFromDate">Rental from date</param>
+    abstract protected void validatePostedRentalFromDate(ITVTPostedRentalFromDate _postedRentalFromDate) {}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateMainWarehouse</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates warehouse from dialog
+    /// </summary>
+    abstract protected void validateMainWarehouse() {}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateShippingDate</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates shipping date on rental line
+    /// </summary>
+    /// <param name = "_rentalLine">An buffer of <c>ITVTRentalLine</c></param>
+    abstract protected void validateShippingDate(ITVTRentalLine _rentalLine) {}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>transferedQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Calculates the quantity that was already included in Transfered orders for the specified Rental line
+    /// </summary>
+    /// <param name = "_rentalLine">A buffer of <c>ITVTRentalLine</c></param>
+    /// <returns>Quantity included in Transfered orders</returns>
+    abstract protected Qty transferedQty(ITVTRentalLine _rentalLine) {}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalLineWarehouseIsRental</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks whether warehouse in Rental line is Rental
+    /// </summary>
+    /// <param name = "_rentalLine">A buffer of <c>ITVTRentalLine</c></param>
+    /// <returns>true if warehouse is setup as Rental, otherwise false</returns>
+    protected boolean rentalLineWarehouseIsRental(ITVTRentalLine _rentalLine) 
+    {
+        return _rentalLine.inventDim().inventLocation().ITVTIsRentalInventLocation;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>mustCreateTransferLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks whether Transfer order line must be created
+    /// </summary>
+    /// <returns>true if Transfer order line must be created, otherwise false</returns>
+    abstract protected boolean mustCreateTransferLine()
+    {
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventTransferOrder</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It creates an invent transfer order
+    /// </summary>
+    /// <param name = "_rentalLine">A buffer of <c>ITVTRentalLine</c></param>
+    protected void createInventTransferOrder(ITVTRentalLine _rentalLine)
+    {
+        inventTransferTable.clear();
+        inventTransferTable.initValue();
+        inventTransferTable.TransferId              = InventTransferTable::numberSeq().num();
+        inventTransferTable.InventLocationIdFrom    = fromWarehouseId;
+        inventTransferTable.modifiedField(fieldNum(InventTransferTable, InventLocationIdFrom));
+        inventTransferTable.InventLocationIdTo      = toWarehouseId;
+        inventTransferTable.modifiedField(fieldNum(InventTransferTable, InventLocationIdTo));
+        inventTransferTable.ShipDate                = shipDate;
+        inventTransferTable.modifiedField(fieldNum(InventTransferTable, ShipDate));
+        // inventTransferTable.ReceiveDate				= shipDate;
+        inventTransferTable.ITVTTransferOrderType   = this.getInventTransferOrderType();
+        inventTransferTable.ITVTOriginSalesId       = _rentalLine.SalesId;
+
+        inventTransferTable.AutoReservation         = _rentalLine.RentalOrderAutoReservation;
+        inventTransferTable.DlvModeId				= _rentalLine.salesTable().DlvMode;
+
+        if (this.rentalLineWarehouseIsRental(_rentalLine)
+            && ITVTRentalParameters::find().StartEndRentalReceiptShip)
+        {
+            inventTransferTable.ITVTRentalPostStartEnd = NoYes::Yes;
+        }
+
+        if (inventTransferTable.validateWrite())
+        {
+            inventTransferTable.insert();
+        }
+
+        inventTransferLineNum = 1;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postInventTransferOrder</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It posts the created invent transfer order
+    /// </summary>
+    /// <param name = "_postingInventTransferTable">The created transfer order</param>
+    protected void postInventTransferOrder(InventTransferTable _postingInventTransferTable)
+    {
+        InventTransferMultiShip     inventTransferMultiShip = InventTransferMultiShip::construct();
+        RunBaseMultiParm::initParm(inventTransferMultiShip);
+
+        ttsbegin;
+
+        InventTransferParmTable     inventTransferParmTable;
+        inventTransferParmTable.initValue();
+        inventTransferParmTable.TransferId      = _postingInventTransferTable.TransferId;
+        inventTransferParmTable.ParmId          = inventTransferMultiShip.parmId();
+        inventTransferMultiShip.initParmBuffer(inventTransferParmTable);
+        inventTransferParmTable.UpdatedByWorker = HcmWorker::findByPerson(DirPersonUser::current().PersonParty).RecId;
+        inventTransferParmTable.ShipUpdateQty   = InventTransferShipUpdateQty::All;
+
+        inventTransferParmTable.createLines(NoYes::Yes);
+
+        inventTransferParmTable.insert();
+
+        inventTransferMultiShip.runUpdate(inventTransferParmTable);
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventTransferLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It creates a invent transfer order line based on the <c>ITVTRentalLine</c> record
+    /// </summary>
+    /// <param name = "_rentalLine">The <c>ITVTRentalLine</c> buffer</param>
+    /// <returns>The invent transfer line's quantity</returns>
+    protected Qty createInventTransferLine(ITVTRentalLine _rentalLine)
+    {
+        InventTransferLine inventTransferLine;
+
+        inventTransferLine.clear();
+        inventTransferLine.initValue();
+        inventTransferLine.ItemId = _rentalLine.ItemId;
+        inventTransferLine.initFromInventTransferTable(inventTransferTable, false);
+        inventTransferLine.initFromInventTable(_rentalLine.inventTable());
+        inventTransferLine.modifiedField(fieldNum(InventTransferLine, ItemId));
+
+        inventTransferLine.InventDimId = this.initInventDim(inventTransferLine, _rentalLine).inventDimId;
+
+        this.setTransferQty(inventTransferLine, _rentalLine);
+        inventTransferLine.QtyRemainShip            = inventTransferLine.QtyTransfer;
+        inventTransferLine.QtyRemainReceive         = inventTransferLine.QtyTransfer;
+        inventTransferLine.DeliveryDateControlType  = SalesDeliveryDateControlType::None;
+        inventTransferLine.modifiedField(fieldNum(InventTransferLine, QtyTransfer));
+        inventTransferLine.ITVTOriginInventTransId  = _rentalLine.InventTransId;
+        inventTransferLine.LineNum                  = inventTransferLineNum;
+
+        if (inventTransferLine.validateWrite())
+        {
+            inventTransferLinesInsertList.add(inventTransferLine);
+            inventTransferLineNum++;
+        }
+
+        return inventTransferLine.QtyTransfer;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getWmsLocationId</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It returns a related Location id
+    /// </summary>
+    /// <param name = "_rentalLine">A buffer of <c>ITVTRentalLine</c></param>
+    /// <returns>Location id</returns>
+    abstract protected WmsLocationId getWmsLocationId(ITVTRentalLine _rentalLine){}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setTransferQty</Name>
+				<Source><![CDATA[
+    protected void setTransferQty(InventTransferLine _inventTransferLine, ITVTRentalLine _rentalLine)
+    {
+        Qty transferedQty = this.transferedQty(_rentalLine);
+        
+        _inventTransferLine.QtyTransfer = this.isPartialTransfer() ? min(this.rentalLinePartialQty(_rentalLine), _rentalLine.Qty - transferedQty) : _rentalLine.Qty - transferedQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalLinePartialQty</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Gets the partial quantity from Rental line
+    /// </summary>
+    /// <param name = "_rentalLine">Rental line</param>
+    /// <returns>Partial quantity</returns>
+    abstract protected Qty rentalLinePartialQty(ITVTRentalLine _rentalLine){}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isPartialTransfer</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks whether transfer order line is created for partial quantity
+    /// </summary>
+    /// <returns>true if transfer order line is created for partial quantity, otherwise false</returns>
+    abstract protected boolean isPartialTransfer(){}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initInventDim</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes InventDim for InventTransferLine
+    /// </summary>
+    /// <param name = "_inventTransferLine">A buffer of <c>InventTransferLine</c></param>
+    /// <param name = "_rentalLine">A buffer of <c>ITVTRentalLine</c></param>
+    /// <returns>A buffer of <c>InventDim</c></returns>
+    protected InventDim initInventDim(
+        InventTransferLine  _inventTransferLine,
+        ITVTRentalLine      _rentalLine)
+    {
+        InventDim newInventDim =  _inventTransferLine.inventDim();
+        newInventDim.copyProductDimensions(_rentalLine.inventDim(), _inventTransferLine.ItemId);
+        newInventDim.wMSLocationId = this.getWmsLocationId(_rentalLine);
+
+        return InventDim::findOrCreate(newInventDim);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInventTransferOrderType</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// It returns a related invent transfer order status
+    /// </summary>
+    /// <returns>The invent transfer status</returns>
+    abstract protected ITVTTransferOrderType getInventTransferOrderType() {}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInventTransferOrderWarehouses</Name>
+				<Source><![CDATA[
+    abstract protected container getInventTransferOrderWarehouses(ITVTRentalLine _rentalLine) {}
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTEcoResTrackingDimensionGroupFldSetup_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tablestr(EcoResTrackingDimensionGroupFldSetup))]
+public final class ITVTEcoResTrackingDimensionGroupFldSetup_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initValue</Name>
+				<Source><![CDATA[
+    public void initValue()
+    {
+        next initValue();
+
+        //Set default values for the inventory RentalStatus dimension
+        if (this.DimensionFieldId == ITVTRentalParameters::getRentalInventDimStatusFieldId())
+        {
+            this.IsFinancialInventoryEnabled    = NoYes::Yes;
+            this.IsPhysicalInventoryEnabled     = NoYes::Yes;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>allowEditFinancialInvent</Name>
+				<Source><![CDATA[
+    public boolean allowEditFinancialInvent()
+    {
+        boolean ret = next allowEditFinancialInvent();
+
+        if (ret && this.DimensionFieldId == ITVTRentalParameters::getRentalInventDimStatusFieldId())
+        {
+            ret = false;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>allowEditPhysicalInvent</Name>
+				<Source><![CDATA[
+    public boolean allowEditPhysicalInvent()
+    {
+        boolean ret = next allowEditPhysicalInvent();
+
+        if (ret && this.DimensionFieldId == ITVTRentalParameters::getRentalInventDimStatusFieldId())
+        {
+            ret = false;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

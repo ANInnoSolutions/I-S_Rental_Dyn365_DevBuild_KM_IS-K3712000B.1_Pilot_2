@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventUpd_Financial_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(classstr(InventUpd_Financial))]
+public final class ITVTInventUpd_Financial_Extension
+{
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>updateFinancialIssueAmounts</Name>
+				<Source><![CDATA[
+    protected void updateFinancialIssueAmounts(InventTrans _inventTrans)
+    {
+        next updateFinancialIssueAmounts(_inventTrans);
+
+        /* skip check Issue
+        if (!movement.CheckRentalItemNewFixedAssetCost(_inventTrans))
+        {
+            throw error("@SYS18447");
+        }
+        */
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateFinancialReceiptAmounts</Name>
+				<Source><![CDATA[
+    protected void updateFinancialReceiptAmounts(InventTrans _inventTrans)
+    {
+        next updateFinancialReceiptAmounts(_inventTrans);
+
+        if (!movement.CheckRentalItemNewFixedAssetCost(_inventTrans))
+        {
+            throw error("@SYS18447");
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventOnhandReserve_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(classstr(InventOnhandReserve))]
+public final class ITVTInventOnhandReserve_Extension
+{    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>getInventMovSubType</Name>
+				<Source><![CDATA[
+    protected InventMovSubType getInventMovSubType(InventMovement _movement)
+    {
+        InventMovSubType      inventMovSubType = next getInventMovSubType(_movement);
+
+        if (_movement && _movement.buffer().TableId == tableNum(ITVTRentalLine))
+        {
+            ITVTRentalLine rentalLine = _movement.buffer();
+            inventMovSubType = rentalLine.getInventMovSubType(InventDirection::Issue);
+        }
+
+        return inventMovSubType;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

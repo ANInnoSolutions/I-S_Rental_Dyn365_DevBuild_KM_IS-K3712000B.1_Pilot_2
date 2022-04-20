@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventDimPhysUIBuilder</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// UI Builder for ITVTInventDimPhys report
+/// </summary>
+class ITVTInventDimPhysUIBuilder extends SrsReportDataContractUIBuilder
+{
+    ITVTInventDimPhysContract       contract;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>postBuild</Name>
+				<Source><![CDATA[
+    public void postBuild()
+    {
+        super();
+
+        this.dialog().caption("@ITVTRental:RentalItemQtyReport");
+
+		DialogField dlgRentalStatus = this.bindInfo().getDialogField(
+            this.dataContractObject(), 
+            methodStr(ITVTInventDimPhysContract, parmRentalStatus));
+
+        dlgRentalStatus.enabled(false);
+
+        dlgRentalStatus.registerOverrideMethod(
+            methodStr(FormStringControl, lookup),
+            methodStr(ITVTInventDimPhysUIBuilder, lookupRentalStatus),
+            this);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>lookupRentalStatus</Name>
+				<Source><![CDATA[
+    private void lookupRentalStatus(FormStringControl _control)
+    {
+        Query query = new Query();
+        query.addDataSource(tableNum(ITVTRentalStatus));
+
+        SysTableLookup sysTableLookup = SysTableLookup::newParameters(tableNum(ITVTRentalStatus), _control);
+        sysTableLookup.addLookupfield(fieldNum(ITVTRentalStatus, RentalStatusId));
+        sysTableLookup.addLookupfield(fieldNum(ITVTRentalStatus, Name));
+        
+        sysTableLookup.parmQuery(query);
+        sysTableLookup.performFormLookup();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

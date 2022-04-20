@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventMovement_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(classstr(InventMovement))]
+public final class ITVTInventMovement_Extension
+{
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>checkDimPhysical</Name>
+				<Source><![CDATA[
+    public boolean checkDimPhysical(
+        InventQty   _qty,
+        InventDim   _inventDim,
+        boolean     _finalCheck,
+        boolean     _showError
+        )
+    {
+        boolean ret = next checkDimPhysical(_qty,_inventDim,_finalCheck,_showError);
+
+        ret = ret && this.checkDimensionRentalStatus(_inventDim,_showError);
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>checkDimensionRentalStatus</Name>
+				<Source><![CDATA[
+    public boolean checkDimensionRentalStatus(InventDim _inventDim,boolean _showError)
+    {
+        boolean ret = true;
+
+        FieldId DimStatusFieldId = ITVTRentalParameters::getRentalInventDimStatusFieldId();
+        InventTable inventTable = this.inventTable();
+
+        if (this.TransType() != InventTransType::RentalLineRented
+            && DimStatusFieldId
+            && _inventDim.(DimStatusFieldId))
+        {
+            setPrefix(strFmt("%1 %2","@ITVTRental:ITVTRentalDimension","@ITVTRental:RentalStatus"));
+            ITVTRentalParameters rentalParameters = ITVTRentalParameters::find();
+
+            if (inventTable && inventTable.ItemId && !inventTable.ITVTIsRentalItem)
+            {
+                if (_showError)
+                {
+                    ret = checkFailed("@SYS335265");
+                }
+                else
+                {
+                    ret = false;
+                }
+            }
+            else if ( _inventDim.(DimStatusFieldId) == rentalParameters.InventDimValueStatusRented)
+            {
+                if (_showError)
+                {
+                    ret = checkFailed(strFmt("@SYS341789",rentalParameters.InventDimValueStatusRented));
+                }
+                else
+                {
+                    ret = false;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>CheckRentalItemNewFixedAssetCost</Name>
+				<Source><![CDATA[
+    public boolean CheckRentalItemNewFixedAssetCost(InventTrans _inventTrans)
+    {
+        boolean ret = true;
+        ITVTRentalParameters rentalParameters = ITVTRentalParameters::find();
+        InventTable inventTable = _inventTrans.inventTable();
+        InventDim inventDim = _inventTrans.inventDim();
+        
+        if ( rentalParameters.CheckRentalItemNewFixedAssetCost
+            && inventTable && inventTable.ItemId
+            && inventTable.ITVTIsRentalItem
+            && inventTable.ITVTIsFixedAsset
+            && (_inventTrans.CostAmountPhysical || _inventTrans.CostAmountPosted)
+            && _inventTrans.Qty > 0 // Receipt only
+            && this.transInventRefType() != InventRefType::InventTransfer // Skip Check Transfers
+            )
+        {
+            ITVTInventDimValueDefault rentalStatus = ITVTRentalParameters::getRentalInventDimStatus(inventDim);
+            boolean ok = false;
+
+            if (rentalStatus == rentalParameters.InventDimValueStatusNew)
+            {
+                ok = true;
+            }
+
+            if (rentalStatus == rentalParameters.InventDimValueStatusInterimFAPurch
+                && this.transType() == InventTransType::Purch
+                && this.buffer() is PurchLine)
+            {
+                PurchLine purchline =  this.buffer() as PurchLine;
+                if (purchline.ITVTPostRentalItem )
+                {
+                    ok = true;
+                }
+            }
+
+            if (!ok)
+            {
+                ret = checkFailed("@ITVTRental:CheckRentalItemNewFixedAssetCostMsg");
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

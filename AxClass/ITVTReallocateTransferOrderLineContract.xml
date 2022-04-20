@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTReallocateTransferOrderLineContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The contract for the <c>ITVTReallocateTransferOrderLineService</c> class
+/// </summary>
+[DataContract,
+    SysOperationContractProcessingAttribute(classStr(ITVTReallocateTransferOrderLineUIBuilder))]
+class ITVTReallocateTransferOrderLineContract implements SysOperationValidatable
+{
+    InventTransferId targetTransferId;
+    InventLocationId targetFromInventLocationId;
+    InventTransferId transferId;
+    container        packedData;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmTargetTransferId</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationLabel("@ITVTRental:TargetTransferOrder"),
+        SysOperationDisplayOrder('1')]
+    public InventTransferId parmTargetTransferId(InventTransferId _targetTransferId = targetTransferId)
+    {
+        targetTransferId = _targetTransferId;
+        return targetTransferId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmTargetFromInventLocationId</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationLabel("@ITVTRental:NewFromWarehouse"),
+        SysOperationDisplayOrder('2')]
+    public InventLocationId parmTargetFromInventLocationId(InventLocationId _targetFromInventLocationId = targetFromInventLocationId)
+    {
+        targetFromInventLocationId = _targetFromInventLocationId;
+        return targetFromInventLocationId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmTransferId</Name>
+				<Source><![CDATA[
+    [DataMember,
+        SysOperationControlVisibility(false)]
+    public InventTransferId parmTransferId(InventTransferId _transferId = transferId)
+    {
+        transferId = _transferId;
+        return transferId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPackedData</Name>
+				<Source><![CDATA[
+    [DataMemberAttribute,
+        SysOperationControlVisibilityAttribute(false)]
+    public container parmPackedData(container _packedData = packedData)
+    {
+        packedData = _packedData;
+        return packedData;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    public boolean validate()
+    {
+        boolean ret = true;
+
+        if (!targetTransferId
+            && !targetFromInventLocationId)
+        {
+            ret = checkFailed("@ITVTRental:TargetTransferIdAndFromInventLocationError");
+        }
+
+        if (targetFromInventLocationId
+            && InventTransferTable::find(transferId).InventLocationIdTo == targetFromInventLocationId)
+        {
+            ret = checkFailed("@ITVTRental:TargetFromInventLocationError");
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

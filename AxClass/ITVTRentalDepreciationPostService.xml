@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalDepreciationPostService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+class ITVTRentalDepreciationPostService extends SysOperationServiceBase
+{
+    ITVTRentalDepreciationPostContract contract;
+    ITVTRentalParameters rentalParameters;
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    private void init()
+    {        
+        rentalParameters = ITVTRentalParameters::find();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runPostDepreciation</Name>
+				<Source><![CDATA[
+    public void runPostDepreciation(ITVTRentalDepreciationPostContract _contract)
+    {
+        InventTransCurrency_RU  inventTransCurrency = InventTransCurrency_RU::PrimaryCur;
+        QueryRun queryRun = new QueryRun(_contract.getQuery());
+        #OCCRetryCount
+        InventModelTypeCache    inventModelTypeCache    = InventModelTypeCache::construct();
+        InventModelType         inventModelType;
+        TransDate               transDate;
+        TmpFormLookUp           tmpFormLookUp;
+        ITVTRentalLine          rentalLine;
+        Counter                 lineCount = 1;
+
+        contract = _contract;
+
+        try
+        {
+            ttsbegin;
+
+            while (queryRun.next())
+            {
+                if (!queryRun.changed(tablenum(InventTrans)))
+                    continue;
+
+                InventTrans         inventTrans = queryRun.get(tablenum(InventTrans),1);
+                InventTransOrigin   inventTransOrigin = queryRun.get(tablenum(InventTransOrigin),1);
+                
+                rentalLine = ITVTRentalLine::findInventTransId(inventTransOrigin.InventTransId);
+
+                CostAmount depreciationAmount = this.calcDepreciationAmount(rentalLine);
+
+                if (depreciationAmount == 0)
+                {
+                    warning(strFmt("Lot ID %1 - Depreciation amount is zero", rentalLine.InventTransId));
+                    continue;
+                }
+                else if (depreciationAmount > inventTrans.CostAmountPosted)
+                {
+                    depreciationAmount = inventTrans.CostAmountPosted;
+                }
+
+                if (   inventTrans.Qty > 0
+                    && inventTrans.isUpdatedFinancial()                    
+                    && inventModelTypeCache.inventModelType(InventTable::modelGroupIdByItemId(inventTrans.ItemId), inventTransCurrency).allowTransactionAdjustment(inventTrans))
+                {
+                    tmpFormLookUp.DateFinancial     = inventTrans.DateFinancial;
+                    tmpFormLookUp.ItemId            = inventTrans.ItemId;
+                    tmpFormLookUp.InventDimId       = inventTrans.InventDimId;
+                    tmpFormLookUp.Qty               = inventTrans.Qty;
+                    tmpFormLookUp.PostedValue       = inventTrans.CostAmountPosted;
+                    tmpFormLookUp.ValueAdjustment   = inventTrans.CostAmountAdjustment;
+                    tmpFormLookUp.AdjustNow         = - depreciationAmount;
+                    tmpFormLookUp.TransRecId        = inventTrans.RecId;
+                    tmpFormLookUp.LineNo            = lineCount;
+                    tmpFormLookUp.ReferenceCategory = inventTransOrigin.ReferenceCategory;
+                    tmpFormLookUp.ReferenceId = inventTransOrigin.ReferenceId;
+                    tmpFormLookUp.insert();
+                    lineCount++;
+                }
+            }
+
+            ttscommit;
+        }
+        catch (Exception::Deadlock)
+        {
+            queryRun.reset();
+            retry;
+        }
+        catch (Exception::UpdateConflict)
+        {
+            if (appl.ttsLevel() == 0)
+            {
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::UpdateConflictNotRecovered;
+                }
+                else
+                {
+                    queryRun.reset();
+                    retry;
+                }
+            }
+            else
+            {
+                throw Exception::UpdateConflict;
+            }
+        }        
+
+        select * from tmpFormLookup;
+
+        this.postTransactionAdjustment(tmpFormLookUp, rentalLine);        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>calcDepreciationAmount</Name>
+				<Source><![CDATA[
+    private CostAmount calcDepreciationAmount(ITVTRentalLine _rentalLine)
+    {
+        CostAmount  currentAmountMST;
+        SalesLine   salesLine;
+        SalesTable  salesTable = salesTable::find(_rentalLine.SalesId);
+        InventTable inventTable = InventTable::find(_rentalLine.ItemId);
+
+        select sum(LineAmount) from salesLine
+            where salesLine.ITVTOriginInventTransId == _rentalLine.InventTransId
+                && salesLine.SalesId == _rentalLine.SalesId;
+
+        currentAmountMST = inventTable.ITVTFixedAssetHGBPct / 100 * CurrencyExchangeHelper::amountCur2MST(salesLine.LineAmount, salesTable.CurrencyCode);
+
+        return currentAmountMST;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postTransactionAdjustment</Name>
+				<Source><![CDATA[
+    private void postTransactionAdjustment(TmpFormLookUp  _tmpFormLookUp, ITVTRentalLine _rentalLine)
+    {
+        InventDataAdjTransact dataAdjTransact = InventDataAdjTransact::newFromForm(_tmpFormLookUp);
+        InventAdj_Transact inventAdj_Transact = InventAdj_Transact::newTransact(dataAdjTransact.pack(), InventTransCurrency_RU::PrimaryCur);
+        TransDate transDate;
+        inventAdj_Transact.initParmDefault();
+
+        if (contract.parmUseRentalEndDate() && _rentalLine.PostedRentalToDate)
+        {
+            transDate = _rentalLine.PostedRentalToDate;
+        }
+        else
+        {
+            transDate = contract.parmAsOfDate();
+        }
+        inventAdj_Transact.parmTransDate(transDate);
+        inventAdj_Transact.parmSpecification(InventAdjustmentSpec::ItemNum);
+        inventAdj_Transact.parmFreeTxt(_rentalLine.SalesId);
+
+        inventAdj_Transact.runOperation();
+
+        while select _tmpFormLookUp
+        {
+            InventTrans         inventTransLocal = InventTrans::findRecId(_tmpFormLookUp.TransRecId);
+            InventTransOrigin   inventTransOrigin = inventTransLocal.inventTransOrigin();
+            SalesLine           salesLineLocal;
+            CustInvoiceTrans    custInvoiceTransLocal;
+            inventSettlement    inventSettlement;
+
+            select firstonly Voucher from inventSettlement
+                    where inventSettlement.TransRecId   == inventTransLocal.RecID
+                       && inventSettlement.Cancelled    == NoYes::No
+                    && inventSettlement.SettleModel  == InventSettleModel::Adjustment;
+            
+            if (inventSettlement.Voucher)
+            {
+                while select salesLineLocal
+                    where salesLineLocal.ITVTOriginInventTransId == inventTransOrigin.InventTransId
+                    join forupdate custInvoiceTransLocal
+                        where custInvoiceTransLocal.InventTransId == salesLineLocal.InventTransId
+                            && !custInvoiceTransLocal.ITVTDepreciationAdjustVoucher
+                {
+                    ttsbegin;
+                    custInvoiceTransLocal.ITVTDepreciationAdjustVoucher = inventSettlement.Voucher;
+                    custInvoiceTransLocal.doUpdate();
+                    ttscommit;
+                }
+            }
+            
+            
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

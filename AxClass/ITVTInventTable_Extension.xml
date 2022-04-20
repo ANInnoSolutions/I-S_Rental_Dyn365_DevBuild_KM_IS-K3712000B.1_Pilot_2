@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTable_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tablestr(InventTable))]
+final class ITVTInventTable_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>validateField</Name>
+				<Source><![CDATA[
+    public boolean validateField(FieldId _fieldIdToCheck)
+    {
+        boolean ret = next validateField(_fieldIdToCheck);
+
+        switch (_fieldIdToCheck)
+        {
+            case fieldNum(InventTable, ITVTIsRentalItem):
+                if (this.ITVTIsRentalItem
+                    && !ITVTRentalParameters::rentalInventDimFieldActiveForItem(this.ItemId))
+                {
+                    ret = checkFailed("@ITVTRental:RentalDimensionMustBeActive");
+                }
+                break;
+            case fieldNum(InventTable, ITVTFixedAssetHGBPct):                
+                ret = this.itvtCheckDepreciationPercentage();
+
+                break;                
+            case fieldNum(InventTable, ITVTIsFixedAsset):
+                ret = this.itvtCheckDepreciationPercentage();
+
+                break;
+                
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>itvtCheckDepreciationPercentage</Name>
+				<Source><![CDATA[
+    boolean itvtCheckDepreciationPercentage()
+    {
+        boolean ret = true;
+
+        InventModelGroup modelGroup = this.modelGroup();
+
+        if ((modelGroup.InventModel == InventModel::StdCost ||
+            modelGroup.InventModel == InventModel::MovingAverage) &&
+            !this.ITVTIsFixedAsset &&
+            this.ITVTFixedAssetHGBPct != 0)
+        {
+            ret = checkFailed("@ITVTRental:DepreciationNotAllowed");
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>modifiedField</Name>
+				<Source><![CDATA[
+    public void modifiedField(FieldId _fieldId)
+    {
+        next modifiedField(_fieldId);
+
+        switch (_fieldId)
+        {
+            case fieldNum(InventTable, ITVTIsFixedAsset):
+                if (this.ITVTIsFixedAsset)
+                {
+                    AssetGroupId assetGroupId =  ITVTRentalItemAssetGroup::findByInventTable(this).AssetGroupId;
+                    AssetBookId bookIdDefault = AssetParameters::find().BookIdDefault;
+                    AssetGroupBookSetup assetGroupBookSetup = AssetGroupBookSetup::find(assetGroupId, bookIdDefault);
+
+                    this.ITVTFixedAssetHGBSL = assetGroupBookSetup.ServiceLife;
+                    this.ITVTFixedAssetIFRSSL = assetGroupBookSetup.ServiceLife;
+                }
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateWrite</Name>
+				<Source><![CDATA[
+    public boolean validateWrite(boolean _skipProductVariantUnitConversionValidation)
+    {
+        boolean ret = next validateWrite();
+
+        ret = ret && this.itvtCheckDepreciationPercentage();
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

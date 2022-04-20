@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTProjInventLocationCreatorService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// This class creates a project inventory warehouse
+/// </summary>
+class ITVTProjInventLocationCreatorService extends SysOperationServiceBase
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>create</Name>
+				<Source><![CDATA[
+    public void create(ITVTProjInventLocationCreatorContract _dataContract)
+    {
+        ProjTable           projTable           = _dataContract.parmProjTable();
+        SalesTable          salesTable          = _dataContract.parmSalesTable();
+        
+        ttsbegin;
+        
+        InventLocationId    newInventLocationId = NumberSeq::newGetNum(ProjParameters::numRefProjInventLocationId()).num();
+        
+        ProjTable           subProjTable;
+        InventLocation      inventLocation;
+        WMSLocation			wmsLocation;
+        WMSAisle			aisle;
+        
+        if (!InventLocation::exist(newInventLocationid))
+        {
+            inventLocation = this.initInventLocation(_dataContract, salesTable, projTable, newInventLocationId);
+            //TODO: Check inventLocation.ITVTIsRentalInventLocation
+            inventLocation.insert();
+
+			// Create default aisle - similar to inventLocation.createDefaultAisle(), but for non WHS enabled warehouse
+            aisle.InventLocationId					= newInventLocationid;
+            aisle.Name								= '--default';
+            aisle.AisleId							= WMSLocation::whsDefaultAisle(); // default aisle (--)
+            aisle.insert();
+
+            if(_dataContract.parmCopyAddress())
+            {
+                if (projTable)
+                {
+                    inventLocation.copyAddressForProjInventLocation(projTable);
+                }
+                else if (salesTable)
+                {
+                    inventLocation.copyAddressForProjInventLocation(salesTable);
+                }
+            }
+
+            wmsLocation.clear();
+
+            wmsLocation.inventLocationId    = inventLocation.InventLocationId;
+            wmsLocation.wMSLocationId       = ITVTRentalParameters::find().DefaultInventLocation;
+            wmsLocation.aisleId             = WMSLocation::whsDefaultAisle(); // default aisle (--)
+            wmsLocation.inputLocation       = ITVTRentalParameters::find().DefaultInventLocation;
+
+            if (wmsLocation.validateWrite())
+            {
+                wmsLocation.insert();
+            }
+
+            inventLocation.selectForUpdate(true);
+
+            inventLocation.WMSlocationIdDefaultIssue    = wmsLocation.wMSLocationId;
+            inventLocation.WMSLocationIdDefaultReceipt  = wmsLocation.wmsLocationId;
+
+            if (inventLocation.validateWrite())
+            {
+                inventLocation.update();
+            }
+        }
+
+        if(projTable)
+        {
+            projTable.ITVTInventLocationId = newInventLocationId;
+            projTable.update();
+
+            //TODO: Check if it's required to updete project warehouse on subprojects
+            update_recordset subProjTable
+                setting ITVTInventLocationId = newInventLocationId
+                where subProjTable.ParentId == projTable.ProjId;
+        }
+        
+        if(salesTable)
+        {
+            salesTable.ITVTProjInventLocationId = newInventLocationId;
+            salesTable.update();
+        }
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initInventLocation</Name>
+				<Source><![CDATA[
+    protected InventLocation initInventLocation(
+        ITVTProjInventLocationCreatorContract   _dataContract,
+        SalesTable                              _salesTable,
+        ProjTable                               _projTable,
+        InventLocationId                        _newInventLocationId)
+    {
+        InventLocation inventLocation;
+
+        inventLocation.initValue();
+        inventLocation.InventLocationId          = _newInventLocationId;
+        inventLocation.Name                      = strFmt("@SYS311966", _projTable.ProjId ? _projTable.ProjId : _salesTable.SalesId, "@ITVTRental:ProjectWarehouse");
+        inventLocation.InventLocationIdReqMain   = _dataContract.parminventLocationIdReqMain();
+        inventLocation.InventLocationIdTransit   = InventLocation::find(_dataContract.parminventLocationIdReqMain()).InventLocationIdTransit;
+        inventLocation.InventSiteId              = InventLocation::find(inventLocation.InventLocationIdReqMain).inventSiteId;
+        inventLocation.Manual                    = false;
+        inventLocation.ReqRefill                 = true;
+        inventLocation.RetailInventNegFinancial  = true;
+        inventLocation.ITVTIsProjInventLocation  = true;
+        
+        if (_salesTable)
+        {
+            inventLocation.ITVTIsRentalInventLocation = true;
+        }
+
+        return inventLocation;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

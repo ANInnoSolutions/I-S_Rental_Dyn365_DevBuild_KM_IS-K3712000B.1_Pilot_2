@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineDeliveryQtyProcessorContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalLineDeliveryQtyProcessorContract</c> class is the data contract class for the <c>ITVTRentalLineDeliveryQtyProcessorService</c> service.
+/// </summary>
+[DataContractAttribute,
+    SysOperationContractProcessingAttribute(classStr(ITVTRentalLineDeliveryQtyProcessorUIBuilder))]
+class ITVTRentalLineDeliveryQtyProcessorContract implements SysOperationValidatable
+{
+    ITVTRentalLineDeliveryOperation     rentalLineDeliveryOperation;
+    InventLocationId                    inventLocationId;
+    InventTransferShipDate              shipDate;
+    str                                 packedQuery;
+    
+    // delivery specific
+    ITVTRentalDeliveryQty               deliveryQty;
+    
+    // return specific
+    ITVTRentalReturnQty                 returnQty;
+    ITVTClosePendingReturn              closePendingReturn;
+    ITVTOnlyHeader                      onlyHeader;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmPackedQuery</Name>
+				<Source><![CDATA[
+    [DataMember,
+    AifQueryType('_packedQuery', '')]
+    public str parmPackedQuery(str _packedQuery = packedQuery)
+    {
+        packedQuery = _packedQuery;
+        return packedQuery;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmRentalLineDeliveryOperation</Name>
+				<Source><![CDATA[
+    [DataMemberAttribute,
+        SysOperationControlVisibilityAttribute(false)]
+    public ITVTRentalLineDeliveryOperation parmRentalLineDeliveryOperation(ITVTRentalLineDeliveryOperation _rentalLineDeliveryOperation = rentalLineDeliveryOperation)
+    {
+        rentalLineDeliveryOperation = _rentalLineDeliveryOperation;
+        return rentalLineDeliveryOperation;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventLocationId</Name>
+				<Source><![CDATA[
+    [DataMemberAttribute]
+    public InventLocationId parmInventLocationId(InventLocationId _inventLocationId = inventLocationId)
+    {
+        inventLocationId = _inventLocationId;
+        return inventLocationId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmShipDate</Name>
+				<Source><![CDATA[
+    [DataMemberAttribute]
+    public InventTransferShipDate parmShipDate(InventTransferShipDate _shipDate = shipDate)
+    {
+        shipDate = _shipDate;
+        return shipDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDeliveryQty</Name>
+				<Source><![CDATA[
+    [DataMemberAttribute]
+    public ITVTRentalDeliveryQty parmDeliveryQty(ITVTRentalDeliveryQty _deliveryQty = deliveryQty)
+    {
+        deliveryQty = _deliveryQty;
+        return deliveryQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmReturnQty</Name>
+				<Source><![CDATA[
+    [DataMemberAttribute]
+    public ITVTRentalReturnQty parmReturnQty(ITVTRentalReturnQty _returnQty = returnQty)
+    {
+        returnQty = _returnQty;
+        return returnQty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmClosePendingReturn</Name>
+				<Source><![CDATA[
+    [DataMemberAttribute]
+    public ITVTClosePendingReturn parmClosePendingReturn(ITVTClosePendingReturn _closePendingReturn = closePendingReturn)
+    {
+        closePendingReturn = _closePendingReturn;
+        return closePendingReturn;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmOnlyHeader</Name>
+				<Source><![CDATA[
+    [
+        DataMemberAttribute,
+        SysOperationControlVisibility(false)
+    ]
+    public ITVTOnlyHeader parmOnlyHeader(ITVTOnlyHeader _onlyHeader = onlyHeader)
+    {
+        onlyHeader = _onlyHeader;
+        return onlyHeader;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    public boolean validate()
+    {
+        boolean ret = true;
+
+        if (!inventLocationId)
+        {
+            ret = checkFailed(strFmt(
+                "@ITVTRental:ParameterIsMandatory", 
+                rentalLineDeliveryOperation == ITVTRentalLineDeliveryOperation::Delivery ? "@SYS25253" : "@SYS8519"));
+        }
+
+        if (!shipDate)
+        {
+            ret = checkFailed(strFmt("@ITVTRental:ParameterIsMandatory", "@GEE31817"));
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getQuery</Name>
+				<Source><![CDATA[
+    public Query getQuery()
+    {
+        return new Query(SysOperationHelper::base64Decode(packedQuery));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setQuery</Name>
+				<Source><![CDATA[
+    public void setQuery(Query _query)
+    {
+        packedQuery = SysOperationHelper::base64Encode(_query.pack());
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

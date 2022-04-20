@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineReturnNowController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ITVTRentalLineDeliverNowController</c> class is the controller class for the <c>ITVTRentalLineDeliverNowService</c> service.
+/// </summary>
+class ITVTRentalLineReturnNowController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTRentalLineReturnNowController controller = new ITVTRentalLineReturnNowController();
+
+        controller.initializeFromArgs(_args);
+        controller.initContract(_args);
+        controller.parmShowDialog(false);
+        controller.startOperation();
+
+        if (!controller.isInBatch()
+            && _args.caller()
+            && _args.caller() is FormRun)
+        {
+            FormObjectSet ds = FormDataUtil::getFormDataSource(_args.record());
+
+            ds.research(true);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract(Args _args)
+    {
+        ITVTRentalLineReturnNowContract contract = this.getDataContractObject() as ITVTRentalLineReturnNowContract;
+        
+        Query query = new Query();
+        QueryBuildDataSource qbdsRentalLine = query.addDataSource(tableNum(ITVTRentalLine));
+        
+        MultiSelectionHelper multiSelectionHelper = MultiSelectionHelper::createFromCaller(_args.caller());
+
+        switch (_args.dataset())
+        {
+            case tableNum(ITVTRentalLine):
+                ITVTRentalLine rentalLine = multiSelectionHelper.getFirst();
+
+                while (rentalLine)
+                {
+                    qbdsRentalLine.addRange(fieldNum(ITVTRentalLine, RecId)).value(queryValue(rentalLine.RecId));
+                    rentalLine = multiSelectionHelper.getNext();
+                }
+                break;
+
+            case tableNum(SalesTable):
+                SalesTable salesTable = multiSelectionHelper.getFirst();
+
+                while (salesTable)
+                {
+                    qbdsRentalLine.addRange(fieldNum(ITVTRentalLine, SalesId)).value(salesTable.SalesId);
+                    salesTable = multiSelectionHelper.getNext();
+                }
+        }
+
+        contract.setQuery(query);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

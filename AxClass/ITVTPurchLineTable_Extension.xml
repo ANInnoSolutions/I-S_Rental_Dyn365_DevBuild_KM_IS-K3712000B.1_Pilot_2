@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPurchLineTable_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(tablestr(PurchLine))]
+final class ITVTPurchLineTable_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initFromItemOrCategory</Name>
+				<Source><![CDATA[
+    public void initFromItemOrCategory(
+        ItemId          _itemId,
+        PurchCategory   _procurementCategory,
+        ItemFreeTxt     _name,
+        boolean         _searchPrice,
+        boolean         _setAddressFromInventDim)
+    {
+        next initFromItemOrCategory(_itemId, _procurementCategory, _name, _searchPrice, _setAddressFromInventDim);
+        
+        if (this.rentalDimensionIsActive()
+            && ITVTRentalParameters::getInventDimDefaultValue(this.TableId))
+        {
+            InventDim inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), this.TableId);
+            this.InventDimId = inventDim.InventDimId;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>itemIdChanged</Name>
+				<Source><![CDATA[
+    public void itemIdChanged(AgreementHeaderRecId _matchingAgreement, boolean _executeOnlyIfProductIsFullySpecified)
+    {
+        next itemIdChanged(_matchingAgreement, _executeOnlyIfProductIsFullySpecified);
+        
+        if (this.rentalDimensionIsActive()
+            && ITVTRentalParameters::getInventDimDefaultValue(this.TableId))
+        {
+            InventDim inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), this.TableId);
+            this.InventDimId = inventDim.InventDimId;
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateField</Name>
+				<Source><![CDATA[
+    public boolean validateField(FieldId _fieldIdToCheck)
+    {
+        boolean ret;
+
+        ret = next validateField(_fieldIdToCheck);
+
+        switch (_fieldIdToCheck)
+        {
+            case fieldNum(PurchLine, ItemId):
+                // Code disabled based on customer's requirement 16.9.2021:
+				/*
+				if (!this.validateRentalDimension())
+                {
+                    EcoResProductDimGroupSetup productDimSetup = EcoResProductDimGroupSetup::newItemId(this.ItemId);
+                    InventDim inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), this.TableId);
+                    ret = checkFailed(strFmt("@SYS73899", inventDim.preFixProductDim(productDimSetup), this.ItemId));
+                }
+				*/
+                break;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateRentalDimension</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates that Rental dimension could be applied for current Item
+    /// </summary>
+    /// <returns>true if Rental dimension could be applied, otherwise false</returns>
+    public boolean validateRentalDimension()
+    {
+        boolean ret = true;
+
+        if (this.rentalDimensionIsActive()
+            && ITVTRentalParameters::getInventDimDefaultValue(this.TableId))
+        {
+            InventDim   inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), this.TableId);
+
+            if (!InventDimCombination::existByInventDim(this.ItemId, inventDim))
+            {
+                ret = false;
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalDimensionIsActive</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks whether Rental dimension from Rental parameters is active for Item
+    /// </summary>
+    /// <returns>true if Rental dimension is active, otherwise false</returns>
+    public boolean rentalDimensionIsActive()
+    {
+        return this.ItemId && this.inventTable().ITVTIsRentalItem && ITVTRentalParameters::rentalInventDimFieldActiveForItem(this.ItemId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insert</Name>
+				<Source><![CDATA[
+    public void insert(
+        boolean     dropInvent,
+        boolean     findMarkup,
+        boolean     updatePurchTableDistributions,
+        boolean     _skipPurchTableUpdate,
+        boolean     _skipInterCompanyCalcDisc)
+    {
+        this.checkRentalStatus();
+     
+        next insert(dropInvent,
+                    findMarkup,
+                    updatePurchTableDistributions,
+                    _skipPurchTableUpdate,
+                    _skipInterCompanyCalcDisc);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>update</Name>
+				<Source><![CDATA[
+    public void update(boolean  dropInvent,
+                       boolean  updateOrderLineOfDeliverySchedule,
+                       boolean  updatePurchTableDropShipStatus)
+    {
+        this.checkRentalStatus();
+
+        next update(dropInvent, updateOrderLineOfDeliverySchedule, updatePurchTableDropShipStatus);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>write</Name>
+				<Source><![CDATA[
+    public void write()
+    {
+        this.checkRentalStatus();
+
+        next write();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>checkRentalStatus</Name>
+				<Source><![CDATA[
+    private void checkRentalStatus()
+    {
+        if (this.ITVTPostRentalItem
+            && (this.ITVTToRentalStatus == ITVTRentalParameters::find().InventDimValueStatusNew
+                || this.ITVTToRentalStatus == ITVTRentalParameters::find().InventDimValueStatusRented))
+        {
+            throw error(strFmt("@ITVTRental:POToRentalStatusError", this.ITVTToRentalStatus));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>modifiedField</Name>
+				<Source><![CDATA[
+    public void modifiedField(FieldId _fieldId, boolean _userInput)
+    {
+        next modifiedField(_fieldId, _userInput);
+
+        switch (_fieldId)
+        {
+            case fieldNum(PurchLine, ITVTPostRentalItem):
+                this.AssetGroup = ITVTRentalItemAssetGroup::findByInventTable(this.inventTable()).AssetGroupId;
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

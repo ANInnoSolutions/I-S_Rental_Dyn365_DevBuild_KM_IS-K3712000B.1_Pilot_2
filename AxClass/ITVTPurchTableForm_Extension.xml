@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPurchTableForm_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension for class <c>PurchTableFrom</c>
+/// </summary>
+[ExtensionOf(classStr(PurchTableForm))]
+final class ITVTPurchTableForm_Extension
+{
+    //protected static boolean canAssetFieldsBeEditedServer(PurchTable _purchTable, PurchLine _purchLine)
+    //{
+    //    boolean ret = next canAssetFieldsBeEditedServer(_purchTable, _purchLine);
+
+    //    if (_purchLine.ITVTPostRentalItem 
+    //        && _purchLine.CreateFixedAsset
+    //        && ret == false)
+    //    {
+    //        ret = true;
+    //    }
+
+    //    return ret;
+    //}
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>setAllowEditAssetFields</Name>
+				<Source><![CDATA[
+    public void setAllowEditAssetFields (PurchTable _purchTable, PurchLine _purchLine, FormDataSource _purchLine_ds)
+    {
+        AssetGroupId assetGroupId;
+
+        if (_purchLine.ITVTPostRentalItem)
+        {
+            assetGroupId = _purchLine.AssetGroup;
+        }
+
+        next setAllowEditAssetFields(_purchTable, _purchLine, _purchLine_ds);
+
+        if (_purchLine.ITVTPostRentalItem)
+        {
+            _purchLine.AssetGroup = assetGroupId;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

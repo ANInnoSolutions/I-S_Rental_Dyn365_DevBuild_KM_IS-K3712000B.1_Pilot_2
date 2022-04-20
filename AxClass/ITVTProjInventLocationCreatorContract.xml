@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTProjInventLocationCreatorContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// DataContract class for the ITVT ProjInventLocationCreator system operaation
+/// </summary>
+[DataContractAttribute]
+class ITVTProjInventLocationCreatorContract
+{
+    ProjTable               projTable;
+    SalesTable              salesTable;
+    
+    InventSiteId            inventSiteId;
+    InventLocationIdReqMain inventLocationIdReqMain;
+    boolean                 copyAddress;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmProjTable</Name>
+				<Source><![CDATA[
+    public ProjTable parmProjTable(ProjTable _projTable = projTable)
+    {
+        projTable = _projTable;
+        return projTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmsalesTable</Name>
+				<Source><![CDATA[
+    public SalesTable parmsalesTable(SalesTable _salesTable = salesTable)
+    {
+        salesTable = _salesTable;
+        return salesTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventSiteId</Name>
+				<Source><![CDATA[
+    public InventSiteId parmInventSiteId(InventSiteId _inventSiteId = inventSiteId)
+    {
+        inventSiteId = _inventSiteId;
+        return inventSiteId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parminventLocationIdReqMain</Name>
+				<Source><![CDATA[
+   [DataMemberAttribute,
+    SysOperationDisplayOrderAttribute('2')]
+    public InventLocationIdReqMain parminventLocationIdReqMain(InventLocationIdReqMain _inventLocationIdReqMain = inventLocationIdReqMain)
+    {
+        inventLocationIdReqMain = _inventLocationIdReqMain;
+        return inventLocationIdReqMain;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmCopyAddress</Name>
+				<Source><![CDATA[
+    public boolean parmCopyAddress(boolean _copyAddress = copyAddress)
+    {
+        copyAddress= _copyAddress;
+        return copyAddress;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

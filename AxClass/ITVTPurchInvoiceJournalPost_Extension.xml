@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPurchInvoiceJournalPost_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Extension for class <c>PurchInvoiceJournalPost</c>
+/// </summary>
+[ExtensionOf(classstr(PurchInvoiceJournalPost))]
+final class ITVTPurchInvoiceJournalPost_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>mustReverseInventBlocking</Name>
+				<Source><![CDATA[
+    private boolean mustReverseInventBlocking()
+    {
+        if (!purchLine.RecId)
+        {
+            purchLine = PurchLine::findInventTransId(vendInvoiceTrans.InventTransId);
+        }
+
+        if (!vendInvoiceTrans.RecId)
+        {
+            this.journalLine(formletterJournalTrans);
+        }
+
+        return purchLine.ITVTPostRentalItem == NoYes::Yes;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventBlocking</Name>
+				<Source><![CDATA[
+    private void createInventBlocking()
+    {
+        InventBlocking inventBlocking;
+        
+        select forupdate inventBlocking
+            where inventBlocking.ITVTInventTransId == vendInvoiceTrans.InventTransId;
+
+        if (inventBlocking.RecId)
+        {
+            if (inventBlocking.Qty > vendInvoiceTrans.Qty)
+            {
+                inventBlocking.Qty -= vendInvoiceTrans.Qty;
+                inventBlocking.update();
+            }
+            else
+            {
+                inventBlocking.delete();
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postSingleLine</Name>
+				<Source><![CDATA[
+    protected void postSingleLine(boolean _countryRegion_RU,
+                                  boolean _hasQualityOrder,
+                                  boolean _isExciseEnableIN,
+                                  boolean _isVATEnableIN,
+                                  boolean _isCustomsEnableIN,
+                                  boolean _isConfigurationkeyRetailEnabled)
+    {
+        if (this.mustReverseInventBlocking())
+        {
+            this.createInventBlocking();
+        }
+
+        next postSingleLine(
+            _countryRegion_RU,
+            _hasQualityOrder,
+            _isExciseEnableIN,
+            _isVATEnableIN,
+            _isCustomsEnableIN,
+            _isConfigurationkeyRetailEnabled);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

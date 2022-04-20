@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetRentalReconValidator</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+class ITVTAssetRentalReconValidator
+{
+    FormDataSource assetRentalReconDataSource;
+
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmAssetRentalReconDataSource</Name>
+				<Source><![CDATA[
+    public FormDataSource parmAssetRentalReconDataSource(FormDataSource _assetRentalReconDataSource = assetRentalReconDataSource)
+    {
+        assetRentalReconDataSource = _assetRentalReconDataSource;
+
+        return assetRentalReconDataSource;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    public static ITVTAssetRentalReconValidator construct()
+    {
+        return new ITVTAssetRentalReconValidator();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>newFromArgs</Name>
+				<Source><![CDATA[
+    public static ITVTAssetRentalReconValidator newFromArgs(Args _args)
+    {
+        if (_args == null || !(_args.record() is ITVTAssetRentalRecon) || !FormDataUtil::getFormDataSource(_args.record()))
+        {
+            throw error(Error::wrongUseOfFunction(funcName()));
+        }
+
+        ITVTAssetRentalReconValidator assetRentalReconValidator = ITVTAssetRentalReconValidator::construct();
+        assetRentalReconValidator.parmAssetRentalReconDataSource(FormDataUtil::getFormDataSource(_args.record()));
+
+        return assetRentalReconValidator;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTAssetRentalReconValidator assetRentalReconValidator = ITVTAssetRentalReconValidator::newFromArgs(_args);
+        assetRentalReconValidator.validateFromDataSource();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateFromDataSource</Name>
+				<Source><![CDATA[
+    public void validateFromDataSource()
+    {        
+        ITVTAssetRentalRecon    assetRentalRecon = assetRentalReconDataSource.getFirst() as ITVTAssetRentalRecon;
+        boolean                 isOk = true;
+
+        while (assetRentalRecon)                
+        {
+            if ((assetRentalRecon.Qty > 0 || assetRentalRecon.IsReceiptTrans) && assetRentalRecon.ReceiptAmount <= 0)
+            {
+                isOk = false;
+                warning(strFmt("@ITVTRental:ReceiptAmountPositive",assetRentalRecon.InventTransId));
+            }
+
+            assetRentalRecon = assetRentalReconDataSource.getNext();
+        }
+
+        if (isOk)
+            Info("@ITVTRental:ReceiptAmountOk");
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

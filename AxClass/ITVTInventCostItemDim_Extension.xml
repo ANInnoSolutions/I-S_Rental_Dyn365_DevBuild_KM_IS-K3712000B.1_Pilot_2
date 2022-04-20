@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventCostItemDim_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(classstr(InventCostItemDim))]
+final public class ITVTInventCostItemDim_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>adjustTrans</Name>
+				<Source><![CDATA[
+    protected void adjustTrans(InventTrans _inventTrans, CostAmount _adjustment)
+    {
+        if (_adjustment && _inventTrans.Qty < 0)
+        {
+            InventTransType referenceCategory = referenceCategoryCache.getReferenceCategory(_inventTrans.InventTransOrigin);
+    
+            switch (referenceCategory)
+            {
+                case InventTransType::RentalLine:
+
+                    ITVTRentalLine rentalLine;
+                    ITVTInventTransOriginRentalLine       originRentalLine;
+                    ITVTInventTransOriginRentalLineRented originRentalLineRented;
+
+                    select originRentalLineRented
+                    join TableId from originRentalLine
+                        where originRentalLine.InventTransOrigin    == _inventTrans.InventTransOrigin
+                    join TableId from rentalLine
+                        where rentalLine.InventTransId              == originRentalLine.RentalLineInventTransId
+                           && rentalLine.InventTransIdRented        == originRentalLineRented.RentalLineInventTransIdRented;
+
+                    this.addkeyAdjustment(true, originRentalLineRented.InventTransOrigin, _adjustment, 0, _inventTrans.VoucherPhysical);
+                    this.addkeyAdjustment(true, _inventTrans.InventTransOrigin, _adjustment, 0, '');
+
+                    break;
+
+                default:
+                    exceptionTextFallThrough();
+            }
+        }
+
+        next adjustTrans(_inventTrans, _adjustment);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

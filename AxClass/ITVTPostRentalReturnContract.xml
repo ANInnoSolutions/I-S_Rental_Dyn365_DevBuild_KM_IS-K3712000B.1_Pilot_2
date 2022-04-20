@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPostRentalReturnContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The contract for the <c>ITVTPostRentalReturnService</c> class
+/// </summary>
+[DataContract]
+class ITVTPostRentalReturnContract
+{
+    SalesId                                     salesId;
+    TransDate                                   postingDate;
+    InventLocationIdTo                          inventLocationTo;
+    WMSLocationId                               wmsLocationId;
+    ITVTRentalRunForOpenPeriods                 rentalRunForOpenPeriods;
+    ITVTUseConfirmedRentalEndDateForEndRental   useConfirmedRentalEndDateForEndRental;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmSalesId</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public SalesId parmSalesId(SalesId _salesId = salesId)
+    {
+        salesId = _salesId;
+        return salesId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPostingDate</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public TransDate parmPostingDate(TransDate _postingDate = postingDate)
+    {
+        postingDate = _postingDate;
+        return postingDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmInventLocationTo</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public InventLocationIdTo parmInventLocationTo(InventLocationIdTo _inventLocationTo = inventLocationTo)
+    {
+        inventLocationTo = _inventLocationTo;
+        return inventLocationTo;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmWmsLocationId</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public WMSLocationId parmWmsLocationId(WMSLocationId _wmsLocationId = wmsLocationId)
+    {
+        wmsLocationId = _wmsLocationId;
+        return wmsLocationId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmRentalRunForOpenPeriods</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public ITVTRentalRunForOpenPeriods parmRentalRunForOpenPeriods(ITVTRentalRunForOpenPeriods _rentalRunForOpenPeriods = rentalRunForOpenPeriods)
+    {
+        rentalRunForOpenPeriods = _rentalRunForOpenPeriods;
+        return rentalRunForOpenPeriods;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmUseConfirmedRentalEndDateForEndRental</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public ITVTUseConfirmedRentalEndDateForEndRental parmUseConfirmedRentalEndDateForEndRental(ITVTUseConfirmedRentalEndDateForEndRental _useConfirmedRentalEndDateForEndRental = useConfirmedRentalEndDateForEndRental)
+    {
+        useConfirmedRentalEndDateForEndRental = _useConfirmedRentalEndDateForEndRental;
+        return useConfirmedRentalEndDateForEndRental;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

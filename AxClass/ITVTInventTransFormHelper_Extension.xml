@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTransFormHelper_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(classstr(InventTransFormHelper))]
+public final class ITVTInventTransFormHelper_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>formQueryPreExecute</Name>
+				<Source><![CDATA[
+    public static void formQueryPreExecute(
+        FormDataSource _inventTransOrigin,
+        FormDataSource _inventTrans,
+        Args           _callerArgs)
+    {
+        next formQueryPreExecute(_inventTransOrigin,_inventTrans,_callerArgs);
+
+        QueryBuildRange                 queryBuildRange;
+
+        switch (_callerArgs.dataset())
+        {
+            case tableNum(ITVTRentalLine):
+                ITVTRentalLine rentalLine = _callerArgs.record() as ITVTRentalLine;
+                queryBuildRange = InventTransOrigin::queryAddRangeInventTransId(_inventTransOrigin.query());
+                queryBuildRange.value(rentalLine.queryValueInventTransId());
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

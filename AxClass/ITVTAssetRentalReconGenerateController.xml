@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetRentalReconGenerateController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The class controller for operating with the <c>ITVTAssetRentalReconGenerateService</c> class
+/// </summary>
+class ITVTAssetRentalReconGenerateController extends SysOperationServiceController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        super();
+
+        this.parmClassName(classStr(ITVTAssetRentalReconGenerateService));
+        this.parmMethodName(methodStr(ITVTAssetRentalReconGenerateService, runReconGenerate));
+        this.parmExecutionMode(SysOperationExecutionMode::Synchronous);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTAssetRentalReconGenerateController controller = new ITVTAssetRentalReconGenerateController();
+
+        controller.initContract();
+        controller.startOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initContract</Name>
+				<Source><![CDATA[
+    private void initContract()
+    {
+        ITVTAssetRentalReconGenerateContract contract = this.getDataContractObject();
+        contract.parmAssetBookId(AssetParameters::find().BookIdDefault);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmDialogCaption</Name>
+				<Source><![CDATA[
+    public LabelType parmDialogCaption(LabelType _dialogCaption = dialogCaption)
+    {
+        return "@ITVTRental:GenerateReconciliation";
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

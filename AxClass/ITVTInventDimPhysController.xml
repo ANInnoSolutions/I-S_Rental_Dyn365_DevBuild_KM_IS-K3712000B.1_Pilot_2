@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventDimPhysController</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Controller for ITVTInventDimPhys report
+/// </summary>
+class ITVTInventDimPhysController extends SrsReportRunController
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        ITVTInventDimPhysController controller;
+   
+        controller = new ITVTInventDimPhysController();
+        controller.parmArgs(_args);
+        
+        controller.parmReportName(ssrsReportStr(ITVTInventDimPhys, Report));
+        controller.parmDialogCaption("@ITVTRental:RentalItemQtyReport");
+        controller.startOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>prePromptModifyContract</Name>
+				<Source><![CDATA[
+    protected void prePromptModifyContract()
+    {
+        super();
+
+        ITVTInventDimPhysContract	contract			= this.parmReportContract().parmRdpContract() as ITVTInventDimPhysContract;
+        AssetParameters				assetParameters		= AssetParameters::find();
+        
+        contract.parmAssetBook(assetParameters.BookIdDefault);
+        contract.parmRentalStatus(this.getRentalStatusFilter());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getRentalStatusFilter</Name>
+				<Source><![CDATA[
+    private ITVTRentalStatusFilter getRentalStatusFilter()
+    {
+        ITVTRentalStatusFilter	result;
+        ITVTRentalStatus		itvtRentalStatus;
+        ITVTRentalParameters	rentalParameters	= ITVTRentalParameters::find();
+
+        while select itvtRentalStatus
+        {
+			if (
+                (itvtRentalStatus.RentalStatusId != rentalParameters.InventDimValueStatusNew) &&
+                (itvtRentalStatus.RentalStatusId != rentalParameters.InventDimValueStatusInterimFAPurch)
+ 			)
+            {
+				if (result)
+					result += "," + itvtRentalStatus.RentalStatusId;
+				else
+					result = itvtRentalStatus.RentalStatusId;
+            }
+        }
+
+        return result;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

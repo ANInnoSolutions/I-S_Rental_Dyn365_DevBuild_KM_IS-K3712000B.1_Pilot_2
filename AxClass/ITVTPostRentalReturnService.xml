@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTPostRentalReturnService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Post rental return service
+/// </summary>
+class ITVTPostRentalReturnService extends SysOperationServiceBase
+{
+    SalesId                                     salesId;
+    TransDate                                   postingDate;
+    InventLocationIdTo                          inventLocationTo;
+    WMSLocationId                               wmsLocationId;
+    ITVTRentalRunForOpenPeriods                 rentalRunForOpenPeriods;
+    ITVTUseConfirmedRentalEndDateForEndRental   useConfirmedRentalEndDateForEndRental;
+
+    List                                        rentalLines;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>runPostRentalReturn</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Post rental return
+    /// </summary>
+    /// <param name = "_contract">An instance of <c>ITVTPostRentalReturnContract</c></param>
+    public void runPostRentalReturn(ITVTPostRentalReturnContract _contract)
+    {
+        this.initFromContract(_contract);
+
+        this.validate();
+
+        ttsbegin;
+        
+        if (rentalRunForOpenPeriods)
+        {
+            this.runRentalRun();
+        }
+
+        this.runEndRental();
+
+        this.createTransferJour();
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromContract</Name>
+				<Source><![CDATA[
+    private void initFromContract(ITVTPostRentalReturnContract _contract)
+    {
+        salesId = _contract.parmSalesId();
+        inventLocationTo = _contract.parmInventLocationTo();
+        wmsLocationId = _contract.parmWmsLocationId();
+        rentalRunForOpenPeriods = _contract.parmRentalRunForOpenPeriods();
+        useConfirmedRentalEndDateForEndRental = _contract.parmUseConfirmedRentalEndDateForEndRental();
+
+        SalesTable salesTable = SalesTable::find(salesId);
+        postingDate = (useConfirmedRentalEndDateForEndRental && salesTable.ITVTConfirmedRentalToDate) ? salesTable.ITVTConfirmedRentalToDate : _contract.parmPostingDate();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    private void validate()
+    {
+        if (!inventLocationTo)
+        {
+            throw error("@ITVTRental:FieldToWarehouseMustBeSpecified");
+        }
+
+        this.validateRentalLines();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createTransferJour</Name>
+				<Source><![CDATA[
+    private void createTransferJour()
+    {
+        ITVTRentalLine                          rentalLine;
+        InventTrans                             inventTrans;
+        InventTransOrigin                       inventTransOrigin;
+        InventDim                               inventDim;
+        InventTable                             inventTable;
+        EcoResTrackingDimensionGroupItem        ecoResTrackingDimensionGroupItem;
+        EcoResTrackingDimensionGroupFldSetup    ecoResTrackingDimensionGroupFldSetup;
+
+        ITVTRentalParameters    rentalParameters = ITVTRentalParameters::find();
+        InventJournalName       inventJournalTableName = InventJournalName::find(rentalParameters.ReturnTransferJournalNameId);
+
+        if (!inventJournalTableName)
+        {
+            throw error("@ITVTRental:TransferJourForReturnMissing");
+        }
+
+        InventJournalTableData  inventJournalTableData = this.createInventJournalTable(inventJournalTableName);
+        InventJournalTable      inventJournalTable = inventJournalTableData.journalTable();
+
+        InventDimension1 rentalStatusUsed = ITVTRentalParameters::find().InventDimValueStatusUsed;
+        FieldId rentalStatusFieldId = ITVTRentalParameters::getRentalInventDimStatusFieldId();
+
+        while select forupdate rentalLine
+            where rentalLine.SalesId == salesId
+            join inventTransOrigin
+                where inventTransOrigin.InventTransId == rentalLine.InventTransId
+                    && inventTransOrigin.ReferenceCategory == InventTransType::RentalLine
+            join inventTrans
+                where inventTrans.InventTransOrigin == inventTransOrigin.RecId
+                    && inventTrans.StatusReceipt == StatusReceipt::Purchased
+            join inventDim
+                where inventDim.inventDimId == inventTrans.inventDimId
+                    && inventDim.(rentalStatusFieldId) == rentalStatusUsed
+            join inventTable 
+                where inventTable.ItemId == rentalLine.ItemId
+            join ecoResTrackingDimensionGroupItem
+                where ecoResTrackingDimensionGroupItem.ItemDataAreaId == inventTable.DataAreaId
+                    && ecoResTrackingDimensionGroupItem.ItemId == inventTable.ItemId
+            outer join ecoResTrackingDimensionGroupFldSetup
+                where ecoResTrackingDimensionGroupFldSetup.TrackingDimensionGroup == ecoResTrackingDimensionGroupItem.TrackingDimensionGroup
+                    && ecoResTrackingDimensionGroupFldSetup.DimensionFieldId == fieldNum(InventDim, inventSerialId)
+                    && ecoResTrackingDimensionGroupFldSetup.IsActive
+        {
+            if (ecoResTrackingDimensionGroupFldSetup.RecId
+                && !ITVTRentalLineRegisterSerialNumbers::exist(rentalLine.InventTransId, inventDim.inventSerialId))
+            {
+                continue;
+            }
+
+            this.createInventJournalTrans(inventJournalTableData, rentalLine, inventTrans, inventDim);
+
+            rentalLine.PendingReturnQuantity = max(0, rentalLine.PendingReturnQuantity - inventTrans.Qty);
+            rentalLine.update();
+        }
+
+        this.postInventJournal(inventJournalTable);
+
+        inventJournalTable.reread();
+
+        if (!inventJournalTable.Posted)
+        {
+            throw error("@SYS69433");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postInventJournal</Name>
+				<Source><![CDATA[
+    private void postInventJournal(InventJournalTable _inventJournalTable)
+    {
+        JournalCheckPost inventJournalPost = InventJournalCheckPost::construct(_inventJournalTable);
+
+        inventJournalPost.parmJournalId(_inventJournalTable.JournalId);
+        inventJournalPost.parmJournalTableId(_inventJournalTable.TableId);
+        inventJournalPost.parmTransferErrors(false);
+        inventJournalPost.parmJournalCheckPostType(JournalCheckPostType::Post);
+        inventJournalPost.runOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventJournalTable</Name>
+				<Source><![CDATA[
+    private InventJournalTableData createInventJournalTable(InventJournalName _journalName)
+    {
+        InventJournalTable      inventJournalTable;
+        InventJournalTableData  inventJournalTableData = JournalTableData::newTable(inventJournalTable);
+
+        if (inventJournalTableData)
+        {
+            inventJournalTableData.initFromJournalName(_journalName);
+        }
+
+        inventJournalTable.ITVTOrigSalesId = salesId;
+
+        inventJournalTable.insert();
+
+        return inventJournalTableData;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createInventJournalTrans</Name>
+				<Source><![CDATA[
+    private InventJournalTrans createInventJournalTrans(
+        InventJournalTableData  _inventJournalTableData,
+        ITVTRentalLine          _rentalLine,
+        InventTrans             _inventTrans,
+        InventDim               _inventDim)
+    {
+        InventJournalTrans inventJournalTrans;
+        inventJournalTrans.initValue();
+
+        InventJournalTransData  inventJournalTransData = new InventJournalTransData(inventJournalTrans, _inventJournalTableData);
+
+        inventJournalTransData.initFromJournalTable();
+        inventJournalTransData.parmLastLineNum(InventJournalTrans::lastLineNum(inventJournalTransData.journalTableData().journalTable().JournalId));
+        inventJournalTrans.initFromInventTable(_rentalLine.inventTable());
+        inventJournalTrans.modifiedField(fieldNum(InventJournalTrans, ItemId));
+        inventJournalTrans.TransDate = postingDate;
+
+        inventJournalTrans.InventDimId = _inventDim.inventDimId;
+        inventJournalTrans.modifiedField(fieldNum(InventJournalTrans, InventDimId));
+
+        InventDim inventDimTo;
+        buf2Buf(_inventDim, inventDimTo);
+
+        inventDimTo.InventLocationId = inventLocationTo;
+        inventDimTo.InventSiteId = InventLocation::find(inventLocationTo).InventSiteId;
+        inventDimTo.wMSLocationId = wmsLocationId ? wmsLocationId : '';
+
+        inventDimTo = InventDim::findOrCreate(inventDimTo);
+
+        inventJournalTrans.ToInventDimId = inventDimTo.inventDimId;
+        inventJournalTrans.modifiedField(fieldNum(InventJournalTrans, ToInventDimId));
+
+        inventJournalTrans.Qty = -_inventTrans.Qty;
+        inventJournalTrans.modifiedField(fieldNum(InventJournalTrans, Qty));
+
+        inventJournalTransData.create();
+
+        return inventJournalTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runRentalRun</Name>
+				<Source><![CDATA[
+    private void runRentalRun()
+    {
+        ITVTRentalRunController::runSalesOrder(salesId, postingDate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runEndRental</Name>
+				<Source><![CDATA[
+    private void runEndRental()
+    {
+        ITVTRentalLineEndRentalController::runEndRentalFromContainer(rentalLines.pack(), postingDate, ITVTRentalReturnQty::ReturnNow, NoYes::Yes);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateRentalLines</Name>
+				<Source><![CDATA[
+    private void validateRentalLines()
+    {
+        ITVTRentalLine                          rentalLine;
+        InventTable                             inventTable;
+        EcoResTrackingDimensionGroupItem        ecoResTrackingDimensionGroupItem;
+        EcoResTrackingDimensionGroupFldSetup    ecoResTrackingDimensionGroupFldSetup;
+        
+        while select rentalLine
+            where rentalLine.SalesId == salesId
+            join inventTable
+                where inventTable.ItemId == rentalLine.ItemId
+            join ecoResTrackingDimensionGroupItem
+                where ecoResTrackingDimensionGroupItem.ItemDataAreaId == inventTable.DataAreaId
+                    && ecoResTrackingDimensionGroupItem.ItemId == inventTable.ItemId
+            outer join ecoResTrackingDimensionGroupFldSetup
+                where ecoResTrackingDimensionGroupFldSetup.TrackingDimensionGroup == ecoResTrackingDimensionGroupItem.TrackingDimensionGroup
+                    && ecoResTrackingDimensionGroupFldSetup.DimensionFieldId == fieldNum(InventDim, inventSerialId)
+                    && ecoResTrackingDimensionGroupFldSetup.IsActive
+        {
+            var qtyInTransfer = rentalLine.displaySumInventTransferLineFromWarehouse();
+
+            if (rentalLine.ReturnNow > rentalLine.Qty - qtyInTransfer)
+            {
+                throw error(strFmt("@ITVTRental:TOForItemAlreadyCreated", rentalLine.ItemId));
+            }
+            
+            ITVTRentalLineRegisterSerialNumbers rentalLineRegisterSerialNumbers;
+
+            if (ecoResTrackingDimensionGroupFldSetup.RecId)
+            {
+                select count(RecId)
+                from rentalLineRegisterSerialNumbers
+                where rentalLineRegisterSerialNumbers.InventTransId == rentalLine.InventTransId;
+
+                if (rentalLine.ReturnNow > rentalLineRegisterSerialNumbers.RecId)
+                {
+                    throw error(strFmt("@ITVTRental:SerialNumbersMustBeRegistered", rentalLine.ItemId));
+                }
+            }
+
+            if (!rentalLines)
+            {
+                rentalLines = new List(Types::Record);
+            }
+
+            rentalLines.addEnd(rentalLine);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

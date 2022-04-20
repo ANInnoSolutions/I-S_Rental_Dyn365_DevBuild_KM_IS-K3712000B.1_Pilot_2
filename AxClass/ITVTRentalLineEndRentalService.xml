@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineEndRentalService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The service class which contains logic for End rental
+/// </summary>
+class ITVTRentalLineEndRentalService extends ITVTRentalLineRentBaseService
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>runEndRental</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the logic to end rental lines
+    /// </summary>
+    /// <param name = "_contract">The used contract</param>
+    public void runEndRental(ITVTRentalLineEndRentalContract _contract)
+    {
+        Set salesIds = new Set(Types::String);
+
+        QueryRun queryRun = new QueryRun(_contract.getQuery());
+        
+        while (queryRun.next())
+        {
+            rentalLine = queryRun.get(tableNum(ITVTRentalLine));
+
+            if (_contract.parmReturnQty() == ITVTRentalReturnQty::All
+                || (_contract.parmReturnQty() == ITVTRentalReturnQty::ReturnNow
+                    && rentalLine.ReturnNow > 0))
+            {
+
+                if (_contract.parmPostingDate() != rentalLine.PostedRentalFromDate
+                && _contract.parmPostingDate() > rentalLine.RentalRunToDate)
+                {
+                    throw error(strFmt("@ITVTRental:EndRentalRunToDateError", rentalLine.LineNum, rentalLine.ItemId));
+                }
+
+                postingDate = this.getPostingDate(rentalLine, _contract.parmPostingDate());
+
+                ttsbegin;
+
+                rentalLine.selectForUpdate(true);
+                rentalLine.reread();
+
+                this.beginLedger();
+
+                this.postTransactions();
+
+                this.commitLedger();
+
+                rentalLine.Status = ITVTRentalLineStatus::Ended;
+                rentalLine.PostedRentalToDate = postingDate;
+                rentalLine.update();
+
+                ITVTRentalLine rentalLineNew; 
+
+                if (rentalLine.Qty - rentalLine.ReturnNow > 0)
+                {
+                    rentalLineNew = this.createRentalLine(rentalLine);
+                }
+
+                ttscommit;
+
+                if (_contract.parmPostRentalReturn() == NoYes::No
+                    && rentalLineNew.RecId)
+                {
+                    this.startRental(rentalLineNew);
+                }
+
+                salesIds.add(rentalLine.SalesId);
+
+                this.startRentalDepreciation(rentalLine);
+            }
+        }
+
+
+        this.salesTablePostUpdate(salesIds);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>startRentalDepreciation</Name>
+				<Source><![CDATA[
+    private void startRentalDepreciation(ITVTRentalLine _rentalLine)
+    {
+        if (ITVTRentalParameters::find().DepreciateInRentalEnd == NoYes::Yes)
+        {
+            ITVTRentalDepreciationPostController controller = new ITVTRentalDepreciationPostController();
+            Args args = new Args();
+            args.record(_rentalLine);
+            controller.initContract(args);
+            controller.parmShowDialog(false);
+            controller.startOperation();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>startRental</Name>
+				<Source><![CDATA[
+    private void startRental(ITVTRentalLine _rentalLine)
+    {
+        if (this.countUsedTrans(rentalLine) == 1)
+        {
+            List rentalLinesStartRental = new List(Types::Record);
+            rentalLinesStartRental.addEnd(_rentalLine);
+
+            ITVTRentalLineStartRentalController::runStartRentalFromContainer(rentalLinesStartRental.pack(), _rentalLine.RentalFromDate);
+        }
+        else
+        {
+            Message::Add(MessageSeverity::Warning, strFmt("@ITVTRental:StartRentalWarning", _rentalLine.ItemId));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>countUsedTrans</Name>
+				<Source><![CDATA[
+    private int countUsedTrans(ITVTRentalLine _rentalLine)
+    {
+        InventTrans inventTrans;
+        InventTransOrigin inventTransOrigin;
+        InventDim inventDim;
+        
+        InventDimension1 rentalStatusUsed = ITVTRentalParameters::find().InventDimValueStatusUsed;
+        FieldId rentalStatusFieldId = ITVTRentalParameters::getRentalInventDimStatusFieldId();
+
+        select count(RecId) from inventTrans
+            where inventTrans.StatusReceipt == StatusReceipt::Purchased
+            join inventTransOrigin
+                where inventTransOrigin.RecId == InventTrans.InventTransOrigin
+                    && inventTransOrigin.InventTransId == _rentalLine.InventTransId
+                    && inventTransOrigin.ReferenceCategory == InventTransType::RentalLine
+            join inventDim 
+                where inventDim.inventDimId == inventTrans.inventDimId
+                    && inventDim.(rentalStatusFieldId) == rentalStatusUsed;
+
+        return inventTrans.RecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRentalLine</Name>
+				<Source><![CDATA[
+    private ITVTRentalLine createRentalLine(ITVTRentalLine _rentalLineOld)
+    {
+        ITVTRentalLine rentalLineNew;
+
+        buf2buf(_rentalLineOld, rentalLineNew);
+
+        rentalLineNew.Qty = _rentalLineOld.Qty - _rentalLineOld.ReturnNow;
+        rentalLineNew.RentalFromDate = postingDate + 1;
+        rentalLineNew.ConfirmedRentalFromDate = postingDate + 1;
+        rentalLineNew.PostedRentalFromDate = dateNull();
+        rentalLineNew.PostedRentalToDate = dateNull();
+        rentalLineNew.RentalRunToDate = dateNull();
+        rentalLineNew.LineNum = ITVTRentalLine::getNextLineNum(_rentalLineOld);
+
+        rentalLineNew.modifiedField(fieldNum(ITVTRentalLine, Qty));
+
+        rentalLineNew.insert();
+
+        return rentalLineNew;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesTablePostUpdate</Name>
+				<Source><![CDATA[
+    private void salesTablePostUpdate(Set _salesIds)
+    {
+        ttsbegin;
+
+        SetEnumerator enumerator = _salesIds.getEnumerator();
+
+        while (enumerator.moveNext())
+        {
+            SalesId salesId = enumerator.current();
+
+            if (ITVTRentalLine::allRentalLinesPosted(salesId))
+            {
+                SalesTable salesTable = SalesTable::find(salesId, true);
+
+                salesTable.ITVTRentalIsFulfilled = NoYes::Yes;
+                salesTable.doUpdate();
+            }
+        }
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getPostingDate</Name>
+				<Source><![CDATA[
+    private TransDate getPostingDate(
+        ITVTRentalLine _rentalLine,
+        TransDate _postingDate)
+    {
+        return _postingDate ? _postingDate : _rentalLine.RentalToDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>postTransactions</Name>
+				<Source><![CDATA[
+    private void postTransactions()
+    {
+        ITVTInventMov_RentalLine mov = ITVTInventMov_RentalLine::newFromRentalLine(rentalLine,InventDirection::Issue);
+        Qty qty = mov.transQty();
+
+        InventUpd_Financial financial   = InventUpd_Financial::newMovement(mov,ledgerVoucher);
+
+        financial.parmCurrencyCode(CompanyInfoHelper::standardCurrency());
+        financial.parmFinancial(qty);
+        financial.parmRemainPhysical(0);
+        financial.parmFinancialUnit(qty);
+        financial.parmRemainPhysicalUnit(0);
+        financial.updateNow();
+
+        CostAmount costAmountIssue = financial.updCostAmountInvent();
+
+        ITVTInventMov_RentalLineRented  movRented  = ITVTInventMov_RentalLineRented::newFromRentalLine(rentalLine,InventDirection::Receipt);
+        Qty qtyRented = movRented.transQty();
+
+        InventUpd_Financial financialRented   = InventUpd_Financial::newMovement(movRented,ledgerVoucher);
+
+        financialRented.parmCurrencyCode(CompanyInfoHelper::standardCurrency());
+        financialRented.parmFinancial(qtyRented);
+        financialRented.parmRemainPhysical(0);
+        financialRented.parmFinancialUnit(qtyRented);
+        financialRented.parmRemainPhysicalUnit(0);
+        financialRented.parmCostAmountCur(-costAmountIssue);
+        financialRented.updateNow();
+
+
+        ITVTInventMov_RentalLineRented  movRentedBack  = ITVTInventMov_RentalLineRented::newFromRentalLine(rentalLine,InventDirection::Issue);
+        qtyRented = movRentedBack.transQty();
+
+        
+        /*
+        InventUpd_Physical physicalRented = InventUpd_Physical::newInventMovement(movRentedBack);
+        physicalRented.parmPhysical(qtyRented);
+        physicalRented.parmRemainPhysical(qtyRented);
+        physicalRented.parmPhysicalUnit(qtyRented);
+        physicalRented.parmRemainPhysicalUnit(qtyRented);
+        //physicalRented.parmAllowReservePhysical(true);
+        //physicalRented.parmAllowAutoReserveDim(true);
+        physicalRented.parmCostInputAmount(InventCostInputAmount::construct(qtyRented, costAmountIssue));
+        physicalRented.updateNow(ledgerVoucher);
+        */
+
+        financialRented   = InventUpd_Financial::newMovement(movRentedBack,ledgerVoucher);
+        //financialRented.setParmAllowDefault();
+        //financialRented.parmAllowReservePhysical(true);
+        //financialRented.parmAllowAutoReserveDim(true);
+        financialRented.parmCurrencyCode(CompanyInfoHelper::standardCurrency());
+        financialRented.parmFinancial(qtyRented);
+        financialRented.parmRemainPhysical(0);
+        financialRented.parmFinancialUnit(qtyRented);
+        financialRented.parmRemainPhysicalUnit(0);
+        financialRented.parmCostAmountCur(costAmountIssue);
+
+        //financialRented.createInventUpd_Physical();
+        InventUpd_Physical physicalRented = InventUpd_Physical::newInventUpdFinancial(
+            movRentedBack,
+            financialRented,
+            qtyRented,
+            qtyRented,
+            costAmountIssue);
+        physicalRented.updateNow(ledgerVoucher);
+
+        financialRented.updateNow();
+
+
+        ITVTInventMov_RentalLine movBack = ITVTInventMov_RentalLine::newFromRentalLine(rentalLine,InventDirection::Receipt);
+        qty = movBack.transQty();
+
+        /*
+        InventUpd_Physical physical = InventUpd_Physical::newInventMovement(movBack);
+        physical.parmPhysical(qty);
+        physical.parmRemainPhysical(qty);
+        physical.parmPhysicalUnit(qty);
+        physical.parmRemainPhysicalUnit(qty);
+        //physical.parmAllowReservePhysical(true);
+        //physical.parmAllowAutoReserveDim(true);
+        physical.parmCostInputAmount(InventCostInputAmount::construct(qtyRented, -costAmountIssue));
+        physical.updateNow(ledgerVoucher);
+        */
+
+        financial   = InventUpd_Financial::newMovement(movBack,ledgerVoucher);
+        //financial.setParmAllowDefault();
+        //financial.parmAllowReservePhysical(true);
+        //financial.parmAllowAutoReserveDim(true);
+        financial.parmCurrencyCode(CompanyInfoHelper::standardCurrency());
+        financial.parmFinancial(qty);
+        financial.parmRemainPhysical(0);
+        financial.parmFinancialUnit(qty);
+        financial.parmRemainPhysicalUnit(0);
+        financial.parmCostAmountCur(-costAmountIssue);
+
+        //financial.createInventUpd_Physical();
+        InventUpd_Physical physical = InventUpd_Physical::newInventUpdFinancial(
+            movBack,
+            financial,
+            qty,
+            qty,
+            -costAmountIssue);
+        physical.updateNow(ledgerVoucher);
+
+        financial.updateNow();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

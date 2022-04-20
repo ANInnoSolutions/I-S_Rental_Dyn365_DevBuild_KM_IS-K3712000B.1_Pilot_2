@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetRentalReconGenerateContract</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Data contract for <c>ITVTAssetRentalReconGenerateService</c> service
+/// </summary>
+[DataContract]
+class ITVTAssetRentalReconGenerateContract implements SysOperationValidatable
+{
+    FromDate                    fromDate;
+    ToDate                      toDate;
+    AssetBookId                 bookId;
+    ITVTOnlyReceiptTrans        onlyReceiptTrans;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>parmOnlyReceiptTrans</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public ITVTOnlyReceiptTrans parmOnlyReceiptTrans(ITVTOnlyReceiptTrans _onlyReceiptTrans = onlyReceiptTrans)
+    {
+        onlyReceiptTrans = _onlyReceiptTrans;
+        return onlyReceiptTrans;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmFromDate</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public FromDate parmFromDate(FromDate _fromDate = fromDate)
+    {
+        fromDate = _fromDate;
+        return fromDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmToDate</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public ToDate parmToDate(ToDate _toDate = toDate)
+    {
+        toDate = _toDate;
+        return toDate;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmAssetBookId</Name>
+				<Source><![CDATA[
+    [DataMember]
+    public AssetBookId parmAssetBookId(AssetBookId _bookId = bookId)
+    {
+        bookId = _bookId;
+        return bookId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validate</Name>
+				<Source><![CDATA[
+    public boolean validate()
+    {
+        boolean ret = true;
+
+        if (!fromDate)
+        {
+            ret = checkFailed(strFmt("@SYS84378", "@SYS5209"));
+        }
+
+        if (!toDate)
+        {
+            ret = checkFailed(strFmt("@SYS84378", "@SYS14656"));
+        }
+
+        if (fromDate
+            && toDate
+            && fromDate > toDate)
+        {
+            ret = checkFailed("@ITVTRental:RentalOrderWrongToDateValue");
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

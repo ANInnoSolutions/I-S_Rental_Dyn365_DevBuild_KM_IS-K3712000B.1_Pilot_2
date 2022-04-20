@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTAssetRentalReconPostUIBuilder</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// UI Builder for <c>ITVTAssetRentalReconPostContract</c>
+/// </summary>
+class ITVTAssetRentalReconPostUIBuilder extends SysOperationAutomaticUIBuilder
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>postBuild</Name>
+				<Source><![CDATA[
+    public void postBuild()
+    {
+        super();
+
+        DialogField dlgFixedAssetJournalName = this.bindInfo().getDialogField(
+            this.dataContractObject(),
+            methodStr(ITVTAssetRentalReconPostContract, parmFixedAssetJournalName));
+
+        dlgFixedAssetJournalName.registerOverrideMethod(
+            methodStr(FormStringControl, lookup),
+            methodStr(ITVTAssetRentalReconPostUIBuilder, lookupFixedAssetJournalName),
+            this);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>lookupFixedAssetJournalName</Name>
+				<Source><![CDATA[
+    private void lookupFixedAssetJournalName(FormStringControl _control)
+    {
+        Query query = new Query();
+        QueryBuildDataSource qbdsLedgerJournalName = query.addDataSource(tableNum(LedgerJournalName));
+        qbdsLedgerJournalName.addRange(fieldNum(LedgerJournalName, JournalType)).value(SysQuery::value(LedgerJournalType::Assets));
+
+        SysTableLookup sysTableLookup = SysTableLookup::newParameters(tableNum(LedgerJournalName), _control);
+        sysTableLookup.addLookupfield(fieldNum(LedgerJournalName, JournalName));
+        sysTableLookup.addLookupfield(fieldNum(LedgerJournalName, Name));
+        
+        sysTableLookup.parmQuery(query);
+        sysTableLookup.performFormLookup();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
