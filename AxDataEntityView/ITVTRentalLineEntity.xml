@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxDataEntityView xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineEntity</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ITVTRentalLineEntity extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>mapEntityToDataSource</Name>
+				<Source><![CDATA[
+    public void mapEntityToDataSource(DataEntityRuntimeContext _entityCtx, DataEntityDataSourceRuntimeContext _dataSourceCtx)
+    {
+        super(_entityCtx, _dataSourceCtx);
+
+        switch (_dataSourceCtx.name())
+        {
+            case dataEntityDataSourceStr(ITVTRentalLineEntity, ITVTRentalLine):
+                ITVTRentalLine rentalLine = _dataSourceCtx.getBuffer();
+                rentalLine.InventDimId = this.InventInventoryDimensionEntityFieldsMapping::resolveInventDimId();
+
+                switch (_entityCtx.getDatabaseOperation())
+                {
+                    case DataEntityDatabaseOperation::Insert:
+                        if (!rentalLine.Name)
+                        {
+                            rentalLine.initName(InventTable::find(rentalLine.ItemId));
+                        }
+                        
+                        if (!this.LineNum)
+                        {
+                            ITVTRentalLine rentalLineLast;
+            
+                            select firstonly rentalLineLast
+                                order by LineNum desc
+                                where rentalLineLast.SalesId == rentalLine.SalesId;
+
+                            rentalLine.LineNum = ITVTRentalLine::getNextLineNum(rentalLineLast);
+                        }
+                        this.skipDataSourceValidateField(fieldNum(ITVTRentalLineEntity, LineNum), true);
+                        break;
+                }
+
+                rentalLine.setRentalPrice();
+                rentalLine.setLineAmount();
+
+                break;
+
+            case dataEntityDataSourceStr(ITVTRentalLineEntity, InventDim):
+                InventDim inventDim = this.InventInventoryDimensionEntityFieldsMapping::resolveInventDim();
+                _dataSourceCtx.setBuffer(inventDim);
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<Label>@ITVTRental:RentalLines</Label>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<DataManagementEnabled>Yes</DataManagementEnabled>
+	<DataManagementStagingTable>ITVTRentalLineStaging</DataManagementStagingTable>
+	<IsPublic>Yes</IsPublic>
+	<PrimaryCompanyContext>DataAreaId</PrimaryCompanyContext>
+	<PrimaryKey>EntityKey</PrimaryKey>
+	<PublicCollectionName>ITVTRentalLineEntity</PublicCollectionName>
+	<PublicEntityName>ITVTRentalLineEntity</PublicEntityName>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>SalesId</Name>
+			<AllowEditOnCreate>Yes</AllowEditOnCreate>
+			<DataField>SalesId</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>LineNum</Name>
+			<AllowEditOnCreate>Yes</AllowEditOnCreate>
+			<DataField>LineNum</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventTransId</Name>
+			<DataField>InventTransId</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ItemId</Name>
+			<DataField>ItemId</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>Name</Name>
+			<DataField>Name</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>Qty</Name>
+			<DataField>Qty</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>UnitId</Name>
+			<DataField>UnitId</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalMinPeriod</Name>
+			<DataField>RentalMinPeriod</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalTimeUnitId</Name>
+			<DataField>RentalTimeUnitId</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalFromDate</Name>
+			<DataField>RentalFromDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalToDate</Name>
+			<DataField>RentalToDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ConfirmedRentalFromDate</Name>
+			<DataField>ConfirmedRentalFromDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ConfirmedRentalToDate</Name>
+			<DataField>ConfirmedRentalToDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>PostedRentalFromDate</Name>
+			<DataField>PostedRentalFromDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>PostedRentalToDate</Name>
+			<DataField>PostedRentalToDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalRunToDate</Name>
+			<DataField>RentalRunToDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalAdditionalText</Name>
+			<DataField>RentalAdditionalText</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalConstructionSite</Name>
+			<DataField>RentalConstructionSite</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalDocumentNumber</Name>
+			<DataField>RentalDocumentNumber</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>UseFactorPercentage</Name>
+			<DataField>UseFactorPercentage</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>SalesPrice</Name>
+			<DataField>SalesPrice</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>PriceUnit</Name>
+			<DataField>PriceUnit</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalFactorPercentage</Name>
+			<DataField>RentalFactorPercentage</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalPrice</Name>
+			<DataField>RentalPrice</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>LineAmount</Name>
+			<DataField>LineAmount</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>RentalOrderAutoReservation</Name>
+			<DataField>RentalOrderAutoReservation</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>Status</Name>
+			<DataField>Status</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>SalesType</Name>
+			<DataField>SalesType</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventTransIdRented</Name>
+			<DataField>InventTransIdRented</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>LineDisc</Name>
+			<DataField>LineDisc</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>LinePercent</Name>
+			<DataField>LinePercent</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>TaxGroup</Name>
+			<DataField>TaxGroup</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>TaxItemGroup</Name>
+			<DataField>TaxItemGroup</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>inventBatchId</Name>
+			<DataField>inventBatchId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventColorId</Name>
+			<DataField>InventColorId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension1</Name>
+			<DataField>InventDimension1</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension10</Name>
+			<DataField>InventDimension10</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension11</Name>
+			<DataField>InventDimension11</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension12</Name>
+			<DataField>InventDimension12</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension2</Name>
+			<DataField>InventDimension2</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension3</Name>
+			<DataField>InventDimension3</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension4</Name>
+			<DataField>InventDimension4</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension5</Name>
+			<DataField>InventDimension5</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension6</Name>
+			<DataField>InventDimension6</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension7</Name>
+			<DataField>InventDimension7</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension8</Name>
+			<DataField>InventDimension8</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventDimension9</Name>
+			<DataField>InventDimension9</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventLocationId</Name>
+			<DataField>InventLocationId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>inventSerialId</Name>
+			<DataField>inventSerialId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventSiteId</Name>
+			<DataField>InventSiteId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventSizeId</Name>
+			<DataField>InventSizeId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventStatusId</Name>
+			<DataField>InventStatusId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventStyleId</Name>
+			<DataField>InventStyleId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>InventVersionId</Name>
+			<DataField>InventVersionId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>LicensePlateId</Name>
+			<DataField>LicensePlateId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>wMSLocationId</Name>
+			<DataField>wMSLocationId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>wMSPalletId</Name>
+			<DataField>wMSPalletId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>configId</Name>
+			<DataField>configId</DataField>
+			<DataSource>InventDim</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ProjectLocationReceiptDate</Name>
+			<DataField>ProjectLocationReceiptDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>DeliverNow</Name>
+			<DataField>DeliverNow</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ReturnDate</Name>
+			<DataField>ReturnDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ReturnNow</Name>
+			<DataField>ReturnNow</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ReturnReceiptDate</Name>
+			<DataField>ReturnReceiptDate</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>PendingReturnQuantity</Name>
+			<DataField>PendingReturnQuantity</DataField>
+			<DataSource>ITVTRentalLine</DataSource>
+		</AxDataEntityViewField>
+	</Fields>
+	<Keys>
+		<AxDataEntityViewKey>
+			<Name>EntityKey</Name>
+			<Fields>
+				<AxDataEntityViewKeyField>
+					<DataField>LineNum</DataField>
+				</AxDataEntityViewKeyField>
+				<AxDataEntityViewKeyField>
+					<DataField>SalesId</DataField>
+				</AxDataEntityViewKeyField>
+			</Fields>
+		</AxDataEntityViewKey>
+	</Keys>
+	<Mappings>
+		<AxTableMapping>
+			<MappingTable>InventInventoryDimensionEntityFieldsMapping</MappingTable>
+			<Connections>
+				<AxTableMappingConnection>
+					<MapField>configId</MapField>
+					<MapFieldTo>configId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>inventBatchId</MapField>
+					<MapFieldTo>InventBatchId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventColorId</MapField>
+					<MapFieldTo>InventColorId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension1</MapField>
+					<MapFieldTo>InventDimension1</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension10</MapField>
+					<MapFieldTo>InventDimension10</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension11</MapField>
+					<MapFieldTo>InventDimension11</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension12</MapField>
+					<MapFieldTo>InventDimension12</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension2</MapField>
+					<MapFieldTo>InventDimension2</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension3</MapField>
+					<MapFieldTo>InventDimension3</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension4</MapField>
+					<MapFieldTo>InventDimension4</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension5</MapField>
+					<MapFieldTo>InventDimension5</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension6</MapField>
+					<MapFieldTo>InventDimension6</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension7</MapField>
+					<MapFieldTo>InventDimension7</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension8</MapField>
+					<MapFieldTo>InventDimension8</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventDimension9</MapField>
+					<MapFieldTo>InventDimension9</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventGTDId_RU</MapField>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventLocationId</MapField>
+					<MapFieldTo>InventLocationId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventOwnerId_RU</MapField>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventProfileId_RU</MapField>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>inventSerialId</MapField>
+					<MapFieldTo>inventSerialId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventSiteId</MapField>
+					<MapFieldTo>InventSiteId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventSizeId</MapField>
+					<MapFieldTo>InventSizeId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventStatusId</MapField>
+					<MapFieldTo>InventStatusId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventStyleId</MapField>
+					<MapFieldTo>InventStyleId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>InventVersionId</MapField>
+					<MapFieldTo>InventVersionId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>LicensePlateId</MapField>
+					<MapFieldTo>LicensePlateId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>wMSLocationId</MapField>
+					<MapFieldTo>wMSLocationId</MapFieldTo>
+				</AxTableMappingConnection>
+				<AxTableMappingConnection>
+					<MapField>wMSPalletId</MapField>
+					<MapFieldTo>wMSPalletId</MapFieldTo>
+				</AxTableMappingConnection>
+			</Connections>
+		</AxTableMapping>
+	</Mappings>
+	<Ranges />
+	<Relations />
+	<StateMachines />
+	<ViewMetadata>
+		<Name>Metadata</Name>
+		<SourceCode>
+			<Methods>
+				<Method>
+					<Name>classDeclaration</Name>
+					<Source><![CDATA[
+[Query]
+public class Metadata extends QueryRun
+{
+}
+]]></Source>
+				</Method>
+			</Methods>
+		</SourceCode>
+		<DataSources>
+			<AxQuerySimpleRootDataSource>
+				<Name>ITVTRentalLine</Name>
+				<DynamicFields>Yes</DynamicFields>
+				<Table>ITVTRentalLine</Table>
+				<DataSources>
+					<AxQuerySimpleEmbeddedDataSource>
+						<Name>InventDim</Name>
+						<DynamicFields>Yes</DynamicFields>
+						<IsReadOnly>Yes</IsReadOnly>
+						<Table>InventDim</Table>
+						<DataSources />
+						<DerivedDataSources />
+						<Fields />
+						<Ranges />
+						<JoinMode>OuterJoin</JoinMode>
+						<Relations>
+							<AxQuerySimpleDataSourceRelation>
+								<Name>QueryDataSourceRelation1</Name>
+								<JoinDataSource>ITVTRentalLine</JoinDataSource>
+								<JoinRelationName>InventDim</JoinRelationName>
+							</AxQuerySimpleDataSourceRelation>
+						</Relations>
+					</AxQuerySimpleEmbeddedDataSource>
+				</DataSources>
+				<DerivedDataSources />
+				<Fields />
+				<Ranges />
+				<GroupBy />
+				<Having />
+				<OrderBy />
+			</AxQuerySimpleRootDataSource>
+		</DataSources>
+	</ViewMetadata>
+</AxDataEntityView>
