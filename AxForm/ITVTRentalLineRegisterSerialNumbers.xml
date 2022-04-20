@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ITVTRentalLineRegisterSerialNumbers</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class ITVTRentalLineRegisterSerialNumbers extends FormRun
+{
+    ITVTRentalLine        rentalLine;
+    InventDim             inventDimRentalLine;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init()
+    {
+        super();
+
+        if (!element.args()
+            || !element.args().record())
+        {
+            throw error(Error::missingFormActiveBuffer(formStr(ITVTRentalLineRegisterSerialNumbers)));
+        }
+
+        rentalLine = element.args().record();
+        inventDimRentalLine = rentalLine.inventDim();
+
+        this.setSummary();
+        ITVTRentalLineRegisterSerialNumbers_ds.allowCreate(element.remainingQty() != 0.0);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setSummary</Name>
+				<Source><![CDATA[
+    public void setSummary()
+    {
+        SummaryGroup_ReturnNow.realValue(rentalLine.ReturnNow);
+        SummaryGroup_RegisteredQty.realValue(this.registeredQty());
+        SummaryGroup_RemainingQty.realValue(this.remainingQty());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>registeredQty</Name>
+				<Source><![CDATA[
+    ITVTRegisteredQty registeredQty()
+    {
+        ITVTRentalLineRegisterSerialNumbers registerSerialNumbers;
+
+        select count(RecId) from registerSerialNumbers
+                where registerSerialNumbers.InventTransId == rentalLine.InventTransId;
+
+        return registerSerialNumbers.RecId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>remainingQty</Name>
+				<Source><![CDATA[
+    ITVTRemainingQty remainingQty()
+    {
+        return rentalLine.ReturnNow - this.registeredQty();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="">
+			<DataSource>
+				<Name>ITVTRentalLineRegisterSerialNumbers</Name>
+				<Methods>
+					<Method>
+						<Name>init</Name>
+						<Source><![CDATA[
+        public void init()
+        {
+            super();
+
+            this.query().dataSourceTable(tableNum(ITVTRentalLineRegisterSerialNumbers)).addRange(
+                fieldNum(ITVTRentalLineRegisterSerialNumbers, InventTransId)).value(rentalLine.InventTransId);
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>active</Name>
+						<Source><![CDATA[
+        public int active()
+        {
+            int ret;
+
+            ret = super();
+
+            this.allowCreate(element.remainingQty() != 0.0);
+            element.setSummary();
+
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+		</DataSources>
+		<DataControls xmlns="">
+			<Control>
+				<Name>ITVTRentalLineRegisterSerialNumbers_InventSerialId</Name>
+				<Type>String</Type>
+				<Methods>
+					<Method>
+						<Name>lookup</Name>
+						<Source><![CDATA[
+        public void lookup()
+        {
+            Query query = new Query();
+            
+            QueryBuildDataSource queryInventOnHandByWarehouse = query.addDataSource(tableNum(InventOnHandByWarehouse));
+            queryInventOnHandByWarehouse.addRange(fieldNum(InventOnHandByWarehouse, ItemId)).value(rentalLine.ItemId);
+            queryInventOnHandByWarehouse.addRange(fieldNum(InventOnHandByWarehouse, InventLocationId)).value(inventDimRentalLine.InventLocationId);
+            queryInventOnHandByWarehouse.addRange(fieldNum(InventOnHandByWarehouse, AvailPhysical)).value('>0');
+
+            SysTableLookup sysTableLookup = SysTableLookup::newParameters(tableNum(InventOnHandByWarehouse), this);
+
+            sysTableLookup.addLookupField(fieldNum(InventOnHandByWarehouse, ITVTInventSerialId));
+            sysTableLookup.addLookupField(fieldNum(InventOnHandByWarehouse, InventLocationId));
+            sysTableLookup.addLookupField(fieldNum(InventOnHandByWarehouse, AvailPhysical));
+    
+            sysTableLookup.parmQuery(query);
+    
+            sysTableLookup.performFormLookup();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources>
+		<AxFormDataSource xmlns="">
+			<Name>ITVTRentalLineRegisterSerialNumbers</Name>
+			<Table>ITVTRentalLineRegisterSerialNumbers</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventSerialId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventTransId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<InsertIfEmpty>No</InsertIfEmpty>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+	</DataSources>
+	<Design>
+		<Caption xmlns="">@ITVTRental:RegisterSerialNumbers</Caption>
+		<DataSource xmlns="">ITVTRentalLineRegisterSerialNumbers</DataSource>
+		<Pattern xmlns="">SimpleDetails-FastTabsContainer</Pattern>
+		<PatternVersion xmlns="">1.4</PatternVersion>
+		<ShowDeleteButton xmlns="">No</ShowDeleteButton>
+		<ShowNewButton xmlns="">No</ShowNewButton>
+		<TitleDataSource xmlns="">ITVTRentalLineRegisterSerialNumbers</TitleDataSource>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormActionPaneControl">
+				<Name>ActionPane</Name>
+				<Type>ActionPane</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls />
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormTabControl">
+				<Name>Tab</Name>
+				<Type>Tab</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>SummaryTab</Name>
+						<AllowEdit>No</AllowEdit>
+						<Pattern>FieldsFieldGroups</Pattern>
+						<PatternVersion>1.1</PatternVersion>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>SummaryGroup_ReturnNow</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<ExtendedDataType>ITVTReturnNow</ExtendedDataType>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>SummaryGroup_RegisteredQty</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<ExtendedDataType>ITVTRegisteredQty</ExtendedDataType>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>SummaryGroup_RemainingQty</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<ExtendedDataType>ITVTRemainingQty</ExtendedDataType>
+							</AxFormControl>
+						</Controls>
+						<ColumnsMode>Fill</ColumnsMode>
+						<Caption>@SYS15560</Caption>
+						<FastTabExpanded>Yes</FastTabExpanded>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>RegisteredSerialNumbersTab</Name>
+						<Pattern>ToolbarList</Pattern>
+						<PatternVersion>1.2</PatternVersion>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormActionPaneControl">
+								<Name>RegisteredSerialNumbersActionPane</Name>
+								<Type>ActionPane</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormButtonGroupControl">
+										<Name>RegisteredSerialNumbersActionPaneTab</Name>
+										<Type>ButtonGroup</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormCommandButtonControl">
+												<Name>NewButton</Name>
+												<Type>CommandButton</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<ButtonDisplay>TextWithImageLeft</ButtonDisplay>
+												<Command>New</Command>
+												<NormalImage>Add</NormalImage>
+												<Text>@SCM:NewButton</Text>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormCommandButtonControl">
+												<Name>DeleteButton</Name>
+												<Type>CommandButton</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<ButtonDisplay>TextWithImageLeft</ButtonDisplay>
+												<Command>DeleteRecord</Command>
+												<NormalImage>Delete</NormalImage>
+												<Text>@SCM:DeleteButton</Text>
+											</AxFormControl>
+										</Controls>
+										<DataSource>ITVTRentalLineRegisterSerialNumbers</DataSource>
+									</AxFormControl>
+								</Controls>
+								<DataSource>ITVTRentalLineRegisterSerialNumbers</DataSource>
+								<Style>Strip</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormGridControl">
+								<Name>RegisteredSerialNumbersGrid</Name>
+								<Type>Grid</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>ITVTRentalLineRegisterSerialNumbers_InventSerialId</Name>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventSerialId</DataField>
+										<DataSource>ITVTRentalLineRegisterSerialNumbers</DataSource>
+									</AxFormControl>
+								</Controls>
+								<DataSource>ITVTRentalLineRegisterSerialNumbers</DataSource>
+							</AxFormControl>
+						</Controls>
+						<HideIfEmpty>No</HideIfEmpty>
+						<Caption>@ITVTRental:RegisteredSerialNumbers</Caption>
+						<FastTabExpanded>Yes</FastTabExpanded>
+					</AxFormControl>
+				</Controls>
+				<ArrangeMethod>HorizontalWrap</ArrangeMethod>
+				<DataSource>ITVTRentalLineRegisterSerialNumbers</DataSource>
+				<Style>FastTabs</Style>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

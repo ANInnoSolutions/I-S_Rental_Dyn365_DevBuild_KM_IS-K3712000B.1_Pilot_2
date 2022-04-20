@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ITVTRentalTableWorkspace</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class ITVTRentalTableWorkspace extends FormRun
+{
+}
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="" />
+		<DataControls xmlns="">
+			<Control>
+				<Name>CreateRentalOrder</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        public void clicked()
+        {
+            SalesTableForm salesTableForm = SalesTableForm::construct(SalesTableFormId::None, null);
+
+            salesTableForm.parmIsRental(NoYes::Yes);
+            boolean created = salesTableForm.create();
+
+            if (created)
+            {
+                Args args = new Args();
+                args.record(salesTableForm.salesTable());
+
+                new MenuFunction(menuItemDisplayStr(SalesTableForEdit), MenuItemType::Display).run(args);
+            }
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources />
+	<Design>
+		<Caption xmlns="">@ITVTRental:RentalOrderManagement</Caption>
+		<Pattern xmlns="">Custom</Pattern>
+		<ViewEditMode xmlns="">View</ViewEditMode>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormActionPaneControl">
+				<Name>ActionPane</Name>
+				<Type>ActionPane</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonGroupControl">
+						<Name>ButtonGroup</Name>
+						<Type>ButtonGroup</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormButtonControl">
+								<Name>CreateRentalOrder</Name>
+								<Type>Button</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Text>@ITVTRental:NewRentalOrder</Text>
+							</AxFormControl>
+						</Controls>
+					</AxFormControl>
+				</Controls>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormTabControl">
+				<Name>PanoramaTab</Name>
+				<Type>Tab</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>SummaryTabPage</Name>
+						<ExtendedStyle>panoramaItem_backgroundNone</ExtendedStyle>
+						<Pattern>SectionTiles</Pattern>
+						<PatternVersion>1.0</PatternVersion>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormMenuFunctionButtonControl">
+								<Name>ITVTRentalTableListPageTile</Name>
+								<Type>MenuFunctionButton</Type>
+								<FormControlExtension>
+									<Name>TileButtonControl</Name>
+									<ExtensionComponents />
+									<ExtensionProperties>
+										<AxFormControlExtensionProperty>
+											<Name>tile</Name>
+											<Type>String</Type>
+											<Value>ITVTRentalTableListPageTile</Value>
+										</AxFormControlExtensionProperty>
+										<AxFormControlExtensionProperty>
+											<Name>tileDisplay</Name>
+											<Type>Enum</Type>
+											<TypeName>TileDisplay</TypeName>
+											<Value>Auto</Value>
+										</AxFormControlExtensionProperty>
+									</ExtensionProperties>
+								</FormControlExtension>
+								<Text>@ITVTRental:AllRentalOrders</Text>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormMenuFunctionButtonControl">
+								<Name>ITVTRentalTableListPageOpenTile</Name>
+								<Type>MenuFunctionButton</Type>
+								<FormControlExtension>
+									<Name>TileButtonControl</Name>
+									<ExtensionComponents />
+									<ExtensionProperties>
+										<AxFormControlExtensionProperty>
+											<Name>tile</Name>
+											<Type>String</Type>
+											<Value>ITVTRentalTableListPageOpenTile</Value>
+										</AxFormControlExtensionProperty>
+										<AxFormControlExtensionProperty>
+											<Name>tileDisplay</Name>
+											<Type>Enum</Type>
+											<TypeName>TileDisplay</TypeName>
+											<Value>Auto</Value>
+										</AxFormControlExtensionProperty>
+									</ExtensionProperties>
+								</FormControlExtension>
+								<Text>@ITVTRental:OpenRentalOrders</Text>
+							</AxFormControl>
+						</Controls>
+						<ArrangeMethod>HorizontalWrap</ArrangeMethod>
+						<ColumnsMode>Fill</ColumnsMode>
+						<Caption>@SYS15560</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>OrdersAndFavoritesTabPage</Name>
+						<Pattern>SectionTabbedList</Pattern>
+						<PatternVersion>1.0</PatternVersion>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormTabControl">
+								<Name>RentalOrdersTab</Name>
+								<Type>Tab</Type>
+								<WidthMode>SizeToContent</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>RentalOpenOrders</Name>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormContainerControl">
+												<Name>RentalOpenOrdersFormPart</Name>
+												<HeightMode>SizeToAvailable</HeightMode>
+												<Type>Container</Type>
+												<FormControlExtension>
+													<Name>FormPartControl</Name>
+													<ExtensionComponents>
+														<AxFormControlExtensionComponent xmlns=""
+															i:type="AxFormControlExtensionComponentComposite">
+															<Name>dataLinks</Name>
+															<ExtensionComponents />
+														</AxFormControlExtensionComponent>
+													</ExtensionComponents>
+													<ExtensionProperties>
+														<AxFormControlExtensionProperty>
+															<Name>targetName</Name>
+															<Type>String</Type>
+															<Value>ITVTRentalTableWorkspaceFormPartOpen</Value>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>autoRefreshInterval</Name>
+															<Type>Int32</Type>
+															<Value>0</Value>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmRunMode</Name>
+															<Type>Enum</Type>
+															<TypeName>FormPartControlRunMode</TypeName>
+															<Value>Local</Value>
+														</AxFormControlExtensionProperty>
+													</ExtensionProperties>
+												</FormControlExtension>
+												<Controls />
+											</AxFormControl>
+										</Controls>
+										<Caption>@ITVTRental:OpenRentalOrders</Caption>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>RentalFinishedOrders</Name>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormContainerControl">
+												<Name>RentalFinishedOrdersFormPart</Name>
+												<HeightMode>SizeToAvailable</HeightMode>
+												<Type>Container</Type>
+												<FormControlExtension>
+													<Name>FormPartControl</Name>
+													<ExtensionComponents>
+														<AxFormControlExtensionComponent xmlns=""
+															i:type="AxFormControlExtensionComponentComposite">
+															<Name>dataLinks</Name>
+															<ExtensionComponents />
+														</AxFormControlExtensionComponent>
+													</ExtensionComponents>
+													<ExtensionProperties>
+														<AxFormControlExtensionProperty>
+															<Name>targetName</Name>
+															<Type>String</Type>
+															<Value>ITVTRentalTableWorkspaceFormPartFinished</Value>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>autoRefreshInterval</Name>
+															<Type>Int32</Type>
+															<Value>0</Value>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmRunMode</Name>
+															<Type>Enum</Type>
+															<TypeName>FormPartControlRunMode</TypeName>
+															<Value>Local</Value>
+														</AxFormControlExtensionProperty>
+													</ExtensionProperties>
+												</FormControlExtension>
+												<Controls />
+											</AxFormControl>
+										</Controls>
+										<Caption>@ITVTRental:FinishedRentalOrders</Caption>
+									</AxFormControl>
+								</Controls>
+								<ArrangeMethod>Vertical</ArrangeMethod>
+								<Style>VerticalTabs</Style>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SCM:OrdersAndFavoriteContacts</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>LinksTabPage</Name>
+						<Pattern>SectionRelatedLinks</Pattern>
+						<PatternVersion>1.0</PatternVersion>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>OrdersGroup</Name>
+								<Type>Group</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormMenuFunctionButtonControl">
+										<Name>InventTransferOrder</Name>
+										<Type>MenuFunctionButton</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<ButtonDisplay>TextOnly</ButtonDisplay>
+										<MenuItemName>InventTransferOrder</MenuItemName>
+										<Style>Link</Style>
+										<Text>@SCM:AllTransferOrders</Text>
+									</AxFormControl>
+								</Controls>
+								<Caption>@SYS67077</Caption>
+								<FrameOptionButton>Hide</FrameOptionButton>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>CustomersAndProductsGroup</Name>
+								<Type>Group</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormMenuFunctionButtonControl">
+										<Name>CustTableHoldListPage</Name>
+										<Type>MenuFunctionButton</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<ButtonDisplay>TextOnly</ButtonDisplay>
+										<MenuItemName>CustTableHoldListPage</MenuItemName>
+										<Style>Link</Style>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormMenuFunctionButtonControl">
+										<Name>EcoResProductDetailsExtendedGrid</Name>
+										<Type>MenuFunctionButton</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<ButtonDisplay>TextOnly</ButtonDisplay>
+										<MenuItemName>EcoResProductDetailsExtendedGrid</MenuItemName>
+										<Style>Link</Style>
+									</AxFormControl>
+								</Controls>
+								<Caption>@SCM:CustomersAndProducts</Caption>
+								<FrameOptionButton>Hide</FrameOptionButton>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS72248</Caption>
+					</AxFormControl>
+				</Controls>
+				<Style>Panorama</Style>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

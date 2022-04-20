@@ -1,0 +1,1920 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ITVTRentalParameters</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class ITVTRentalParameters extends FormRun
+{
+    boolean                     runExecuteDirect;
+    TmpIdRef                    tmpIdRef;
+    NumberSeqScope              scope;
+    NumberSeqApplicationModule  numberSeqApplicationModule;
+    container                   numberSequenceModules;
+    NumberSeqReference          numberSeqReferenceRebate;
+
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initItemAssignmentsFields</Name>
+				<Source><![CDATA[
+    protected void initItemAssignmentsFields()
+    {
+        if (ITVTRentalItemAssetGroup.ItemCode == TableGroupAll::All)
+        {
+            ITVTRentalItemAssetGroup_ds.object(fieldNum(ITVTRentalItemAssetGroup, ItemRelation)).mandatory(false);
+            ITVTRentalItemAssetGroup_ds.object(fieldNum(ITVTRentalItemAssetGroup, ItemRelation)).allowEdit(false);
+        }
+        else
+        {
+            ITVTRentalItemAssetGroup_ds.object(fieldNum(ITVTRentalItemAssetGroup, ItemRelation)).mandatory(true);
+            ITVTRentalItemAssetGroup_ds.object(fieldNum(ITVTRentalItemAssetGroup, ItemRelation)).allowEdit(true);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initRentalParametersFields</Name>
+				<Source><![CDATA[
+    protected void initRentalParametersFields()
+    {
+        ITVTRentalParameters_ds.object(fieldNum(ITVTRentalParameters, DepreciateInRentalEnd)).allowEdit(ITVTRentalParameters.DepreciateInventory == NoYes::Yes);
+        
+        if (ITVTRentalParameters.DepreciateInventory == NoYes::No)
+        {
+            ITVTRentalParameters.DepreciateInRentalEnd = NoYes::No;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="">
+			<DataSource>
+				<Name>ITVTRentalParameters</Name>
+				<Methods>
+					<Method>
+						<Name>active</Name>
+						<Source><![CDATA[
+        public int active()
+        {
+            int ret;
+        
+            ret = super();
+
+            element.initRentalParametersFields();
+        
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields>
+					<Field>
+						<DataField>DepreciateInventory</DataField>
+						<Methods>
+							<Method>
+								<Name>modified</Name>
+								<Source><![CDATA[
+            public void modified()
+            {
+                super();
+
+                element.initRentalParametersFields();
+            }
+
+]]></Source>
+							</Method>
+						</Methods>
+					</Field>
+					<Field>
+						<DataField>ProjCategory</DataField>
+						<Methods>
+							<Method>
+								<Name>lookup</Name>
+								<Source><![CDATA[
+            public void lookup(FormControl _formControl, str _filterStr)
+            {
+                ProjCategory::lookupProjCategoryType(_formControl, ProjCategoryType::Item);
+            }
+
+]]></Source>
+							</Method>
+						</Methods>
+					</Field>
+				</Fields>
+			</DataSource>
+			<DataSource>
+				<Name>ITVTRentalItemAssetGroup</Name>
+				<Methods>
+					<Method>
+						<Name>active</Name>
+						<Source><![CDATA[
+        public int active()
+        {
+            int ret;
+        
+            ret = super();
+
+            element.initItemAssignmentsFields();
+        
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields>
+					<Field>
+						<DataField>ItemCode</DataField>
+						<Methods>
+							<Method>
+								<Name>modified</Name>
+								<Source><![CDATA[
+            public void modified()
+            {
+                super();
+
+                element.initItemAssignmentsFields();
+            }
+
+]]></Source>
+							</Method>
+						</Methods>
+					</Field>
+				</Fields>
+			</DataSource>
+		</DataSources>
+		<DataControls xmlns="" />
+		<Members xmlns="" />
+	</SourceCode>
+	<AllowPreLoading>No</AllowPreLoading>
+	<DataSources>
+		<AxFormDataSource xmlns="">
+			<Name>ITVTRentalParameters</Name>
+			<Table>ITVTRentalParameters</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>AccrualAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AccrualJournalName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CheckRentalItemNewFixedAssetCost</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreateFixedAssetWithFirstRental</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreateProjLocation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DefaultInventLocation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DefaultIsFixedAsset</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciateInRentalEnd</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciateInventory</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ExpenseAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>FactorPercentage</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueDefaultFAPurch</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueDefaultProd</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueDefaultPurch</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueDefaultRental</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueDefaultSales</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueStatusInterimFAPurch</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueStatusNew</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueStatusNewFixedAsset</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueStatusRented</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimValueStatusUsed</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventJournalNameId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ItemGroupId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ItemModelGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ITVTWeekStart</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Key</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LossProfitJournalNameId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ManualPosting</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedBy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MovementJournalLedgerDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MovementJournalNameId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ProjCategory</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalDispatchJournalName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalOrderAutoReservation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalRunForOpenPeriods</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalServiceInventoryUnit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalServicePrefix</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalServicePurchUnit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalServiceSalesUnit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalServiceStorageDimensionGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalServiceTrackingDimensionGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReturnTransferJournalNameId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>StartEndRentalReceiptShip</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxItemGroupIdPurch</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxItemGroupIdSales</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TimeUnitId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>UseConfirmedRentalEndDateForEndRental</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>UseFactorPercentage</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>ITVTRentalItemAssetGroup</Name>
+			<Table>ITVTRentalItemAssetGroup</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>AssetGroupId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ItemCode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ItemRelation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<InsertAtEnd>No</InsertAtEnd>
+			<InsertIfEmpty>No</InsertIfEmpty>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>AssetParameters</Name>
+			<Table>AssetParameters</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>AcceleratedDepCalcMethod_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AcceleratedDepRateFactor_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AcceleratedDepRateThreshold_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Acquisition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AcquisitionAdj</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AllowPreAcquisition_CZ</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AnalysisDimensionAttribute_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssessedRoll_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssessedTaxInitDate_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetAccountingStandard_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetAllowAcqPostingPO</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetAllowAutoCreate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetAllowCreate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetAllowLocationTransfer_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetAllowSale_PL</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetAssemblingReservation_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetBookInSingleUse</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetChanges</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetDefaultSaleLedgerDimension_PL</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetPercentageLevel_PL</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetSaleBasis_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AssetUserGroupIdPostPO</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>AutoNumber</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>BarcodeEqualsAssetNumber</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>BookIdDefault</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CapitalizationThreshold</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CapitalReserve</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CapitalReserveTransfer</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CheckMaxPercentRB</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CompanyIssue_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CompanyReceipt_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ConsiderCapitalizationThreshold</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CurrencyWriteDownAdj_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CurrencyWriteUpAdj_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DeductCashDisc</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_IsCurrentPeriodAdjustment</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Depreciation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciationAdj</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciationCatchUpInterval_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciationCompaniesAct_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciationIncomeTaxAct_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciationMin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciationMinReportingCurrency</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DepreciationThreshold_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DerogatoryDecrease</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DerogatoryIncrease</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DisposalSale</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DisposalScrap</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Disposal_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EnableDepreciationMethods</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EnableDepreciationPolicy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ExtraOrdinaryDepreciation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>HalfYearDepreciation_AT</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ICMSCreditInstallments_BR</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ImpairmentWarningPeriod_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventJournalNameId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>IsAssemblingEnabled_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>IsAutomaticPosting</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>IsDisposalSameYear</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>IsProratedDepreciation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Key</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LandTaxCode_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LandTaxRoll_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LedgerDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LendingReturn_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Lending_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LowCostAssetInventProfileId_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LowCostAssetThreshold_HU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LowCostAssetThreshold_W</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MajorRepairs_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ManuallyChangeDepProfileEnable_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MaxAcquisitionValue_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MaxBooksInAcquisitionProposalJournal</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MaxBooksInDepreciationProposalJournal</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MaxBooksInSumDepreciationProposalJournal</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MinNonSeasonalWorkingDays_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MinSeasonalWorkingDays_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedBy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>MultiAcquisition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Other_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PartialTakeDown_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PostingProfile</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReportingCurrencyAmountUpdatesComplete</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Revaluation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxBookIdDefault_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxCode_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ThresholdPercentage_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransportTaxCode_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TransportTaxRoll_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>UseCatchUpMethod_JP</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>UseSpecialDepreciatonBalance_IN</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>WriteDownAdj</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>WriteUpAdj</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+	</DataSources>
+	<Design>
+		<Caption xmlns="">@ITVTRental:RentalParameters</Caption>
+		<Pattern xmlns="">TableOfContents</Pattern>
+		<PatternVersion xmlns="">1.1</PatternVersion>
+		<Style xmlns="">TableOfContents</Style>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormTabControl">
+				<Name>Tab</Name>
+				<Type>Tab</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>General</Name>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>GeneralTitle</Name>
+								<ElementPosition>1073741822</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Skip>Yes</Skip>
+								<Type>Group</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<WidthMode>SizeToAvailable</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStaticTextControl">
+										<Name>StaticText</Name>
+										<ElementPosition>1431655764</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Skip>Yes</Skip>
+										<Type>StaticText</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<WidthMode>SizeToAvailable</WidthMode>
+										<FormControlExtension
+											i:nil="true" />
+										<Style>MainInstruction</Style>
+										<Text>@ITVTRental:GeneralInfoForRent</Text>
+									</AxFormControl>
+								</Controls>
+								<AllowUserSetup>No</AllowUserSetup>
+								<FrameType>None</FrameType>
+								<Style>TOCTitleContainer</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormTabControl">
+								<Name>GeneralTab</Name>
+								<Type>Tab</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>GeneralTabPage</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>ProjectLocation</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ITVTRentalParameters_DefaultInventLocation</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>DefaultInventLocation</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<Caption>@ITVTRental:ProjectWarehouse</Caption>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>RentalRun</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormComboBoxControl">
+														<Name>RentalRun_ITVTWeekStart</Name>
+														<Type>ComboBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>ITVTWeekStart</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+														<Items />
+													</AxFormControl>
+												</Controls>
+												<DataGroup>RentalRun</DataGroup>
+												<DataSource>ITVTRentalParameters</DataSource>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>DirectItemReceiptFromRental</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>DirectItemReceiptFromRental_ReturnTransferJournalNameId</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>ReturnTransferJournalNameId</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>DirectItemReceiptFromRental_RentalRunForOpenPeriods</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalRunForOpenPeriods</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>DirectItemReceiptFromRental_UseConfirmedRentalEndDateForEndRental</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>UseConfirmedRentalEndDateForEndRental</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<Caption>@ITVTRental:DirectItemReceiptFromRental</Caption>
+												<DataGroup>DirectItemReceiptFromRental</DataGroup>
+												<DataSource>ITVTRentalParameters</DataSource>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@ITVTRental:General</Caption>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>RentalOrderTab</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>DefaultValuesGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>ITVTRentalParameters_CreateProjLocation</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>CreateProjLocation</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>ITVTRentalParameters_RentalOrderAutoReservation</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalOrderAutoReservation</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>TimeUnit_TimeUnitId1</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>TimeUnitId</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>ITVTRentalParameters_UseFactorPercentage</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>UseFactorPercentage</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormRealControl">
+														<Name>ITVTRentalParameters_FactorPercentage</Name>
+														<Type>Real</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>FactorPercentage</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>ITVTRentalParameters_StartEndRentalReceiptShip</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>StartEndRentalReceiptShip</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<Caption>@SYS21682</Caption>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@ITVTRental:RentalOrder</Caption>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>RentalItemTab</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>DefaultValuesGroup2</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>RentalItemDefaults_DefaultIsFixedAsset1</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>DefaultIsFixedAsset</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<Caption>@SYS21682</Caption>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@ITVTRental:RentalItem</Caption>
+									</AxFormControl>
+								</Controls>
+								<Style>FastTabs</Style>
+							</AxFormControl>
+						</Controls>
+						<Caption>@ITVTRental:General</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>FixedAssets</Name>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>FixedAssetsTitle</Name>
+								<ElementPosition>1073741822</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Skip>Yes</Skip>
+								<Type>Group</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<WidthMode>SizeToAvailable</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStaticTextControl">
+										<Name>FixedAssetsText</Name>
+										<ElementPosition>1431655764</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Skip>Yes</Skip>
+										<Type>StaticText</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<WidthMode>SizeToAvailable</WidthMode>
+										<FormControlExtension
+											i:nil="true" />
+										<Style>MainInstruction</Style>
+										<Text>@ITVTRental:AssetReconciliationForRental</Text>
+									</AxFormControl>
+								</Controls>
+								<AllowUserSetup>No</AllowUserSetup>
+								<FrameType>None</FrameType>
+								<Style>TOCTitleContainer</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormTabControl">
+								<Name>FixedAssetsTab</Name>
+								<Type>Tab</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>FixedAssetsGeneralTabPage</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormStringControl">
+												<Name>AssetParameters_BookIdDefault</Name>
+												<Type>String</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataField>BookIdDefault</DataField>
+												<DataSource>AssetParameters</DataSource>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>FixedAssetParameters</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>FixedAssetParameters_RentalDispatchJournalName</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalDispatchJournalName</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>FixedAssetParameters_ManualPosting</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>ManualPosting</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>FixedAssetParameters_InventJournalNameId</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>InventJournalNameId</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>FixedAssetParameters_CheckRentalItemNewFixedAssetCost</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>CheckRentalItemNewFixedAssetCost</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<DataGroup>FixedAssetParameters</DataGroup>
+												<DataSource>ITVTRentalParameters</DataSource>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>StartRentalGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>ITVTRentalParameters_CreateFixedAssetWithFirstRental</Name>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>CreateFixedAssetWithFirstRental</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ITVTRentalParameters_MovementJournalNameId</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>MovementJournalNameId</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormSegmentedEntryControl">
+														<Name>ITVTRentalParameters_MovementJournalLedgerDimension</Name>
+														<Type>SegmentedEntry</Type>
+														<FormControlExtension>
+															<Name>SegmentedEntryControl</Name>
+															<ExtensionComponents />
+															<ExtensionProperties>
+																<AxFormControlExtensionProperty>
+																	<Name>parmControllerClassName</Name>
+																	<Type>String</Type>
+																	<Value>LedgerDimensionDefaultAccountController</Value>
+																</AxFormControlExtensionProperty>
+																<AxFormControlExtensionProperty>
+																	<Name>parmAccountTypeEnumName</Name>
+																	<Type>String</Type>
+																</AxFormControlExtensionProperty>
+																<AxFormControlExtensionProperty>
+																	<Name>parmIsDefaultAccount</Name>
+																	<Type>Enum</Type>
+																	<TypeName>boolean</TypeName>
+																	<Value>False</Value>
+																</AxFormControlExtensionProperty>
+																<AxFormControlExtensionProperty>
+																	<Name>parmValidateBlockedForManualEntry</Name>
+																	<Type>Enum</Type>
+																	<TypeName>NoYes</TypeName>
+																</AxFormControlExtensionProperty>
+																<AxFormControlExtensionProperty>
+																	<Name>parmLockMainAccountSegment</Name>
+																	<Type>Enum</Type>
+																	<TypeName>NoYes</TypeName>
+																</AxFormControlExtensionProperty>
+																<AxFormControlExtensionProperty>
+																	<Name>parmPostingType</Name>
+																	<Type>Enum</Type>
+																	<TypeName>LedgerPostingType</TypeName>
+																</AxFormControlExtensionProperty>
+																<AxFormControlExtensionProperty>
+																	<Name>parmIncludeTotalAccounts</Name>
+																	<Type>Enum</Type>
+																	<TypeName>NoYes</TypeName>
+																</AxFormControlExtensionProperty>
+																<AxFormControlExtensionProperty>
+																	<Name>parmIncludeFinancialAccounts</Name>
+																	<Type>Enum</Type>
+																	<TypeName>NoYes</TypeName>
+																</AxFormControlExtensionProperty>
+															</ExtensionProperties>
+														</FormControlExtension>
+														<DataSource>ITVTRentalParameters</DataSource>
+														<ReferenceField>MovementJournalLedgerDimension</ReferenceField>
+													</AxFormControl>
+												</Controls>
+												<Caption>@ITVTRental:StartRental</Caption>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>FixedAssetPurchase</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>FixedAssetPurchase_LossProfitJournalNameId</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>LossProfitJournalNameId</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<DataGroup>FixedAssetPurchase</DataGroup>
+												<DataSource>ITVTRentalParameters</DataSource>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@ITVTRental:General</Caption>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>RentalItemAssignmetTabPage</Name>
+										<Pattern>ToolbarList</Pattern>
+										<PatternVersion>1.2</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormActionPaneControl">
+												<Name>ITVTRentalItemAssignmentActionPane</Name>
+												<Type>ActionPane</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormButtonGroupControl">
+														<Name>ITVTRentalItemAssignmentMaintenance</Name>
+														<Type>ButtonGroup</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Controls>
+															<AxFormControl xmlns=""
+																i:type="AxFormCommandButtonControl">
+																<Name>ITVTRentalItemNewAssignment</Name>
+																<Type>CommandButton</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<Command>New</Command>
+																<NormalImage>Add</NormalImage>
+																<Text>@SYS152770</Text>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormCommandButtonControl">
+																<Name>ITVTRentalItemDeleteAssignment</Name>
+																<Type>CommandButton</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<Command>DeleteRecord</Command>
+																<NormalImage>Delete</NormalImage>
+																<SaveRecord>No</SaveRecord>
+																<Text>@SYS94691</Text>
+															</AxFormControl>
+														</Controls>
+														<DataSource>ITVTRentalItemAssetGroup</DataSource>
+													</AxFormControl>
+												</Controls>
+												<DataSource>ITVTRentalItemAssetGroup</DataSource>
+												<Style>Strip</Style>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGridControl">
+												<Name>ITVTRentalItemAssignmentGrid</Name>
+												<Type>Grid</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormComboBoxControl">
+														<Name>ITVTRentalItemAssignmentGrid_ItemCode</Name>
+														<Type>ComboBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>ItemCode</DataField>
+														<DataSource>ITVTRentalItemAssetGroup</DataSource>
+														<Items />
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ITVTRentalItemAssignmentGrid_ItemRelation</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>ItemRelation</DataField>
+														<DataSource>ITVTRentalItemAssetGroup</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ITVTRentalItemAssignmentGrid_AssetGroupId</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>AssetGroupId</DataField>
+														<DataSource>ITVTRentalItemAssetGroup</DataSource>
+													</AxFormControl>
+												</Controls>
+												<DataGroup>AutoReport</DataGroup>
+												<DataSource>ITVTRentalItemAssetGroup</DataSource>
+											</AxFormControl>
+										</Controls>
+										<Caption>@ITVTRental:ItemAssignments</Caption>
+									</AxFormControl>
+								</Controls>
+								<Style>FastTabs</Style>
+							</AxFormControl>
+						</Controls>
+						<Caption>@ITVTRental:FixedAssetsGroup</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>InventoryValue</Name>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>InventoryValueTitle</Name>
+								<ElementPosition>1073741822</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Skip>Yes</Skip>
+								<Type>Group</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<WidthMode>SizeToAvailable</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStaticTextControl">
+										<Name>InventValueText</Name>
+										<ElementPosition>1431655764</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Skip>Yes</Skip>
+										<Type>StaticText</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<WidthMode>SizeToAvailable</WidthMode>
+										<FormControlExtension
+											i:nil="true" />
+										<Style>MainInstruction</Style>
+										<Text>@ITVTRental:InventoryValueCurrentAsset</Text>
+									</AxFormControl>
+								</Controls>
+								<AllowUserSetup>No</AllowUserSetup>
+								<FrameType>None</FrameType>
+								<Style>TOCTitleContainer</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormTabControl">
+								<Name>InventoryValueTab</Name>
+								<Type>Tab</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>InventGeneralTab</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormCheckBoxControl">
+												<Name>ITVTRentalParameters_DepreciateInventory</Name>
+												<Type>CheckBox</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataField>DepreciateInventory</DataField>
+												<DataSource>ITVTRentalParameters</DataSource>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormCheckBoxControl">
+												<Name>ITVTRentalParameters_DepreciateInRentalEnd</Name>
+												<Type>CheckBox</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataField>DepreciateInRentalEnd</DataField>
+												<DataSource>ITVTRentalParameters</DataSource>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@SYS55776</Caption>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>InventAccrualTab</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormStringControl">
+												<Name>ITVTRentalParameters_AccrualJournalName</Name>
+												<Type>String</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataField>AccrualJournalName</DataField>
+												<DataSource>ITVTRentalParameters</DataSource>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormSegmentedEntryControl">
+												<Name>ITVTRentalParameters_AccrualAccount</Name>
+												<Type>SegmentedEntry</Type>
+												<FormControlExtension>
+													<Name>SegmentedEntryControl</Name>
+													<ExtensionComponents />
+													<ExtensionProperties>
+														<AxFormControlExtensionProperty>
+															<Name>parmControllerClassName</Name>
+															<Type>String</Type>
+															<Value>LedgerDimensionDefaultAccountController</Value>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmAccountTypeEnumName</Name>
+															<Type>String</Type>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmIsDefaultAccount</Name>
+															<Type>Enum</Type>
+															<TypeName>boolean</TypeName>
+															<Value>False</Value>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmValidateBlockedForManualEntry</Name>
+															<Type>Enum</Type>
+															<TypeName>NoYes</TypeName>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmLockMainAccountSegment</Name>
+															<Type>Enum</Type>
+															<TypeName>NoYes</TypeName>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmPostingType</Name>
+															<Type>Enum</Type>
+															<TypeName>LedgerPostingType</TypeName>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmIncludeTotalAccounts</Name>
+															<Type>Enum</Type>
+															<TypeName>NoYes</TypeName>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmIncludeFinancialAccounts</Name>
+															<Type>Enum</Type>
+															<TypeName>NoYes</TypeName>
+														</AxFormControlExtensionProperty>
+													</ExtensionProperties>
+												</FormControlExtension>
+												<DataSource>ITVTRentalParameters</DataSource>
+												<ReferenceField>AccrualAccount</ReferenceField>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormSegmentedEntryControl">
+												<Name>ITVTRentalParameters_ExpenseAccount</Name>
+												<Type>SegmentedEntry</Type>
+												<FormControlExtension>
+													<Name>SegmentedEntryControl</Name>
+													<ExtensionComponents />
+													<ExtensionProperties>
+														<AxFormControlExtensionProperty>
+															<Name>parmControllerClassName</Name>
+															<Type>String</Type>
+															<Value>LedgerDimensionDefaultAccountController</Value>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmAccountTypeEnumName</Name>
+															<Type>String</Type>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmIsDefaultAccount</Name>
+															<Type>Enum</Type>
+															<TypeName>boolean</TypeName>
+															<Value>False</Value>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmValidateBlockedForManualEntry</Name>
+															<Type>Enum</Type>
+															<TypeName>NoYes</TypeName>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmLockMainAccountSegment</Name>
+															<Type>Enum</Type>
+															<TypeName>NoYes</TypeName>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmPostingType</Name>
+															<Type>Enum</Type>
+															<TypeName>LedgerPostingType</TypeName>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmIncludeTotalAccounts</Name>
+															<Type>Enum</Type>
+															<TypeName>NoYes</TypeName>
+														</AxFormControlExtensionProperty>
+														<AxFormControlExtensionProperty>
+															<Name>parmIncludeFinancialAccounts</Name>
+															<Type>Enum</Type>
+															<TypeName>NoYes</TypeName>
+														</AxFormControlExtensionProperty>
+													</ExtensionProperties>
+												</FormControlExtension>
+												<DataSource>ITVTRentalParameters</DataSource>
+												<ReferenceField>ExpenseAccount</ReferenceField>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@ITVTRental:AccrualTransaction</Caption>
+									</AxFormControl>
+								</Controls>
+								<Style>FastTabs</Style>
+							</AxFormControl>
+						</Controls>
+						<Caption>@ITVTRental:InventoryValue</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>Items</Name>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>ItemsTitleGroup</Name>
+								<Skip>Yes</Skip>
+								<Type>Group</Type>
+								<WidthMode>SizeToAvailable</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStaticTextControl">
+										<Name>ItemsTitleText</Name>
+										<Skip>Yes</Skip>
+										<Type>StaticText</Type>
+										<WidthMode>SizeToAvailable</WidthMode>
+										<FormControlExtension
+											i:nil="true" />
+										<Style>MainInstruction</Style>
+										<Text>@ITVTRental:RentalService</Text>
+									</AxFormControl>
+								</Controls>
+								<AllowUserSetup>No</AllowUserSetup>
+								<FrameType>None</FrameType>
+								<Style>TOCTitleContainer</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormTabControl">
+								<Name>ItemsTab</Name>
+								<Type>Tab</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>ItemsTabPage</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>ItemsGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsGroup_RentalServicePrefix</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalServicePrefix</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsGroup_ItemModelGroup</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>ItemModelGroup</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsGroup_ItemGroupId</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>ItemGroupId</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsGroup_ProjCategory</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>ProjCategory</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<DataGroup>Items</DataGroup>
+												<DataSource>ITVTRentalParameters</DataSource>
+												<FrameType>None</FrameType>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@SYS50258</Caption>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>ItemUnitsTabPage</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>ItemsUnitsGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsUnitsGroup_RentalServiceInventoryUnit</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalServiceInventoryUnit</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsUnitsGroup_RentalServiceSalesUnit</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalServiceSalesUnit</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsUnitsGroup_RentalServicePurchUnit</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalServicePurchUnit</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<DataGroup>ItemsUnits</DataGroup>
+												<DataSource>ITVTRentalParameters</DataSource>
+												<FrameType>None</FrameType>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@SYS7867</Caption>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>ItemsDimensionsGroup</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>ItemsDimensionGroups</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsDimensionGroups_RentalServiceStorageDimensionGroup</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalServiceStorageDimensionGroup</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsDimensionGroups_RentalServiceTrackingDimensionGroup</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>RentalServiceTrackingDimensionGroup</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<DataGroup>DimensionGroups</DataGroup>
+												<DataSource>ITVTRentalParameters</DataSource>
+												<FrameType>None</FrameType>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@SYS57637</Caption>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>ItemsTaxesTabPage</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>ItemsTaxesGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsTaxesGroup_TaxItemGroupIdSales</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>TaxItemGroupIdSales</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormStringControl">
+														<Name>ItemsTaxesGroup_TaxItemGroupIdPurch</Name>
+														<Type>String</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataField>TaxItemGroupIdPurch</DataField>
+														<DataSource>ITVTRentalParameters</DataSource>
+													</AxFormControl>
+												</Controls>
+												<DataGroup>ItemsTaxes</DataGroup>
+												<DataSource>ITVTRentalParameters</DataSource>
+												<FrameType>None</FrameType>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@SYS334059</Caption>
+									</AxFormControl>
+								</Controls>
+								<Style>FastTabs</Style>
+							</AxFormControl>
+						</Controls>
+						<Caption>@ITVTRental:RentalService</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>InventDimension</Name>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>InventDimensionTitle</Name>
+								<ElementPosition>1073741822</ElementPosition>
+								<FilterExpression>%1</FilterExpression>
+								<Skip>Yes</Skip>
+								<Type>Group</Type>
+								<VerticalSpacing>-1</VerticalSpacing>
+								<WidthMode>SizeToAvailable</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStaticTextControl">
+										<Name>InventDimensionTitleTxt</Name>
+										<ElementPosition>1431655764</ElementPosition>
+										<FilterExpression>%1</FilterExpression>
+										<Skip>Yes</Skip>
+										<Type>StaticText</Type>
+										<VerticalSpacing>-1</VerticalSpacing>
+										<WidthMode>SizeToAvailable</WidthMode>
+										<FormControlExtension
+											i:nil="true" />
+										<Style>MainInstruction</Style>
+										<Text>@ITVTRental:RentalDimension</Text>
+									</AxFormControl>
+								</Controls>
+								<AllowUserSetup>No</AllowUserSetup>
+								<FrameType>None</FrameType>
+								<Style>TOCTitleContainer</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>InventDimensionBody</Name>
+								<HeightMode>SizeToAvailable</HeightMode>
+								<Type>Group</Type>
+								<WidthMode>SizeToAvailable</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabControl">
+										<Name>InventDimensionTab</Name>
+										<Type>Tab</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormTabPageControl">
+												<Name>InventDimensionTabGeneral</Name>
+												<Pattern>FieldsFieldGroups</Pattern>
+												<PatternVersion>1.1</PatternVersion>
+												<Type>TabPage</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormGroupControl">
+														<Name>InventDimGeneral</Name>
+														<Type>Group</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Controls>
+															<AxFormControl xmlns=""
+																i:type="AxFormComboBoxControl">
+																<Name>InventDimGeneral_InventDimension</Name>
+																<Type>ComboBox</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimension</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+																<Items />
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimGeneral_InventDimValueStatusNew</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueStatusNew</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimGeneral_InventDimValueStatusNewFixedAsset</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueStatusNewFixedAsset</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimGeneral_InventDimValueStatusInterimFAPurch</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueStatusInterimFAPurch</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimGeneral_InventDimValueStatusRented</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueStatusRented</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimGeneral_InventDimValueStatusUsed</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueStatusUsed</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+														</Controls>
+														<DataGroup>InventDimensionGeneral</DataGroup>
+														<DataSource>ITVTRentalParameters</DataSource>
+														<FrameType>None</FrameType>
+													</AxFormControl>
+												</Controls>
+												<ColumnsMode>Fill</ColumnsMode>
+												<Caption>@CostAccountingService:TabPage_HeaderDetails_Caption</Caption>
+												<FastTabExpanded>Yes</FastTabExpanded>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormTabPageControl">
+												<Name>InventDimensionTabDefault</Name>
+												<Pattern>FieldsFieldGroups</Pattern>
+												<PatternVersion>1.1</PatternVersion>
+												<Type>TabPage</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormGroupControl">
+														<Name>InventDimDefault</Name>
+														<Type>Group</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Controls>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimDefault_InventDimValueDefaultPurch</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueDefaultPurch</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimDefault_InventDimValueDefaultFAPurch</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueDefaultFAPurch</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimDefault_InventDimValueDefaultSales</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueDefaultSales</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimDefault_InventDimValueDefaultProd</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueDefaultProd</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+															<AxFormControl xmlns=""
+																i:type="AxFormStringControl">
+																<Name>InventDimDefault_InventDimValueDefaultRental</Name>
+																<Type>String</Type>
+																<FormControlExtension
+																	i:nil="true" />
+																<DataField>InventDimValueDefaultRental</DataField>
+																<DataSource>ITVTRentalParameters</DataSource>
+															</AxFormControl>
+														</Controls>
+														<DataGroup>InventDimensionDefault</DataGroup>
+														<DataSource>ITVTRentalParameters</DataSource>
+														<FrameType>None</FrameType>
+													</AxFormControl>
+												</Controls>
+												<ColumnsMode>Fill</ColumnsMode>
+												<Caption>@SYS21682</Caption>
+											</AxFormControl>
+										</Controls>
+										<ArrangeMethod>Vertical</ArrangeMethod>
+										<Style>FastTabs</Style>
+									</AxFormControl>
+								</Controls>
+								<FrameType>None</FrameType>
+							</AxFormControl>
+						</Controls>
+						<Caption>@ITVTRental:RentalDimension</Caption>
+					</AxFormControl>
+				</Controls>
+				<Style>VerticalTabs</Style>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>
