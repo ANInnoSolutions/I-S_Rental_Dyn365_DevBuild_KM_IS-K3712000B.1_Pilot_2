@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxDataEntityViewExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>EcoResReleasedProductV2Entity.ITVTRental</Name>
+	<DataSources />
+	<FieldGroupExtensions />
+	<FieldGroups />
+	<FieldModifications />
+	<Fields>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTIsRentalItem</Name>
+			<DataField>ITVTIsRentalItem</DataField>
+			<DataSource>InventTable</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTFixedAssetHGBPct</Name>
+			<DataField>ITVTFixedAssetHGBPct</DataField>
+			<DataSource>InventTable</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTFixedAssetHGBSL</Name>
+			<DataField>ITVTFixedAssetHGBSL</DataField>
+			<DataSource>InventTable</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTFixedAssetIFRSPct</Name>
+			<DataField>ITVTFixedAssetIFRSPct</DataField>
+			<DataSource>InventTable</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTFixedAssetIFRSSL</Name>
+			<DataField>ITVTFixedAssetIFRSSL</DataField>
+			<DataSource>InventTable</DataSource>
+		</AxDataEntityViewField>
+		<AxDataEntityViewField xmlns=""
+			i:type="AxDataEntityViewMappedField">
+			<Name>ITVTIsFixedAsset</Name>
+			<DataField>ITVTIsFixedAsset</DataField>
+			<DataSource>InventTable</DataSource>
+		</AxDataEntityViewField>
+	</Fields>
+	<Mappings />
+	<PropertyModifications />
+	<Relations />
+</AxDataEntityViewExtension>
