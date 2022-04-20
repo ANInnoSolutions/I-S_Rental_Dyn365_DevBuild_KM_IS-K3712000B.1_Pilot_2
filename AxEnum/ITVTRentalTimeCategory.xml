@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEnum xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalTimeCategory</Name>
+	<Label>@SYS32339</Label>
+	<UseEnumValue>No</UseEnumValue>
+	<EnumValues>
+		<AxEnumValue>
+			<Name>RentalFreeDays</Name>
+			<Label>@ITVTRental:RentalFreeDays</Label>
+		</AxEnumValue>
+	</EnumValues>
+	<IsExtensible>true</IsExtensible>
+</AxEnum>

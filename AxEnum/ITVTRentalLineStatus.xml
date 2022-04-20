@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEnum xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLineStatus</Name>
+	<Label>@ITVTRental:RentalStatus</Label>
+	<EnumValues>
+		<AxEnumValue>
+			<Name>None</Name>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>Created</Name>
+			<Label>@SYS101275</Label>
+			<Value>1</Value>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>Started</Name>
+			<Label>@SYS4695</Label>
+			<Value>2</Value>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>Ended</Name>
+			<Label>@SYS12257</Label>
+			<Value>3</Value>
+		</AxEnumValue>
+	</EnumValues>
+</AxEnum>
