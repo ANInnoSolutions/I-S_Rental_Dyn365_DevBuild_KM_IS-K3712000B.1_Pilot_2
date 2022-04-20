@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdt xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxEdtString">
+	<Name>ITVTProjInventLocationId</Name>
+	<Extends>InventLocationId</Extends>
+	<HelpText>@ITVTRental:ProjWarehouseNumSeqHelp</HelpText>
+	<Label>@ITVTRental:ProjectWarehouse</Label>
+	<ArrayElements />
+	<Relations />
+	<TableReferences />
+</AxEdt>
