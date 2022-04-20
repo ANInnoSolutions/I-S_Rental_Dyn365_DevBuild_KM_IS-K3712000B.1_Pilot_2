@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalOrderTrans</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ITVTRentalOrderTrans extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>inventTable</Name>
+				<Source><![CDATA[
+    public InventTable inventTable(boolean _forUpdate = false)
+    {
+        return InventTable::find(this.ItemId, _forUpdate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventDim</Name>
+				<Source><![CDATA[
+    public InventDim inventDim(boolean _forUpdate = false)
+    {
+        return InventDim::find(this.InventDimId, _forUpdate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventTransOrigin</Name>
+				<Source><![CDATA[
+    public InventTransOrigin inventTransOrigin(boolean _forUpdate = false)
+    {
+        return InventTransOrigin::findByInventTransId(this.InventTransId, _forUpdate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesTable</Name>
+				<Source><![CDATA[
+    public SalesTable salesTable(boolean _forUpdate = false)
+    {
+        return SalesTable::find(this.SalesId, _forUpdate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromRentalLine</Name>
+				<Source><![CDATA[
+    void initFromRentalLine(ITVTRentalLine _rentalLine)
+    {
+        this.SalesId                    = _rentalLine.SalesId;
+        this.InventTransId              = _rentalLine.InventTransId;
+        this.InventDimId                = _rentalLine.InventDimId;
+        this.ItemId                     = _rentalLine.ItemId;
+        this.LineNum                    = _rentalLine.LineNum;
+        this.Name                       = _rentalLine.Name;
+        this.PriceUnit                  = _rentalLine.PriceUnit;
+        this.Qty                        = _rentalLine.Qty;
+        this.UnitId                     = _rentalLine.UnitId;
+        this.SalesPrice                 = _rentalLine.SalesPrice;
+        this.RentalMinPeriod            = _rentalLine.RentalMinPeriod;
+        this.RentalTimeUnitId           = _rentalLine.RentalTimeUnitId;
+        this.RentalFromDate             = _rentalLine.RentalFromDate;
+        this.RentalToDate               = _rentalLine.RentalToDate;
+        this.PostedRentalFromDate       = _rentalLine.PostedRentalFromDate;
+        this.PostedRentalToDate         = _rentalLine.PostedRentalToDate;
+        this.RentalRunToDate            = _rentalLine.RentalRunToDate;
+        this.RentalAdditionalText       = _rentalLine.RentalAdditionalText;
+        this.RentalConstructionSite     = _rentalLine.RentalConstructionSite;
+        this.RentalDocumentNumber       = _rentalLine.RentalDocumentNumber;
+        this.UseFactorPercentage        = _rentalLine.UseFactorPercentage;
+        this.RentalFactorPercentage     = _rentalLine.RentalFactorPercentage;
+        this.RentalPrice                = _rentalLine.RentalPrice;
+        this.LineAmount                 = _rentalLine.LineAmount;
+        this.ConfirmedRentalFromDate    = _rentalLine.ConfirmedRentalFromDate;
+        this.ConfirmedRentalToDate      = _rentalLine.ConfirmedRentalToDate;
+        this.LineDisc                   = _rentalLine.LineDisc;
+        this.LinePercent                = _rentalLine.LinePercent;
+        this.TaxGroup                   = _rentalLine.TaxGroup;
+        this.TaxItemGroup               = _rentalLine.TaxItemGroup;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>lastLineNum</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Finds the last line number for the specified Rental confirmation journal
+    /// </summary>
+    /// <param name = "_rentalOrderJourRecId">Record id of <c>ITVTRentalOrderJour</c> table</param>
+    /// <returns>The last line number for the specified Rental confirmation journal</returns>
+    static LineNum lastLineNum(RefRecId _rentalOrderJourRecId)
+    {
+        return (select maxof(LineNum) from ITVTRentalOrderTrans
+                    where ITVTRentalOrderTrans.ITVTRentalOrderJourRecId == _rentalOrderJourRecId).LineNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>exist</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Finds whether Rental confirmation line exists for specified Rental confirmation journal
+    /// </summary>
+    /// <param name = "_rentalOrderJourRecId">Record id of <c>ITVTRentalOrderJour</c> table</param>
+    /// <param name = "_lineNum">Line number of Rental confirmation line</param>
+    /// <returns>true if Rental confirmation line exists, otherwise false</returns>
+    static boolean exist(
+        RefRecId _rentalOrderJourRecId,
+        LineNum _lineNum = naReal())
+    {
+        if (!_rentalOrderJourRecId)
+        {
+            return false;
+        }
+
+        if (_lineNum == naReal())
+        {
+            return (select firstonly RecId from ITVTRentalOrderTrans
+                        where ITVTRentalOrderTrans.ITVTRentalOrderJourRecId == _rentalOrderJourRecId).RecId != 0;
+        }
+
+        return (select firstonly RecId from ITVTRentalOrderTrans
+                    where ITVTRentalOrderTrans.ITVTRentalOrderJourRecId  == _rentalOrderJourRecId
+                        && ITVTRentalOrderTrans.LineNum == _lineNum).RecId != 0;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insert</Name>
+				<Source><![CDATA[
+    public void  insert()
+    {
+        if (!this.LineNum || ITVTRentalOrderTrans::exist(this.ITVTRentalOrderJourRecId, this.LineNum))
+        {
+            this.LineNum = ITVTRentalOrderTrans::lastLineNum(this.ITVTRentalOrderJourRecId) + 1.0;
+        }
+
+        super();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>itemName</Name>
+				<Source><![CDATA[
+    [SysClientCacheDataMethod]
+    public display SalesLineShowItemName itemName()
+    {
+        return this.inventTable().itemName(this.inventDim());
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DeveloperDocumentation>@ITVTRental:RentalLines</DeveloperDocumentation>
+	<Label>@ITVTRental:RentalLines</Label>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TableGroup>WorksheetLine</TableGroup>
+	<TitleField1>SalesId</TitleField1>
+	<TitleField2>ItemId</TitleField2>
+	<ClusteredIndex>RentalLineIdx</ClusteredIndex>
+	<CreatedDateTime>Yes</CreatedDateTime>
+	<ModifiedBy>Yes</ModifiedBy>
+	<ModifiedDateTime>Yes</ModifiedDateTime>
+	<Modules>SalesAndMarketing</Modules>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>SalesId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LineNum</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventTransId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ItemId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Name</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Qty</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalMinPeriod</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalTimeUnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ConfirmedRentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ConfirmedRentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalRunToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalAdditionalText</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalConstructionSite</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalDocumentNumber</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UseFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SalesPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PriceUnit</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LineAmount</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ITVTRentalOrderJourRecId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Product</Name>
+			<Label>@Retail:Product</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ItemId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>itemName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Name</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Quantity</Name>
+			<Label>@SYS3065</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Qty</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventTransId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Rental</Name>
+			<Label>@ITVTRental:Rental</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalMinPeriod</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalTimeUnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalRunToDate</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>PriceDiscount</Name>
+			<Label>@SYS328717</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>UseFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SalesPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PriceUnit</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Other</Name>
+			<Label>@SYS1284</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalAdditionalText</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalConstructionSite</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalDocumentNumber</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Grid</Name>
+			<Label>@SYS117084</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ItemId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>itemName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Qty</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalMinPeriod</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalTimeUnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalRunToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalAdditionalText</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalConstructionSite</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalDocumentNumber</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UseFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SalesPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LineAmount</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LineDisc</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LinePercent</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TaxGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TaxItemGroup</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>SalesId</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>SalesId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>LineNum</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>LineNum</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventTransId</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>InventTransId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ItemId</Name>
+			<AllowEdit>No</AllowEdit>
+			<ExtendedDataType>ItemId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>Name</Name>
+			<ExtendedDataType>ItemFreeTxt</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimId</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>InventDimId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>Qty</Name>
+			<ExtendedDataType>SalesQty</ExtendedDataType>
+			<Label>@SYS14578</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>UnitId</Name>
+			<ExtendedDataType>SalesUnit</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt">
+			<Name>RentalMinPeriod</Name>
+			<ExtendedDataType>ITVTRentalMinPeriod</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalTimeUnitId</Name>
+			<ExtendedDataType>ITVTRentalTimeUnitId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>RentalFromDate</Name>
+			<ExtendedDataType>ITVTRentalFromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>RentalToDate</Name>
+			<ExtendedDataType>ITVTRentalToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ConfirmedRentalFromDate</Name>
+			<ExtendedDataType>ITVTConfirmedRentalFromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ConfirmedRentalToDate</Name>
+			<ExtendedDataType>ITVTConfirmedRentalToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>PostedRentalFromDate</Name>
+			<ExtendedDataType>ITVTPostedRentalFromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>PostedRentalToDate</Name>
+			<ExtendedDataType>ITVTPostedRentalToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>RentalRunToDate</Name>
+			<ExtendedDataType>ITVTRentalRunToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalAdditionalText</Name>
+			<ExtendedDataType>ITVTRentalAdditionalText</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalConstructionSite</Name>
+			<ExtendedDataType>ITVTRentalConstructionSite</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalDocumentNumber</Name>
+			<ExtendedDataType>ITVTRentalDocumentNumber</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>UseFactorPercentage</Name>
+			<ExtendedDataType>ITVTUseFactorPercentage</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>SalesPrice</Name>
+			<ExtendedDataType>SalesPrice</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>PriceUnit</Name>
+			<ExtendedDataType>PriceUnit</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>RentalFactorPercentage</Name>
+			<ExtendedDataType>ITVTRentalFactorPercentage</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>RentalPrice</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>Amount</ExtendedDataType>
+			<Label>@ITVTRental:RentalPrice</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>LineAmount</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>LineAmount</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>ITVTRentalOrderJourRecId</Name>
+			<ExtendedDataType>RefRecId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>LineDisc</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>SalesLineDisc</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>LinePercent</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>SalesLinePercent</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TaxGroup</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>TaxGroup</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TaxItemGroup</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>TaxItemGroup</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>RentalLineIdx</Name>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>SalesId</DataField>
+				</AxTableIndexField>
+				<AxTableIndexField>
+					<DataField>LineNum</DataField>
+				</AxTableIndexField>
+				<AxTableIndexField>
+					<DataField>RecId</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+		<AxTableIndex>
+			<Name>TransIdIdx</Name>
+			<AllowDuplicates>Yes</AllowDuplicates>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>InventTransId</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings />
+	<Relations>
+		<AxTableRelation>
+			<Name>SalesTable</Name>
+			<Cardinality>OneMore</Cardinality>
+			<OnDelete>Cascade</OnDelete>
+			<RelatedTable>SalesTable</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelatedTableRole>SalesTable</RelatedTableRole>
+			<RelationshipType>Composition</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>SalesId</Name>
+					<Field>SalesId</Field>
+					<RelatedField>SalesId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>InventDim</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>InventDim</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimId</Name>
+					<Field>InventDimId</Field>
+					<RelatedField>inventDimId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>ITVTRentalOrderJour</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>ITVTRentalOrderJour</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ITVTRentalOrderJourRecId</Name>
+					<Field>ITVTRentalOrderJourRecId</Field>
+					<RelatedField>RecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+	</Relations>
+	<StateMachines />
+</AxTable>

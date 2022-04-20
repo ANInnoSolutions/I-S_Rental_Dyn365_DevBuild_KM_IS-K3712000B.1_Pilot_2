@@ -1,0 +1,1642 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalParameters</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ITVTRentalParameters extends common
+{
+
+
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>find</Name>
+				<Source><![CDATA[
+        /// <summary>
+    /// find.
+    /// </summary>
+    /// <param name="_forupdate">
+    /// The new value of the forupdate; optional.
+    /// </param>
+    /// <returns>
+    /// The current value of ITVTRentalParameters.
+    /// </returns>
+    static ITVTRentalParameters find(boolean _forupdate = false)
+    {
+        ITVTRentalParameters parameters;
+
+        if (_forupdate)
+        {
+            parameters.selectForUpdate(_forupdate);
+        }
+
+        select firstonly parameters
+            index KeyIdx
+            where parameters.Key == 0;
+
+        if (!parameters && !parameters.isTmp())
+        {
+            Company::createParameter(parameters);
+        }
+
+        return parameters;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateWrite</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// validate data
+    /// </summary>
+    /// <returns>Boolean</returns>
+    public boolean validateWrite()
+    {
+        boolean ret;
+    
+        ret = super();
+    
+        if(this.FactorPercentage > 100 || this.FactorPercentage < 0.01)
+        {
+            ret = checkFailed("@ITVTRental:RentalFactorError");
+        }
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInventDimDefaultValue</Name>
+				<Source><![CDATA[
+    public static ITVTInventDimValueDefault getInventDimDefaultValue(TableId _tableNum)
+    {
+        ITVTInventDimValueDefault   defaultValue;
+        ITVTRentalParameters        itvtRentalParameters = ITVTRentalParameters::find();
+
+        switch(_tableNum)
+        {
+            case tableNum(PurchLine):           defaultValue = itvtRentalParameters.InventDimValueDefaultPurch;   break;
+            case tableNum(ProdTable):           defaultValue = itvtRentalParameters.InventDimValueDefaultProd;    break;
+            case tableNum(SalesLine):           defaultValue = itvtRentalParameters.InventDimValueDefaultSales;   break;
+            case tableNum(ITVTRentalLine):      defaultValue = itvtRentalParameters.InventDimValueDefaultRental;  break;
+        }
+
+        return defaultValue;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setRentalInventDimDefault</Name>
+				<Source><![CDATA[
+    public static InventDim setRentalInventDimDefault(InventDim _inventDimOri, TableId _tableNum)
+    {
+        return ITVTRentalParameters::setRentalInventDimStatus(_inventDimOri, ITVTRentalParameters::getInventDimDefaultValue(_tableNum));
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setRentalInventDimStatus</Name>
+				<Source><![CDATA[
+    public static InventDim setRentalInventDimStatus(InventDim _inventDimOri, ITVTInventDimValueDefault _value = ITVTRentalParameters::find().InventDimValueStatusNew)
+    {
+        ITVTRentalParameters itvtRentalParameters = ITVTRentalParameters::find();
+
+        if (itvtRentalParameters.InventDimension == ITVTInventDimension::None)
+        {
+            return _inventDimOri;
+        }
+
+        InventDim                   inventDim;
+
+        inventDim.clear();
+        inventDim.initFromInventDim(_inventDimOri);
+
+        switch(itvtRentalParameters.InventDimension)
+        {
+            case ITVTInventDimension::InventConfigId:       inventDim.configId              = _value; break;
+            case ITVTInventDimension::InventSizeId:         inventDim.InventSizeId          = _value; break;
+            case ITVTInventDimension::InventColorId:        inventDim.InventColorId         = _value; break;
+            case ITVTInventDimension::InventStyleId:        inventDim.InventStyleId         = _value; break;
+            case ITVTInventDimension::InventVersionId:      inventDim.InventVersionId       = _value; break;
+            case ITVTInventDimension::InventSiteId:         inventDim.InventSiteId          = _value; break;
+            case ITVTInventDimension::InventLocationId:     inventDim.InventLocationId      = _value; break;
+            case ITVTInventDimension::wmsLocationId:        inventDim.wmsLocationId         = _value; break;
+            case ITVTInventDimension::wMSPalletId:          inventDim.wmsPalletId           = _value; break;
+            case ITVTInventDimension::LicensePlateId:       inventDim.LicensePlateId        = _value; break;
+            case ITVTInventDimension::InventStatusId:       inventDim.InventStatusId        = _value; break;
+            case ITVTInventDimension::InventBatchId:        inventDim.InventBatchId         = _value; break;
+            case ITVTInventDimension::InventSerialId:       inventDim.InventSerialId        = _value; break;
+            case ITVTInventDimension::SHA1HashHex:          inventDim.SHA1HashHex           = _value; break;
+            case ITVTInventDimension::InventGtdId_RU:       inventDim.InventGtdId_RU        = _value; break;
+            case ITVTInventDimension::InventOwnerId_RU:     inventDim.InventOwnerId_RU      = _value; break;
+            case ITVTInventDimension::InventProfileId_RU:   inventDim.InventProfileId_RU    = _value; break;
+            case ITVTInventDimension::InventDimension1:     inventDim.InventDimension1      = _value; break;
+            case ITVTInventDimension::InventDimension2:     inventDim.InventDimension2      = _value; break;
+            case ITVTInventDimension::InventDimension3:     inventDim.InventDimension3      = _value; break;
+            case ITVTInventDimension::InventDimension4:     inventDim.InventDimension4      = _value; break;
+            case ITVTInventDimension::InventDimension5:     inventDim.InventDimension5      = _value; break;
+            case ITVTInventDimension::InventDimension6:     inventDim.InventDimension6      = _value; break;
+            case ITVTInventDimension::InventDimension7:     inventDim.InventDimension7      = _value; break;
+            case ITVTInventDimension::InventDimension8:     inventDim.InventDimension8      = _value; break;
+            //TODO: Proper conversion??? -->
+            case ITVTInventDimension::InventDimension9:     inventDim.InventDimension9      = str2Date(_value,123); break;
+            case ITVTInventDimension::InventDimension10:    inventDim.InventDimension10     = str2num(_value);      break;
+            //TODO: Proper conversion??? <--
+            case ITVTInventDimension::InventDimension11:    inventDim.InventDimension11     = _value; break;
+            case ITVTInventDimension::InventDimension12:    inventDim.InventDimension12     = _value; break;
+        }
+
+        return InventDim::findOrCreate(inventDim);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getRentalInventDimStatus</Name>
+				<Source><![CDATA[
+    public static str getRentalInventDimStatus(InventDim _inventDim)
+    {
+        str ret;
+
+        ITVTRentalParameters itvtRentalParameters = ITVTRentalParameters::find();
+
+        if (itvtRentalParameters.InventDimension == ITVTInventDimension::None)
+        {
+            return '';
+        }
+
+        switch (itvtRentalParameters.InventDimension)
+        {
+            case ITVTInventDimension::InventConfigId:      ret = _inventDim.configId;           break;
+            case ITVTInventDimension::InventSizeId:        ret = _inventDim.InventSizeId;       break;
+            case ITVTInventDimension::InventColorId:       ret = _inventDim.InventColorId;      break;
+            case ITVTInventDimension::InventStyleId:       ret = _inventDim.InventStyleId;      break;
+            case ITVTInventDimension::InventVersionId:     ret = _inventDim.InventVersionId;    break;
+            case ITVTInventDimension::InventSiteId:        ret = _inventDim.InventSiteId;       break;
+            case ITVTInventDimension::InventLocationId:    ret = _inventDim.InventLocationId;   break;
+            case ITVTInventDimension::wmsLocationId:       ret = _inventDim.wmsLocationId;      break;
+            case ITVTInventDimension::wMSPalletId:         ret = _inventDim.wmsPalletId;        break;
+            case ITVTInventDimension::LicensePlateId:      ret = _inventDim.LicensePlateId;     break;
+            case ITVTInventDimension::InventStatusId:      ret = _inventDim.InventStatusId;     break;
+            case ITVTInventDimension::InventBatchId:       ret = _inventDim.InventBatchId;      break;
+            case ITVTInventDimension::InventSerialId:      ret = _inventDim.InventSerialId;     break;
+            case ITVTInventDimension::SHA1HashHex:         ret = _inventDim.SHA1HashHex;        break;
+            case ITVTInventDimension::InventGtdId_RU:      ret = _inventDim.InventGtdId_RU;     break;
+            case ITVTInventDimension::InventOwnerId_RU:    ret = _inventDim.InventOwnerId_RU;   break;
+            case ITVTInventDimension::InventProfileId_RU:  ret = _inventDim.InventProfileId_RU; break;
+            case ITVTInventDimension::InventDimension1:    ret = _inventDim.InventDimension1;   break;
+            case ITVTInventDimension::InventDimension2:    ret = _inventDim.InventDimension2;   break;
+            case ITVTInventDimension::InventDimension3:    ret = _inventDim.InventDimension3;   break;
+            case ITVTInventDimension::InventDimension4:    ret = _inventDim.InventDimension4;   break;
+            case ITVTInventDimension::InventDimension5:    ret = _inventDim.InventDimension5;   break;
+            case ITVTInventDimension::InventDimension6:    ret = _inventDim.InventDimension6;   break;
+            case ITVTInventDimension::InventDimension7:    ret = _inventDim.InventDimension7;   break;
+            case ITVTInventDimension::InventDimension8:    ret = _inventDim.InventDimension8;   break;
+            case ITVTInventDimension::InventDimension9:    
+                ret = date2Str(
+                    _inventDim.InventDimension9,
+                    123, 
+                    DateDay::Auto, 
+                    DateSeparator::Auto, 
+                    DateMonth::Auto, 
+                    DateSeparator::Auto, 
+                    DateYear::Auto);
+                break;
+            case ITVTInventDimension::InventDimension10:   
+                ret = num2Str(
+                    _inventDim.InventDimension10, 
+                    -1, 
+                    -1, 
+                    DecimalSeparator::Auto, 
+                    ThousandSeparator::Auto);      
+                break;
+            case ITVTInventDimension::InventDimension11:   ret = _inventDim.InventDimension11;  break;
+            case ITVTInventDimension::InventDimension12:   ret = _inventDim.InventDimension12;  break;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getRentalInventDimStatusFieldId</Name>
+				<Source><![CDATA[
+    public static FieldId getRentalInventDimStatusFieldId()
+    {
+        FieldId ret;
+
+        ITVTRentalParameters itvtRentalParameters = ITVTRentalParameters::find();
+
+        if (itvtRentalParameters.InventDimension == ITVTInventDimension::None)
+        {
+            return 0;
+        }
+
+        switch (itvtRentalParameters.InventDimension)
+        {
+            case ITVTInventDimension::InventConfigId:      ret = fieldNum(InventDim,configId);           break;
+            case ITVTInventDimension::InventSizeId:        ret = fieldNum(InventDim,InventSizeId);       break;
+            case ITVTInventDimension::InventColorId:       ret = fieldNum(InventDim,InventColorId);      break;
+            case ITVTInventDimension::InventStyleId:       ret = fieldNum(InventDim,InventStyleId);      break;
+            case ITVTInventDimension::InventVersionId:     ret = fieldNum(InventDim,InventVersionId);    break;
+            case ITVTInventDimension::InventSiteId:        ret = fieldNum(InventDim,InventSiteId);       break;
+            case ITVTInventDimension::InventLocationId:    ret = fieldNum(InventDim,InventLocationId);   break;
+            case ITVTInventDimension::wmsLocationId:       ret = fieldNum(InventDim,wmsLocationId);      break;
+            case ITVTInventDimension::wMSPalletId:         ret = fieldNum(InventDim,wmsPalletId);        break;
+            case ITVTInventDimension::LicensePlateId:      ret = fieldNum(InventDim,LicensePlateId);     break;
+            case ITVTInventDimension::InventStatusId:      ret = fieldNum(InventDim,InventStatusId);     break;
+            case ITVTInventDimension::InventBatchId:       ret = fieldNum(InventDim,InventBatchId);      break;
+            case ITVTInventDimension::InventSerialId:      ret = fieldNum(InventDim,InventSerialId);     break;
+            case ITVTInventDimension::SHA1HashHex:         ret = fieldNum(InventDim,SHA1HashHex);        break;
+            case ITVTInventDimension::InventGtdId_RU:      ret = fieldNum(InventDim,InventGtdId_RU);     break;
+            case ITVTInventDimension::InventOwnerId_RU:    ret = fieldNum(InventDim,InventOwnerId_RU);   break;
+            case ITVTInventDimension::InventProfileId_RU:  ret = fieldNum(InventDim,InventProfileId_RU); break;
+            case ITVTInventDimension::InventDimension1:    ret = fieldNum(InventDim,InventDimension1);   break;
+            case ITVTInventDimension::InventDimension2:    ret = fieldNum(InventDim,InventDimension2);   break;
+            case ITVTInventDimension::InventDimension3:    ret = fieldNum(InventDim,InventDimension3);   break;
+            case ITVTInventDimension::InventDimension4:    ret = fieldNum(InventDim,InventDimension4);   break;
+            case ITVTInventDimension::InventDimension5:    ret = fieldNum(InventDim,InventDimension5);   break;
+            case ITVTInventDimension::InventDimension6:    ret = fieldNum(InventDim,InventDimension6);   break;
+            case ITVTInventDimension::InventDimension7:    ret = fieldNum(InventDim,InventDimension7);   break;
+            case ITVTInventDimension::InventDimension8:    ret = fieldNum(InventDim,InventDimension8);   break;
+            case ITVTInventDimension::InventDimension9:    ret = fieldNum(InventDim,InventDimension9);   break;
+            case ITVTInventDimension::InventDimension10:   ret = fieldNum(InventDim,InventDimension1);   break;
+            case ITVTInventDimension::InventDimension11:   ret = fieldNum(InventDim,InventDimension11);  break;
+            case ITVTInventDimension::InventDimension12:   ret = fieldNum(InventDim,InventDimension12);  break;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalInventDimFieldActiveForItem</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks whether Rental dimension is active for the Item
+    /// </summary>
+    /// <param name = "_itemId">Item for which active dimensions are checked</param>
+    /// <returns>true if Rental dimension is active for Item, otherwise false</returns>
+    public static boolean rentalInventDimFieldActiveForItem(ItemId _itemId)
+    {
+        ITVTRentalParameters itvtRentalParameters = ITVTRentalParameters::find();
+
+        if (itvtRentalParameters.InventDimension == ITVTInventDimension::None)
+        {
+            return false;
+        }
+
+        boolean ret; 
+
+        InventDimParm inventDimParm = InventDimParm::activeDimFlag(InventDimGroupSetup::newItemId(_itemId));
+
+        switch (itvtRentalParameters.InventDimension)
+        {
+            case ITVTInventDimension::InventConfigId:      ret = inventDimParm.ConfigIdFlag;           break;
+            case ITVTInventDimension::InventSizeId:        ret = inventDimParm.InventSizeIdFlag;       break;
+            case ITVTInventDimension::InventColorId:       ret = inventDimParm.InventColorIdFlag;      break;
+            case ITVTInventDimension::InventStyleId:       ret = inventDimParm.InventStyleIdFlag;      break;
+            case ITVTInventDimension::InventVersionId:     ret = inventDimParm.InventVersionIdFlag;    break;
+            case ITVTInventDimension::InventSiteId:        ret = inventDimParm.InventSiteIdFlag;       break;
+            case ITVTInventDimension::InventLocationId:    ret = inventDimParm.InventLocationIdFlag;   break;
+            case ITVTInventDimension::wmsLocationId:       ret = inventDimParm.wmsLocationIdFlag;      break;
+            case ITVTInventDimension::wMSPalletId:         ret = inventDimParm.wmsPalletIdFlag;        break;
+            case ITVTInventDimension::LicensePlateId:      ret = inventDimParm.LicensePlateFlag;       break;
+            case ITVTInventDimension::InventStatusId:      ret = inventDimParm.InventStatusFlag;       break;
+            case ITVTInventDimension::InventBatchId:       ret = inventDimParm.InventBatchIdFlag;      break;
+            case ITVTInventDimension::InventSerialId:      ret = inventDimParm.InventSerialIdFlag;     break;
+            case ITVTInventDimension::InventGtdId_RU:      ret = inventDimParm.InventGTDIdFlag_RU;     break;
+            case ITVTInventDimension::InventOwnerId_RU:    ret = inventDimParm.InventOwnerIdFlag_RU;   break;
+            case ITVTInventDimension::InventProfileId_RU:  ret = inventDimParm.InventProfileIdFlag_RU; break;
+            case ITVTInventDimension::InventDimension1:    ret = inventDimParm.InventDimension1Flag;   break;
+            case ITVTInventDimension::InventDimension2:    ret = inventDimParm.InventDimension2Flag;   break;
+            case ITVTInventDimension::InventDimension3:    ret = inventDimParm.InventDimension3Flag;   break;
+            case ITVTInventDimension::InventDimension4:    ret = inventDimParm.InventDimension4Flag;   break;
+            case ITVTInventDimension::InventDimension5:    ret = inventDimParm.InventDimension5Flag;   break;
+            case ITVTInventDimension::InventDimension6:    ret = inventDimParm.InventDimension6Flag;   break;
+            case ITVTInventDimension::InventDimension7:    ret = inventDimParm.InventDimension7Flag;   break;
+            case ITVTInventDimension::InventDimension8:    ret = inventDimParm.InventDimension8Flag;   break;
+            case ITVTInventDimension::InventDimension9:    ret = inventDimParm.Inventdimension9Flag;   break;
+            case ITVTInventDimension::InventDimension10:   ret = inventDimParm.InventDimension10Flag;  break;
+            case ITVTInventDimension::InventDimension11:   ret = inventDimParm.InventDimension11Flag;  break;
+            case ITVTInventDimension::InventDimension12:   ret = inventDimParm.InventDimension12Flag;  break;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>delete</Name>
+				<Source><![CDATA[
+    void delete()
+    {
+        throw error("@SYS23721");
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>exist</Name>
+				<Source><![CDATA[
+    static boolean exist()
+    {
+        return (select firstonly RecId from ITVTRentalParameters).RecId != 0;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findByCompany</Name>
+				<Source><![CDATA[
+    public static ITVTRentalParameters findByCompany(DataAreaId _company, boolean _forUpdate = false)
+    {
+        ITVTRentalParameters parameter;
+
+        changecompany(_company)
+        {
+            parameter = ITVTRentalParameters::find(_forUpdate);
+        }
+
+        return parameter;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateDelete</Name>
+				<Source><![CDATA[
+    boolean validateDelete()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>dateStartWk</Name>
+				<Source><![CDATA[
+    static date dateStartWk(date transDate)
+    {
+        #TimeConstants
+
+        WeekDays weekStart = ITVTRentalParameters::find().ITVTWeekStart;
+
+        if (weekStart)
+        {
+            int dayOfWeek = dayOfWk(transdate);
+            int daysToSubtract = (dayOfWeek >= weekStart) ? (dayOfWeek - weekStart) : (dayOfWeek + #daysPerWeek - weekStart);
+            return transDate - daysToSubtract;
+        }
+        else
+        {
+            return dateStartWk(transDate);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>dateEndWk</Name>
+				<Source><![CDATA[
+    static date  dateEndWk(date transDate)
+    {
+        #TimeConstants
+        WeekDays weekStart = ITVTRentalParameters::find().ITVTWeekStart;
+
+        if (weekStart)
+        {
+            int dayOfWeek = dayOfWk(transdate);
+            int daysToAdd = (weekStart > dayOfWeek) ? (weekStart - dayOfWeek - 1) : (#daysPerWeek - dayOfWeek + weekStart - 1);
+            return transDate + daysToAdd;
+        }
+        else 
+        {
+            return dateEndWk(transDate);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DeveloperDocumentation>@ITVTRental:RentalParamDev</DeveloperDocumentation>
+	<FormRef>ITVTRentalParameters</FormRef>
+	<Label>@ITVTRental:RentalParameters</Label>
+	<TableGroup>Parameter</TableGroup>
+	<CacheLookup>Found</CacheLookup>
+	<ClusteredIndex>KeyIdx</ClusteredIndex>
+	<ModifiedBy>Yes</ModifiedBy>
+	<ModifiedDateTime>Yes</ModifiedDateTime>
+	<PrimaryIndex>KeyIdx</PrimaryIndex>
+	<ReplacementKey>KeyIdx</ReplacementKey>
+	<TableContents>DefaultData</TableContents>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Key</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>FactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TimeUnitId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Key</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>SalesAgreement</Name>
+			<Label>@ITVTRental:SalesAgreements</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Rental</Name>
+			<Label>@ITVTRental:Rental</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>InvoiceCancellation</Name>
+			<Label>@ITVTRental:InvoiceCancellation</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Invoice</Name>
+			<Label>@SYS12128</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>CollectiveInvoice</Name>
+			<Label>@ITVTRental:STRProjectCollectiveInv</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>RentalItemRun</Name>
+			<Label>@ITVTRental:RentalItemRun</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>BasicPriceList</Name>
+			<Label>@ITVTRental:BasePriceList</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>RentalPriceGroup</Name>
+			<Label>@ITVTRental:RentalPriceGroup</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ItemDiscountGroup</Name>
+			<Label>@ITVTRental:ItemDiscGroup</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>TimeUnit</Name>
+			<Label>@ITVTRental:Unit</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>TimeUnitId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Logistic</Name>
+			<Label>@ITVTRental:Logistic</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ReturnDlv</Name>
+			<Label>@ITVTRental:ReturnDeliveries</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>DefaultInventLocation</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AvailabilityCheck</Name>
+			<Label>@ITVTRental:AvailabilityCheck</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>LogActions</Name>
+			<Label>@ITVTRental:ActionLogged</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>FinancialDimension</Name>
+			<Label>@ITVTRental:FinancialDimension</Label>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Percentage</Name>
+			<Label>@SYS15774</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>FactorPercentage</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Items</Name>
+			<Label>@SYS50258</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalServicePrefix</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ItemModelGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ItemGroupId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ProjCategory</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ItemsUnits</Name>
+			<Label>@SYS7867</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalServiceInventoryUnit</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalServiceSalesUnit</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalServicePurchUnit</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>DimensionGroups</Name>
+			<Label>@SYS57637</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalServiceStorageDimensionGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalServiceTrackingDimensionGroup</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>ItemsTaxes</Name>
+			<Label>@SYS334059</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>TaxItemGroupIdSales</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TaxItemGroupIdPurch</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>InventDimensionGeneral</Name>
+			<Label>@ApplicationSuite_Localization:General</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>InventDimension</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueStatusNew</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueStatusNewFixedAsset</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueStatusInterimFAPurch</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueStatusRented</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueStatusUsed</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>InventDimensionDefault</Name>
+			<Label>@SYS21682</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueDefaultPurch</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueDefaultFAPurch</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueDefaultSales</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueDefaultProd</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventDimValueDefaultRental</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>JournalNames</Name>
+			<Label>@SYS6155</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>MovementJournalNameId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>DefaultValues</Name>
+			<Label>@SYS21682</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalOrderAutoReservation</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TimeUnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>FactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>StartEndRentalReceiptShip</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>RentalItemDefaults</Name>
+			<Label>@ITVTRental:RentalItem</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>DefaultIsFixedAsset</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>RentalRun</Name>
+			<Label>@ITVTRental:RentalRun</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ITVTWeekStart</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>FixedAssetParameters</Name>
+			<Label>@SYS341763</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalDispatchJournalName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ManualPosting</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventJournalNameId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CheckRentalItemNewFixedAssetCost</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>FixedAssetPurchase</Name>
+			<Label>@ITVTRental:FixedAssetPurchase</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>LossProfitJournalNameId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>DirectItemReceiptFromRental</Name>
+			<Label>@ITVTRental:DirectItemReceiptFromRental</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ReturnTransferJournalNameId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalRunForOpenPeriods</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UseConfirmedRentalEndDateForEndRental</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AccrualTransaction</Name>
+			<Label>@ITVTRental:AccrualTransaction</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>AccrualJournalName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>AccrualAccount</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ExpenseAccount</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>GeneralRental</Name>
+			<Label>@SYS55776</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>DepreciateInRentalEnd</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>DepreciateInventory</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt">
+			<Name>Key</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>ParametersKey</ExtendedDataType>
+			<Visible>No</Visible>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>FactorPercentage</Name>
+			<ExtendedDataType>ITVTRentalFactorPercentage</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TimeUnitId</Name>
+			<ExtendedDataType>ITVTRentalTimeUnitId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalServicePrefix</Name>
+			<ExtendedDataType>ITVTRentalServicePrefix</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalServiceInventoryUnit</Name>
+			<ExtendedDataType>UnitIDInventory</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalServiceSalesUnit</Name>
+			<ExtendedDataType>SalesUnit</ExtendedDataType>
+			<Label>@SYS79797</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalServicePurchUnit</Name>
+			<ExtendedDataType>PurchUnit</ExtendedDataType>
+			<Label>@SYS22997</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalServiceStorageDimensionGroup</Name>
+			<ExtendedDataType>EcoResStorageDimensionGroupName</ExtendedDataType>
+			<Label>@SYS312237</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalServiceTrackingDimensionGroup</Name>
+			<ExtendedDataType>EcoResTrackingDimensionGroupName</ExtendedDataType>
+			<Label>@SYS312248</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ItemModelGroup</Name>
+			<ExtendedDataType>InventModelGroupId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ItemGroupId</Name>
+			<ExtendedDataType>ItemGroupId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TaxItemGroupIdSales</Name>
+			<ExtendedDataType>TaxItemGroup</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TaxItemGroupIdPurch</Name>
+			<ExtendedDataType>TaxItemGroup</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ProjCategory</Name>
+			<ExtendedDataType>ProjCategoryId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>InventDimension</Name>
+			<EnumType>ITVTInventDimension</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueDefaultProd</Name>
+			<ExtendedDataType>ITVTInventDimValueDefaultProd</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueDefaultPurch</Name>
+			<ExtendedDataType>ITVTInventDimValueDefaultPurch</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueDefaultRental</Name>
+			<ExtendedDataType>ITVTInventDimValueDefaultRental</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueDefaultSales</Name>
+			<ExtendedDataType>ITVTInventDimValueDefaultSales</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueStatusNew</Name>
+			<ExtendedDataType>ITVTInventDimValueStatusNew</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueStatusRented</Name>
+			<ExtendedDataType>ITVTInventDimValueStatusRented</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueStatusUsed</Name>
+			<ExtendedDataType>ITVTInventDimValueStatusUsed</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>DefaultInventLocation</Name>
+			<ExtendedDataType>ITVTRentalDefaultInventLocation</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>MovementJournalNameId</Name>
+			<ExtendedDataType>InventJournalNameMovement</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+			<Label>@ITVTRental:MovementJournal</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>RentalOrderAutoReservation</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>InventTransferAutoReservation</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>StartEndRentalReceiptShip</Name>
+			<ExtendedDataType>ITVTStartEndRentalReceiptShip</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>DefaultIsFixedAsset</Name>
+			<ExtendedDataType>ITVTInventTableIsFixedAsset</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>UseFactorPercentage</Name>
+			<ExtendedDataType>ITVTUseFactorPercentage</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ITVTWeekStart</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>TSWeekStart</ExtendedDataType>
+			<EnumType>WeekDays</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueDefaultFAPurch</Name>
+			<ExtendedDataType>ITVTInventDimValueDefaultFAPurch</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueStatusNewFixedAsset</Name>
+			<ExtendedDataType>ITVTInventDimValueStatusNewFixedAsset</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimValueStatusInterimFAPurch</Name>
+			<ExtendedDataType>ITVTInventDimValueInterimFAPurch</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>LossProfitJournalNameId</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>InventJournalNameLossProfit</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>MovementJournalLedgerDimension</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>LedgerDimensionDefaultAccount</ExtendedDataType>
+			<Label>@Sys11162</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>CreateFixedAssetWithFirstRental</Name>
+			<Label>@ITVTRental:CreateFixedAssetWithFirstRental</Label>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>ManualPosting</Name>
+			<Label>@SYS28646</Label>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>CheckRentalItemNewFixedAssetCost</Name>
+			<Label>@ITVTRental:CheckRentalItemNewFixedAssetCost</Label>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalDispatchJournalName</Name>
+			<ExtendedDataType>ITVTRentalDispatchJournalName</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventJournalNameId</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>InventJournalNameAsset</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>DepreciateInRentalEnd</Name>
+			<ExtendedDataType>ITVTDepreciateInRentalEnd</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>DepreciateInventory</Name>
+			<ExtendedDataType>ITVTDepreciateInventory</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>AccrualJournalName</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ConfigurationKey>MCRRoyalty</ConfigurationKey>
+			<ExtendedDataType>LedgerJournalNameId</ExtendedDataType>
+			<Label>@MCR34505</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>AccrualAccount</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>MCRRoyaltyLedgerDimensionDefaultAccount</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>ExpenseAccount</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>MCRRoyaltyOffsetDimensionDefaultAccount</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>CreateProjLocation</Name>
+			<ExtendedDataType>ITVTCreateProjLocation</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>RentalRunForOpenPeriods</Name>
+			<ExtendedDataType>ITVTRentalRunForOpenPeriods</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>UseConfirmedRentalEndDateForEndRental</Name>
+			<ExtendedDataType>ITVTUseConfirmedRentalEndDateForEndRental</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ReturnTransferJournalNameId</Name>
+			<ExtendedDataType>ITVTReturnTransferJournalNameId</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>KeyIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>Key</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings />
+	<Relations>
+		<AxTableRelation>
+			<Name>ItemPriceDiscGroup</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>PriceDiscGroup</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>ItemDiscGroup</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>ItemPriceDiscGroup</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>Type</Name>
+					<RelatedField>Type</RelatedField>
+					<ValueStr>PriceGroupType::LineDiscGroup</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>SalesPriceGroup</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>PriceDiscGroup</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>SalesPriceGroup</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>SalesPriceGroup</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>Type</Name>
+					<RelatedField>Type</RelatedField>
+					<ValueStr>PriceGroupType::PriceGroup</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalPriceGroup</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>PriceDiscGroup</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>RentalPriceGroup</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>RentalPriceGroup</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>Type</Name>
+					<RelatedField>Type</RelatedField>
+					<ValueStr>PriceGroupType::PriceGroup</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>TimeUnit</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>ITVTRentalTimeUnit</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>TimeUnitId</Name>
+					<Field>TimeUnitId</Field>
+					<RelatedField>TimeUnitId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>RentalItemInventoryUnit</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>UnitOfMeasure</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>RentalItemInventoryUnit</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>RentalItemInventoryUnit</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalServiceInventoryUnit</Name>
+					<SourceEDT>UnitOfMeasureSymbol</SourceEDT>
+					<Field>RentalServiceInventoryUnit</Field>
+					<RelatedField>Symbol</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>RentalItemSalesUnit</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>UnitOfMeasure</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>RentalItemSalesUnit</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>RentalItemSalesUnit</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalServiceSalesUnit</Name>
+					<SourceEDT>UnitOfMeasureSymbol</SourceEDT>
+					<Field>RentalServiceSalesUnit</Field>
+					<RelatedField>Symbol</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>RentalItemPurchUnit</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>UnitOfMeasure</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>RentalItemPurchUnit</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>RentalItemPurchUnit</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalServicePurchUnit</Name>
+					<SourceEDT>UnitOfMeasureSymbol</SourceEDT>
+					<Field>RentalServicePurchUnit</Field>
+					<RelatedField>Symbol</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>TaxItemGroupSales</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>TaxItemGroupHeading</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>TaxItemGroupSales</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>TaxItemGroupSales</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>TaxItemGroupIdSales</Name>
+					<SourceEDT>TaxItemGroup</SourceEDT>
+					<Field>TaxItemGroupIdSales</Field>
+					<RelatedField>TaxItemGroup</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>TaxItemGroupPurch</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>TaxItemGroupHeading</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>TaxItemGroupPurch</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>TaxItemGroupPurch</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>TaxItemGroupIdPurch</Name>
+					<SourceEDT>TaxItemGroup</SourceEDT>
+					<Field>TaxItemGroupIdPurch</Field>
+					<RelatedField>TaxItemGroup</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>ItemGroup</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>InventItemGroup</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ItemGroupId</Name>
+					<SourceEDT>ItemGroupId</SourceEDT>
+					<Field>ItemGroupId</Field>
+					<RelatedField>ItemGroupId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>ItemModel</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>InventModelGroup</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ItemModelGroup</Name>
+					<SourceEDT>InventModelGroupId</SourceEDT>
+					<Field>ItemModelGroup</Field>
+					<RelatedField>ModelGroupId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>EcoResStorageDimensionGroup</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<RelatedTable>EcoResStorageDimensionGroup</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalServiceStorageDimensionGroup</Name>
+					<Field>RentalServiceStorageDimensionGroup</Field>
+					<RelatedField>Name</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>EcoResStorageTrackingGroup</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<RelatedTable>EcoResTrackingDimensionGroup</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalServiceTrackingDimensionGroup</Name>
+					<Field>RentalServiceTrackingDimensionGroup</Field>
+					<RelatedField>Name</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>ProjCategory</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>ProjCategory</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ProjCategory</Name>
+					<SourceEDT>ProjCategoryId</SourceEDT>
+					<Field>ProjCategory</Field>
+					<RelatedField>CategoryId</RelatedField>
+				</AxTableRelationConstraint>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>CategoryType</Name>
+					<RelatedField>CategoryType</RelatedField>
+					<ValueStr>ProjCategoryType::Item</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>MovementInventJournalName</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<RelatedTable>InventJournalName</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Role>InventParameters</Role>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>MovementJournalNameId</Name>
+					<Field>MovementJournalNameId</Field>
+					<RelatedField>JournalNameId</RelatedField>
+				</AxTableRelationConstraint>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>JournalType_Extern</Name>
+					<RelatedField>JournalType</RelatedField>
+					<ValueStr>InventJournalType::Movement</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusPurch</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueDefaultPurch</Name>
+					<Field>InventDimValueDefaultPurch</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusProd</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueDefaultProd</Name>
+					<Field>InventDimValueDefaultProd</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusRental</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueDefaultRental</Name>
+					<Field>InventDimValueDefaultRental</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusSales</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueDefaultSales</Name>
+					<Field>InventDimValueDefaultSales</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>TransferInventJournalName</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<RelatedTable>InventJournalName</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>JournalType_Extern</Name>
+					<RelatedField>JournalType</RelatedField>
+					<ValueStr>InventJournalType::Transfer</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+			<Index>NamesIdx</Index>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>LossProfitInventJournalName</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<RelatedTable>InventJournalName</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>LossProfitInventJournalName</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>InventParameters</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>LossProfitJournalNameId</Name>
+					<Field>LossProfitJournalNameId</Field>
+					<RelatedField>JournalNameId</RelatedField>
+				</AxTableRelationConstraint>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>JournalType_Extern</Name>
+					<RelatedField>JournalType</RelatedField>
+					<ValueStr>InventJournalType::LossProfit</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+			<Index>NamesIdx</Index>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusFAPurch</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueDefaultFAPurch</Name>
+					<Field>InventDimValueDefaultFAPurch</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusRentalNew</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueStatusNew</Name>
+					<Field>InventDimValueStatusNew</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusRentalNewFixedAssed</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueStatusNewFixedAsset</Name>
+					<Field>InventDimValueStatusNewFixedAsset</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusRentalRented</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueStatusRented</Name>
+					<Field>InventDimValueStatusRented</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusRentalUsed</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueStatusUsed</Name>
+					<Field>InventDimValueStatusUsed</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>LedgerDimension</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>DimensionAttributeValueCombination</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>LedgerDimension</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>LedgerDimension_InventJournalTable</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>MovementJournalLedgerDimension</Name>
+					<Field>MovementJournalLedgerDimension</Field>
+					<RelatedField>RecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+			<Index>RecId</Index>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalDispatchJournalName</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>LedgerJournalName</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalDispatchJournalName</Name>
+					<Field>RentalDispatchJournalName</Field>
+					<RelatedField>JournalName</RelatedField>
+				</AxTableRelationConstraint>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>JournalType</Name>
+					<RelatedField>JournalType</RelatedField>
+					<ValueStr>LedgerJournalType::Assets</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalStatusInterimFAPurch</Name>
+			<RelatedTable>ITVTRentalStatus</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimValueStatusInterimFAPurch</Name>
+					<Field>InventDimValueStatusInterimFAPurch</Field>
+					<RelatedField>RentalStatusId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>AccrualJournalName</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>LedgerJournalName</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>AccrualJournalName</Name>
+					<SourceEDT>LedgerJournalNameId</SourceEDT>
+					<Field>AccrualJournalName</Field>
+					<RelatedField>JournalName</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>AccrualAccount</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>DimensionAttributeValueCombination</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>MCRRoyaltyLedgerDimension</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>MCRRoyaltyLedgerDimension</Role>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>AccrualAccount</Name>
+					<SourceEDT>MCRRoyaltyLedgerDimensionDefaultAccount</SourceEDT>
+					<Field>AccrualAccount</Field>
+					<RelatedField>RecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>ExpenseAccount</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<EDTRelation>Yes</EDTRelation>
+			<RelatedTable>DimensionAttributeValueCombination</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>MCRRoyaltyOffsetLedgerDimension</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>MCRRoyaltyOffsetLedgerDimension</Role>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ExpenseAccount</Name>
+					<SourceEDT>MCRRoyaltyOffsetDimensionDefaultAccount</SourceEDT>
+					<Field>ExpenseAccount</Field>
+					<RelatedField>RecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>InventJournalNameReturnTransfer</Name>
+			<RelatedTable>InventJournalName</RelatedTable>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ReturnTransferJournalNameId</Name>
+					<Field>ReturnTransferJournalNameId</Field>
+					<RelatedField>JournalNameId</RelatedField>
+				</AxTableRelationConstraint>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintRelatedFixed">
+					<Name>JournalType</Name>
+					<RelatedField>JournalType</RelatedField>
+					<ValueStr>InventJournalType::Transfer</ValueStr>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+	</Relations>
+	<StateMachines />
+</AxTable>

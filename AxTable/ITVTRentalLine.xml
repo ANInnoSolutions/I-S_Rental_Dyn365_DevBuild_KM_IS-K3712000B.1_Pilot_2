@@ -1,0 +1,1849 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTRentalLine</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Rental Order Lines
+/// </summary>
+public class ITVTRentalLine extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>lookupRentalItemId</Name>
+				<Source><![CDATA[
+    public static void lookupRentalItemId(FormStringControl _callingControl)
+    {
+        SysTableLookup       sysTableLookup = SysTableLookup::newParameters(tableNum(InventTable), _callingControl);
+        Query                query;
+        QueryBuildDataSource qbds;
+        
+        query = new Query();
+
+        sysTableLookup = SysTableLookup::newParameters(tablenum(InventTable), _callingControl);
+        qbds = query.addDataSource(tableNum(InventTable));
+        qbds.addRange(fieldNum(InventTable, ITVTIsRentalItem)).value(queryValue(NoYes::Yes));
+
+        sysTableLookup.addLookupfield(fieldNum(InventTable, ItemId));
+        sysTableLookup.addLookupfield(fieldNum(InventTable, NameAlias));
+        sysTableLookup.addLookupMethod(tableMethodStr(InventTable, defaultProductName));
+        sysTableLookup.addLookupMethod(tableMethodStr(InventTable, iTemGroupId));
+        sysTableLookup.parmUseLookupValue(true);
+        sysTableLookup.parmQuery(query);
+ 
+        sysTableLookup.performFormLookup();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventTable</Name>
+				<Source><![CDATA[
+    public InventTable inventTable(boolean _forUpdate = false)
+    {
+        return InventTable::find(this.ItemId, _forUpdate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventDim</Name>
+				<Source><![CDATA[
+    public InventDim inventDim(boolean _forUpdate = false)
+    {
+        return InventDim::find(this.InventDimId, _forUpdate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesTable</Name>
+				<Source><![CDATA[
+    public SalesTable salesTable(boolean _forUpdate = false)
+    {
+        return SalesTable::find(this.SalesId, _forUpdate);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initName</Name>
+				<Source><![CDATA[
+    public void initName(InventTable _inventTable)
+    {
+        this.Name = SalesParameters::nameAndOrDescription(_inventTable, this.salesTable().LanguageId, this.InventDimId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFactorPct</Name>
+				<Source><![CDATA[
+    public void initFactorPct()
+    {
+        this.RentalFactorPercentage = this.UseFactorPercentage ? ITVTRentalParameters::find().FactorPercentage : 100;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initValue</Name>
+				<Source><![CDATA[
+    public void initValue()
+    {
+        this.PriceUnit = 1;
+        this.LineNum = ITVTRentalLine::lastLineNum(this.SalesId) + 1.0;
+
+        if (this.SalesId)
+        {
+            this.initFromSalesTable();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setRentalPrice</Name>
+				<Source><![CDATA[
+    public void setRentalPrice()
+    {
+        this.RentalPrice = this.SalesPrice * this.RentalFactorPercentage / 100;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setLineAmount</Name>
+				<Source><![CDATA[
+    public void setLineAmount()
+    {
+        this.LineAmount = (this.Qty * ((this.RentalPrice - this.LineDisc) / this.PriceUnit)) * (100 - this.LinePercent) / 100;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setPriceAmount</Name>
+				<Source><![CDATA[
+    public void setPriceAmount()
+    {
+        this.setSalesPrice();
+        this.setSalesDiscount();
+        this.setRentalPrice();
+        this.setLineAmount();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromSalesTable</Name>
+				<Source><![CDATA[
+    public void initFromSalesTable(SalesTable _salesTable = this.salesTable())
+    {
+        this.SalesId                            = _salesTable.SalesId;
+        this.SalesType							= _salesTable.SalesType;
+        this.RentalMinPeriod                    = _salesTable.ITVTRentalMinPeriod;
+        this.RentalTimeUnitId                   = _salesTable.ITVTRentalTimeUnitId;
+        this.RentalFromDate                     = _salesTable.ITVTRentalFromDate;
+        this.RentalToDate                       = _salesTable.ITVTRentalToDate;
+        this.UseFactorPercentage                = _salesTable.ITVTUseFactorPercentage;
+        this.RentalOrderAutoReservation         = _salesTable.ITVTRentalOrderAutoReservation;
+        this.ConfirmedRentalFromDate            = _salesTable.ITVTConfirmedRentalFromDate;
+        this.ConfirmedRentalToDate              = _salesTable.ITVTConfirmedRentalToDate;
+        this.ProjectLocationReceiptDate         = _salesTable.ITVTProjectLocationReceiptDate ? 
+                                                  _salesTable.ITVTProjectLocationReceiptDate : 
+                                                  this.ConfirmedRentalFromDate ? this.ConfirmedRentalFromDate : this.RentalFromDate;
+
+
+        this.TaxGroup                           = _salesTable.TaxGroup;
+        
+        this.InventDimId = this.initStorageDimensionsFromSalesTable(_salesTable).inventDimId;
+        this.initRentalDimensionDefault();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromInventTable</Name>
+				<Source><![CDATA[
+    public void initFromInventTable(InventTable _inventTable = this.inventTable())
+    {
+        InventDim   inventDim = _inventTable.getDefaultProductDimensions(this.inventDim());
+
+        this.ItemId = _inventTable.ItemId;
+        this.initName(_inventTable);
+
+        this.Qty            = _inventTable.inventStandardQty(inventDim.inventDimId);
+        this.initFromInventTableModule(InventTableModule::find(_inventTable.ItemId, ModuleInventPurchSales::Sales));
+        this.Qty            = decRound(this.Qty, UnitOfMeasure::unitOfMeasureDecimalPrecision(UnitOfMeasure::unitOfMeasureIdBySymbol(this.UnitId)));
+
+        this.TaxItemGroup   = InventTableModule::find(_inventTable.ITVTRentalService, ModuleInventPurchSales::Sales).TaxItemGroupId;
+
+        if(inventDim.InventLocationId && !inventDim.InventStatusId && WHSInventEnabled::exist(this.ItemId))
+        {
+            inventDim.InventStatusId = WHSInvent::getDefaultStatus(inventDim, null, this);
+        }
+
+        inventDim.setInventoryOwner(_inventTable);
+
+        this.InventDimId  = InventDim::findOrCreate(inventDim).InventDimId;
+        this.initRentalDimensionDefault();
+
+        this.initFactorPct();
+        this.setPriceAmount();       
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromInventTableModule</Name>
+				<Source><![CDATA[
+    public void initFromInventTableModule(InventTableModule _inventTableModule)
+    {
+        this.UnitId             = _inventTableModule.UnitId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initStorageDimensionsFromSalesTable</Name>
+				<Source><![CDATA[
+    protected InventDim initStorageDimensionsFromSalesTable(SalesTable _salesTable)
+    {
+        InventDim inventdim = this.inventDim();
+
+        if (_salesTable.ITVTProjInventLocationId)
+        {
+            inventDim.InventLocationId     = _salesTable.ITVTProjInventLocationId;
+        }
+        else
+        if (_salesTable.InventLocationId)
+        {
+            inventDim.InventLocationId     = _salesTable.InventLocationId;
+        }        
+
+        this.InventDimId = InventDim::findOrCreate(InventDim).InventDimId;
+            
+        inventdim = this.initFromInventLocation();
+
+        return inventdim;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromInventLocation</Name>
+				<Source><![CDATA[
+    /*
+    public void initFromProjInventLocation(SalesTable _salesTable)
+    {
+        InventDim   inventDim = this.inventDim();
+
+        if(_salesTable.ITVTProjInventLocationId)
+        {
+            inventDim.InventLocationId = _salesTable.ITVTProjInventLocationId;
+            this.InventDimId = InventDim::findOrCreate(InventDim).InventDimId;
+            
+            inventdim = this.initFromInventLocation();
+        }
+
+        this.InventDimId = InventDim::findOrCreate(InventDim).inventDimId;
+    }
+    */
+    public InventDim initFromInventLocation()
+    {
+        InventDim inventdim = ITVTRentalLine::inventLocationModified(this.inventDim());
+		this.InventDimId = inventdim.inventDimId;
+
+        return inventdim;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>inventLocationModified</Name>
+				<Source><![CDATA[
+    public static InventDim inventLocationModified(InventDim _inventDim)
+    {
+        InventLocation inventLocation = InventLocation::find(_inventDim.InventLocationId);
+        if (inventLocation)
+        {
+            if (inventLocation.InventSiteId)
+            {
+                _inventDim.InventSiteId = inventLocation.InventSiteId;
+            }
+            /*
+            if (inventLocation.WMSlocationIdDefaultIssue)
+            {
+                _inventDim.wMSLocationId = inventLocation.WMSlocationIdDefaultIssue;
+            }
+            */
+        }
+
+        return InventDim::findOrCreate(_inventDim);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initRentalDimensionDefault</Name>
+				<Source><![CDATA[
+    public void initRentalDimensionDefault()
+    {
+        if (this.rentalDimensionIsActive()
+            && ITVTRentalParameters::getInventDimDefaultValue(this.TableId))
+        {
+            InventDim   inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), this.TableId);
+            this.InventDimId      = InventDim::findOrCreate(inventDim).inventDimId;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>lastLineNum</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Finds the last line number for specified Sales order id
+    /// </summary>
+    /// <param name = "_salesId">Sales order id</param>
+    /// <returns>Last line number for the Sales order</returns>
+    static LineNum  lastLineNum(SalesId _salesId)
+    {
+        return (select maxof(LineNum) from ITVTRentalLine
+                    index hint RentalLineIdx
+                    where ITVTRentalLine.SalesId == _salesId).LineNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insert</Name>
+				<Source><![CDATA[
+    public void  insert()
+    {        
+        this.InventTransId = NumberSeq::newGetNum(InventParameters::numRefInventTransId()).num();
+        this.InventTransIdRented = NumberSeq::newGetNum(InventParameters::numRefInventTransId()).num();
+
+        this.Status = this.SalesType == SalesType::Sales ? ITVTRentalLineStatus::Created : ITVTRentalLineStatus::None;
+
+		if (!this.LineNum || ITVTRentalLine::exist(this.SalesId, this.LineNum))
+        {
+            this.LineNum = ITVTRentalLine::lastLineNum(this.SalesId) + 1.0;
+        }
+
+        ITVTInventMov_RentalLine movEstimated = ITVTInventMov_RentalLine::newFromRentalLine(this,InventDirection::Issue);
+        InventUpd_Estimated estimated = InventUpd_Estimated::newInventMovement(movEstimated);        
+        estimated.updateNow();
+
+        ITVTInventMov_RentalLine movBackEstimated = ITVTInventMov_RentalLine::newFromRentalLine(this,InventDirection::Receipt);
+        movBackEstimated.inventTransOriginId(movEstimated.inventTransOriginId());
+        InventUpd_Estimated estimatedBack = InventUpd_Estimated::newInventMovement(movBackEstimated);
+        estimatedBack.updateNow();
+
+        super();
+
+        estimated.updateOwnerRelationship();
+        estimated.updateReservation();
+
+        estimatedBack.updateOwnerRelationship();
+        estimatedBack.updateReservation();
+
+        this.updateSalesFulfilledStatus(NoYes::No);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateSalesFulfilledStatus</Name>
+				<Source><![CDATA[
+    private void updateSalesFulfilledStatus(ITVTRentalIsFulfilled _rentalIsFulfilled)
+    {
+        ttsbegin;
+
+        SalesTable salesTable = SalesTable::find(this.SalesId, true);
+
+        salesTable.ITVTRentalIsFulfilled = _rentalIsFulfilled;
+        salesTable.doUpdate();
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>update</Name>
+				<Source><![CDATA[
+    public void update()
+    {
+        if (this.SalesType != this.orig().SalesType)
+        {
+            if (this.SalesType != SalesType::Sales
+                && this.Status != ITVTRentalLineStatus::Created
+                && this.Status != ITVTRentalLineStatus::None)
+            {
+                throw error("@ITVTRental:OrderTypeCannotChange");
+            }
+
+            this.Status = this.SalesType == SalesType::Sales ? ITVTRentalLineStatus::Created : ITVTRentalLineStatus::None;
+        }
+        
+
+        InventUpd_Estimated estimated;
+        InventUpd_Estimated estimatedBack;
+
+        if ( this.Qty != this.orig().Qty
+            || this.InventDimId != this.orig().InventDimId
+            || this.RentalOrderAutoReservation != this.orig().RentalOrderAutoReservation
+            || this.RentalFromDate != this.orig().RentalFromDate
+            || this.RentalToDate != this.orig().RentalToDate
+            || this.ConfirmedRentalFromDate != this.orig().ConfirmedRentalFromDate
+            || this.ConfirmedRentalToDate != this.orig().ConfirmedRentalToDate
+            || this.ProjectLocationReceiptDate != this.orig().ProjectLocationReceiptDate
+            || (this.SalesType != this.orig().SalesType && this.SalesType == SalesType::Sales)
+           )
+        {
+            switch(this.Status)
+            {
+                case ITVTRentalLineStatus::Created:
+                    {
+                        //Rental Issue
+                        ITVTInventMov_RentalLine movEstimated = ITVTInventMov_RentalLine::newFromRentalLine(this, InventDirection::Issue);
+                        estimated = InventUpd_Estimated::newInventMovement(movEstimated);
+                        estimated.updateNow();
+
+                        // Rental Receipt
+                        ITVTInventMov_RentalLine movBackEstimated = ITVTInventMov_RentalLine::newFromRentalLine(this, InventDirection::Receipt);
+                        estimatedBack = InventUpd_Estimated::newInventMovement(movBackEstimated);
+                        estimatedBack.updateNow();
+
+                    }
+                    break;
+
+                case ITVTRentalLineStatus::Started:
+                    {
+                        // Rental Rented Issue
+                        ITVTInventMov_RentalLine movEstimated = ITVTInventMov_RentalLineRented::newFromRentalLine(this, InventDirection::Issue);
+                        estimated = InventUpd_Estimated::newInventMovement(movEstimated);
+                        estimated.updateNow();
+
+                        // Rental Receipt
+                        ITVTInventMov_RentalLine movBackEstimated = ITVTInventMov_RentalLine::newFromRentalLine(this, InventDirection::Receipt);
+                        estimatedBack = InventUpd_Estimated::newInventMovement(movBackEstimated);
+                        estimatedBack.updateNow();
+
+                    }
+                    break;
+            }
+        }
+
+        super();
+
+        if (estimated)
+            estimated.updateReservation();
+
+        if (estimatedBack)
+            estimatedBack.updateReservation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>delete</Name>
+				<Source><![CDATA[
+    /*
+    public InventTrans findInventTransIssue(RefRecId _inventTransOriginRecId, boolean _forUpdate = false)
+    {
+        InventTrans inventTrans;
+
+        inventTrans.selectForUpdate(_forUpdate);
+
+        select firstonly inventTrans
+            where	inventTrans.InventTransOrigin	== _inventTransOriginRecId &&
+            inventTrans.StatusIssue			!= StatusIssue::None;
+
+        return inventTrans;
+    }
+
+    public InventTrans updateInventTransIssue(RefRecId _inventTransOriginRecId)
+    {
+        InventTrans inventTrans = this.findInventTransIssue(_inventTransOriginRecId, true);
+
+        if (!inventTrans)
+        {
+            inventTrans.initValue();
+            inventTrans.InventTransOrigin	= _inventTransOriginRecId;
+            inventTrans.StatusIssue			= StatusIssue::OnOrder;
+            inventTrans.ItemId				= this.ItemId;
+        }
+
+        inventTrans.Qty					= - this.Qty;
+        inventTrans.inventDimId			= this.InventDimId;
+        inventTrans.DateExpected		= this.RentalFromDate;
+
+        if (inventTrans.validateWrite())
+        {
+            inventTrans.write();
+        }
+
+        return inventTrans;
+    }
+
+    public InventTrans findInventTransReceipt(RefRecId _inventTransOriginRecId, boolean _forUpdate = false)
+    {
+        InventTrans				inventTrans;
+
+        inventTrans.selectForUpdate(_forUpdate);
+        
+		select firstonly inventTrans
+            where	inventTrans.InventTransOrigin	== _inventTransOriginRecId &&
+                    inventTrans.StatusReceipt		!= StatusReceipt::None;
+
+        return inventTrans;
+    }
+
+    public InventTrans updateInventTransReceipt(RefRecId _inventTransOriginRecId)
+    {
+        InventTrans				inventTrans = this.findInventTransReceipt(_inventTransOriginRecId, true);
+        InventDim				inventDim = this.inventDim();
+        ITVTRentalParameters	rentalParameters = ITVTRentalParameters::find();
+
+        if (!inventTrans)
+        {
+            inventTrans.initValue();
+            inventTrans.InventTransOrigin	= _inventTransOriginRecId;
+			inventTrans.StatusReceipt		= StatusReceipt::Ordered;
+			inventTrans.ItemId				= this.ItemId;
+        }
+
+        inventTrans.Qty					= this.Qty;
+        inventTrans.DateExpected		= this.RentalToDate;
+
+        inventDim = ITVTRentalParameters::setRentalInventDimStatus(inventDim, rentalParameters.InventDimValueStatusUsed);
+        inventTrans.inventDimId			= inventDim.InventDimId;
+
+        if (inventTrans.validateWrite())
+        {
+            inventTrans.write();
+        }
+
+        return inventTrans;
+    }
+    */
+    void delete()
+    {   
+        super();
+
+        InventUpd_DeleteMovement::newMovement(ITVTInventMov_RentalLine::newFromRentalLine(this,InventDirection::Issue)).updateNow();
+        InventUpd_DeleteMovement::newMovement(ITVTInventMov_RentalLine::newFromRentalLine(this,InventDirection::Receipt)).updateNow();
+
+        this.salesTablePostDeleteUpdate();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>allRentalLinesPosted</Name>
+				<Source><![CDATA[
+    public static boolean allRentalLinesPosted(SalesId _salesId)
+    {
+        ITVTRentalLine rentalLine;
+
+        select firstonly RecId from rentalLine
+            where rentalLine.SalesId == _salesId
+                && !rentalLine.PostedRentalToDate;
+
+        return rentalLine.RecId ? false : true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>salesTablePostDeleteUpdate</Name>
+				<Source><![CDATA[
+    private void salesTablePostDeleteUpdate()
+    {
+        if (ITVTRentalLine::allRentalLinesPosted(this.SalesId))
+        {
+            this.updateSalesFulfilledStatus(NoYes::Yes);
+        }
+        else
+        {
+            this.updateSalesFulfilledStatus(NoYes::No);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>modifiedField</Name>
+				<Source><![CDATA[
+    public void modifiedField(FieldId _fieldId)
+    {
+        super(_fieldId);
+
+        switch (_fieldId)
+        {
+            case fieldNum(ITVTRentalLine, SalesPrice):
+                this.setRentalPrice();
+                this.setLineAmount();
+                break;
+
+            case fieldNum(ITVTRentalLine, ItemId):
+                this.initFromInventTable();
+                this.initDefaultDimension();
+                break;
+
+            case fieldNum(ITVTRentalLine, UseFactorPercentage):
+                this.initFactorPct();
+                this.setPriceAmount();
+                break;
+
+            case fieldNum(ITVTRentalLine, UnitId),
+                fieldNum(ITVTRentalLine, RentalFactorPercentage),
+                fieldNum(ITVTRentalLine, RentalFromDate):
+                this.setPriceAmount();
+                break;
+
+            case fieldNum(ITVTRentalLine, PriceUnit),
+                fieldNum(ITVTRentalLine, LineDisc),
+                fieldNum(ITVTRentalLine, LinePercent):
+                this.setLineAmount();
+                break;
+
+            case fieldNum(ITVTRentalLine, Qty):
+                this.setPriceAmount();
+                //this.handleStockedItems(false);
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setSalesDiscount</Name>
+				<Source><![CDATA[
+    private void setSalesDiscount()
+    {
+        if (!this.salesTable().ProjId)
+        {
+            PriceDisc_LineDisc priceDisc_LineDisc = PriceDisc_LineDisc::construct();
+            ItemId discountItemId = this.UseFactorPercentage ? this.ItemId : this.inventTable().ITVTRentalService;
+
+            priceDisc_LineDisc.parmModuleType(ModuleInventPurchSales::Sales);
+            priceDisc_LineDisc.parmItemId(discountItemId);
+            priceDisc_LineDisc.parmInventDim(this.inventDim());
+            priceDisc_LineDisc.parmUnitID(this.UnitId);
+            priceDisc_LineDisc.parmDiscDate(this.RentalFromDate);
+            priceDisc_LineDisc.parmQty(this.Qty);
+            priceDisc_LineDisc.parmAccountNum(this.salesTable().CustAccount);
+            priceDisc_LineDisc.parmCurrencyCode(this.salesTable().CurrencyCode);
+            priceDisc_LineDisc.parmItemLineDiscCode(InventTableModule::find(discountItemId, ModuleInventPurchSales::Sales).LineDisc);
+            priceDisc_LineDisc.findLineDiscAgreement();
+
+            this.LineDisc = priceDisc_LineDisc.discAmount();
+            this.LinePercent = priceDisc_LineDisc.discPct();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setSalesPrice</Name>
+				<Source><![CDATA[
+    private void setSalesPrice()
+    {
+        PriceDisc           priceDisc;
+        PriceDiscParameters parameters = PriceDiscParameters::construct();
+        
+        parameters.parmModuleType(ModuleInventPurchSales::Sales);
+        parameters.parmItemId(this.UseFactorPercentage ? this.ItemId : this.inventTable().ITVTRentalService);
+        parameters.parmInventDim(this.inventDim());
+        parameters.parmUnitID(this.UnitId);
+        parameters.parmPriceDiscDate(this.RentalFromDate);
+        parameters.parmQty(this.Qty);
+        parameters.parmAccountNum(this.salesTable().CustAccount);
+        parameters.parmCurrencyCode(this.salesTable().CurrencyCode);
+
+        priceDisc = PriceDisc::newFromPriceDiscParameters(parameters);
+        
+        // From Trade agreement
+        if (priceDisc.findPrice(this.salesTable().PriceGroupId))
+        {
+            this.SalesPrice = priceDisc.price();
+        }
+        
+        // From Item
+        else if (priceDisc.findItemPrice())
+        {
+            this.SalesPrice = priceDisc.price();
+        }
+    
+        if (this.SalesPrice == 0)
+        {
+            this.SalesPrice = this.inventTable().inventTableModuleSales().Price;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>itemName</Name>
+				<Source><![CDATA[
+    [SysClientCacheDataMethod]
+    public display SalesLineShowItemName itemName()
+    {
+        return this.inventTable().itemName(this.inventDim());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalServiceItem</Name>
+				<Source><![CDATA[
+    public display ITVTRentalServiceItemId rentalServiceItem()
+    {
+        return this.inventTable().ITVTRentalService;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>displaySumInventTransferLineToWarehouse</Name>
+				<Source><![CDATA[
+    [SysClientCacheDataMethod]
+    public display InventTransferQty displaySumInventTransferLineToWarehouse()
+    {
+        InventTransferLine inventTransferLine;
+        InventTransferTable inventTransferTable;
+        InventLocationIdTo inventLocationIdTo = this.inventDim().InventLocationId;
+
+        select sum(QtyRemainShip), sum(QtyShipped) from inventTransferLine
+            where inventTransferLine.ITVTOriginInventTransId == this.InventTransId
+            join inventTransferTable
+                where inventTransferTable.TransferId == inventTransferLine.TransferId
+                    && inventTransferTable.InventLocationIdTo == inventLocationIdTo;
+
+        return inventTransferLine.QtyRemainShip + inventTransferLine.QtyShipped;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>displaySumInventTransferLineFromWarehouse</Name>
+				<Source><![CDATA[
+    [SysClientCacheDataMethod]
+    public display InventTransferQty displaySumInventTransferLineFromWarehouse()
+    {
+        InventTransferLine inventTransferLine;
+        InventTransferTable inventTransferTable;
+        InventLocationIdTo inventLocationIdFrom = this.inventDim().InventLocationId;
+
+        select sum(QtyRemainShip), sum(QtyShipped) from inventTransferLine
+            where inventTransferLine.ITVTOriginInventTransId == this.InventTransId
+            join inventTransferTable
+                where inventTransferTable.TransferId == inventTransferLine.TransferId
+                    && inventTransferTable.InventLocationIdFrom == inventLocationIdFrom;
+
+        return inventTransferLine.QtyRemainShip + inventTransferLine.QtyShipped;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateField</Name>
+				<Source><![CDATA[
+    public boolean validateField(FieldId _fieldIdToCheck)
+    {
+        boolean ret;
+
+        ret = super(_fieldIdToCheck);
+
+        switch (_fieldIdToCheck)
+        {
+            case fieldNum(ITVTRentalLine, ItemId):
+                // Code disabled based on customer's requirement 16.9.2021:
+                /*
+                if (!this.validateRentalDimension())
+                {
+                    EcoResProductDimGroupSetup productDimSetup = EcoResProductDimGroupSetup::newItemId(this.ItemId);
+                    InventDim inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), this.TableId);
+                    ret = checkFailed(strFmt("@SYS73899", inventDim.preFixProductDim(productDimSetup), this.ItemId));
+                }
+                */
+                if (!this.validateWMSSetup())
+                {
+                    ret = checkFailed(strFmt("@ITVTRental:RentalLineWMSProcessActiveError", this.ItemId, this.inventDim().InventLocationId));
+                }
+
+                break;
+
+            case fieldNum(ITVTRentalLine, ProjectLocationReceiptDate):
+                if ((this.ConfirmedRentalFromDate
+                    && this.ProjectLocationReceiptDate > this.ConfirmedRentalFromDate)
+                    || (!this.ConfirmedRentalFromDate
+                        && this.ProjectLocationReceiptDate > this.RentalFromDate))
+                {
+                    Message::Add(MessageSeverity::Warning, "@ITVTRental:RentalStartBeforeDeliveryDateLine");
+                }
+
+                if (!this.ProjectLocationReceiptDate
+                    && this.inventDim().InventLocationId == this.salesTable().ITVTProjInventLocationId)
+                {
+                    ret = checkFailed("@ITVTRental:ProjectWarehouseReceiptDateError");
+                }
+                break;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateWMSSetup</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates whether WMS processes are correctly setup for the item and warehouse
+    /// </summary>
+    /// <returns>true if WMS is not enabled, otherwise false</returns>
+    public boolean validateWMSSetup()
+    {
+        boolean ret = true;
+        
+        if (WHSInventEnabled::exist(this.ItemId)
+            && InventLocation::find(this.inventDim().InventLocationId).WHSEnabled)
+        {
+            ret = false;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateRentalDimension</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates that Rental dimension could be applied for current Item
+    /// </summary>
+    /// <returns>true if Rental dimension could be applied, otherwise false</returns>
+    public boolean validateRentalDimension()
+    {
+        boolean ret = true;
+
+        if (this.rentalDimensionIsActive()
+            && ITVTRentalParameters::getInventDimDefaultValue(this.TableId))
+        {
+            InventDim   inventDim = ITVTRentalParameters::setRentalInventDimDefault(this.inventDim(), this.TableId);
+
+            if (!InventDimCombination::existByInventDim(this.ItemId, inventDim))
+            {
+                ret = false;
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalDimensionIsActive</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Checks whether Rental dimension from Rental parameters is active for Item
+    /// </summary>
+    /// <returns>true if Rental dimension is active, otherwise false</returns>
+    public boolean rentalDimensionIsActive()
+    {
+        return this.ItemId && ITVTRentalParameters::rentalInventDimFieldActiveForItem(this.ItemId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findInventTransId</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Finds a record of <c>ITVTRentalLine</c> table
+    /// </summary>
+    /// <param name = "_inventTransId">Inventory transaction id</param>
+    /// <param name = "_selectForUpdate">Specified whether selected record must be selected for update</param>
+    /// <returns>A buffer of <c>ITVTRentalLine</c> table</returns>
+    public static ITVTRentalLine findInventTransId(
+            InventTransId   _inventTransId, 
+            boolean         _selectForUpdate = false)
+    {
+        ITVTRentalLine rentalLine;
+
+        rentalLine.selectForUpdate(_selectForUpdate);
+
+        if (_inventTransId)
+        {
+            select firstonly rentalLine
+                where rentalLine.InventTransId == _inventTransId;
+        }
+
+        return rentalLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findInventTransIdRented</Name>
+				<Source><![CDATA[
+    public static ITVTRentalLine findInventTransIdRented(
+            InventTransId   _inventTransIdRented,
+            boolean         _selectForUpdate = false)
+    {
+        ITVTRentalLine rentalLine;
+
+        rentalLine.selectForUpdate(_selectForUpdate);
+
+        if (_inventTransIdRented)
+        {
+            select firstonly rentalLine
+                where rentalLine.InventTransIdRented == _inventTransIdRented;
+        }
+
+        return rentalLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>find</Name>
+				<Source><![CDATA[
+    static ITVTRentalLine find(SalesId     _salesId,
+                        LineNum     _lineNum,
+                        boolean     _selectForUpdate = false)
+    {
+        ITVTRentalLine rentalLine;
+
+        rentalLine.selectForUpdate(_selectForUpdate);
+
+        if (_salesId && _lineNum)
+        {
+            select firstfast firstonly rentalLine
+                where rentalLine.SalesId    == _salesId
+                   && rentalLine.LineNum    == _lineNum;
+        }
+
+        return rentalLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>exist</Name>
+				<Source><![CDATA[
+    static boolean  exist(SalesId   _salesId,
+                          LineNum   _lineNum = naReal())
+    {
+        if (!_salesId)
+        {
+            return false;
+        }
+
+        if (_lineNum == naReal())
+        {
+            return (select firstfast firstonly RecId 
+                        from ITVTRentalLine
+                        where ITVTRentalLine.SalesId     == _salesId).RecId != 0;
+        }
+
+        return ITVTRentalLine::find(_salesId,_lineNum).RecId != 0;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateDelete</Name>
+				<Source><![CDATA[
+    public boolean validateDelete()
+    {
+        boolean ret = super();
+
+        if (this.Status == ITVTRentalLineStatus::Started
+            || this.Status == ITVTRentalLineStatus::Ended)
+        {
+            ret = checkFailed("@ITVTRental:StartedRentalLineDeleteError");
+        }
+    
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>nextLineNum</Name>
+				<Source><![CDATA[
+    public LineNum nextLineNum()
+    {
+        return (select firstonly LineNum
+                    from ITVTRentalLine
+                    order by LineNum
+                    where ITVTRentalLine.SalesId == this.SalesId
+                       && ITVTRentalLine.LineNum >  this.LineNum).LineNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getNextLineNum</Name>
+				<Source><![CDATA[
+    public static LineNum getNextLineNum(ITVTRentalLine _rentalLineFrom)
+    {
+        LineNum nextLineNum = _rentalLineFrom.nextLineNum();
+        
+        if (nextLineNum)
+        {
+            nextLineNum = (_rentalLineFrom.LineNum + nextLineNum) / 2.0;
+        }
+        else
+        {
+            nextLineNum = _rentalLineFrom.LineNum + 1.0;
+        }
+
+        return nextLineNum;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getInventMovSubType</Name>
+				<Source><![CDATA[
+    public InventMovSubType getInventMovSubType(InventDirection _inventDirection)
+    {
+        InventMovSubType ret = InventMovSubType::None;
+        switch (_inventDirection)
+        {
+            case InventDirection::None      :           
+                ret = InventMovSubType::None; 
+                break;
+
+            case InventDirection::Issue     :   
+                switch (this.Status)
+                {
+                    case ITVTRentalLineStatus::Created : ret = InventMovSubType::None; break;
+                    case ITVTRentalLineStatus::Started : ret = InventMovSubType::TransferReceipt; break;
+                }
+                break;
+            case InventDirection::Receipt   : 
+                switch (this.Status)
+                {
+                    case ITVTRentalLineStatus::Created : ret = InventMovSubType::TransferReceipt; break;
+                    case ITVTRentalLineStatus::Started : ret = InventMovSubType::None; break;
+                }
+                break;
+        }
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>qtyStarted</Name>
+				<Source><![CDATA[
+    public InventQty qtyStarted()
+    {
+        InventTrans     inventTrans;
+        InventDim       inventDim;
+        InventLocation  inventLocation;
+
+        select sum(Qty) from inventTrans
+            where inventTrans.InventTransOrigin == ITVTInventTransOriginRentalLine::findInventTransOriginId(this.DataAreaId, this.SalesId)
+               && (inventTrans.StatusIssue      == StatusIssue::Deducted
+               ||  inventTrans.StatusIssue      == StatusIssue::Sold)
+               && inventTrans.StatusReceipt     == StatusReceipt::None
+            join TableId from inventDim
+                where inventDim.InventDimId == inventTrans.InventDimId
+            join TableId from inventLocation
+                where inventLocation.InventLocationId   == inventDim.InventLocationId;
+                   //&& inventLocation.InventLocationType == InventLocationType::Standard;
+
+        return -inventTrans.Qty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>qtyStartedFinancial</Name>
+				<Source><![CDATA[
+    public InventQty qtyStartedFinancial()
+    {
+        InventTrans     inventTrans;
+        InventDim       inventDim;
+        InventLocation  inventLocation;
+
+        select sum(Qty) from inventTrans
+            where inventTrans.InventTransOrigin == ITVTInventTransOriginRentalLine::findInventTransOriginId(this.DataAreaId, this.SalesId)
+               && inventTrans.StatusIssue       == StatusIssue::Sold
+               && inventTrans.StatusReceipt     == StatusReceipt::None
+            join TableId from inventDim
+                where inventDim.InventDimId == inventTrans.InventDimId
+            join TableId from inventLocation
+                where inventLocation.InventLocationId   == inventDim.InventLocationId;
+                   //&& inventLocation.InventLocationType == InventLocationType::Standard;
+
+        return -inventTrans.Qty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>qtyEndedPhysical</Name>
+				<Source><![CDATA[
+    public InventQty qtyEndedPhysical()
+    {
+        InventTrans     inventTrans;
+        InventDim       inventDim;
+        InventLocation  inventLocation;
+
+        select sum(Qty) from inventTrans
+            where inventTrans.InventTransOrigin == ITVTInventTransOriginRentalLine::findInventTransOriginId(this.DataAreaId, this.SalesId)
+               && inventTrans.StatusIssue       == StatusIssue::Deducted
+               && inventTrans.StatusReceipt     == StatusReceipt::None
+            join TableId from inventDim
+                where inventDim.InventDimId == inventTrans.InventDimId
+            join TableId from inventLocation
+                where inventLocation.InventLocationId   == inventDim.InventLocationId;
+                    //&& inventLocation.InventLocationType == InventLocationType::Standard;
+
+        return -inventTrans.Qty;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>queryValueInventTransId</Name>
+				<Source><![CDATA[
+    str queryValueInventTransId()
+    {
+        str     s;
+
+        s = '(';
+        s += '((' + fieldStr(InventTransOrigin,InventTransId)+' == \"'+this.InventTransId+'\"))';
+        s += ' || ';
+        s += '((' + fieldStr(InventTransOrigin,InventTransId)+' == \"'+this.InventTransIdRented+'\"))';
+        s +=')';
+        return s;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initDefaultDimension</Name>
+				<Source><![CDATA[
+    protected void initDefaultDimension()
+    {
+        RefRecId companyInfoRecId = CompanyInfo::findDataArea(this.dataAreaId).RecId;
+
+        // Copy dimension from SalesTable (the copy does not overwrite the dimension linked to the site)
+        this.DefaultDimension = DimensionCopy::newFromTable(this, companyInfoRecId).copy(this.salesTable().DefaultDimension);
+        // Merge current dimension with inventTable
+        this.DefaultDimension = DimensionMerge::newFromTable(this, companyInfoRecId).merge(this.DefaultDimension, this.inventTable().DefaultDimension);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initNewRentalLine</Name>
+				<Source><![CDATA[
+    public void initNewRentalLine(
+        SalesId             _salesId, 
+        ItemId              _itemId,
+        Qty                 _qty,
+        InventUnitId        _unitId,
+        InventDimId         _inventDimId)
+    {
+        this.initValue();
+        this.initFromSalesTable(SalesTable::find(_salesId));
+        this.initFromInventTable(InventTable::find(_itemId));
+        
+        this.InventDimId			    = _inventDimId;
+        this.UnitId			            = _unitId;
+        
+        this.Qty				        = _qty;
+        this.modifiedField(fieldNum(ITVTRentalLine, Qty));
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<Label>@ITVTRental:RentalLines</Label>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TableGroup>WorksheetLine</TableGroup>
+	<TitleField1>SalesId</TitleField1>
+	<TitleField2>ItemId</TitleField2>
+	<ClusteredIndex>RentalLineIdx</ClusteredIndex>
+	<CreatedBy>Yes</CreatedBy>
+	<CreatedDateTime>Yes</CreatedDateTime>
+	<ModifiedBy>Yes</ModifiedBy>
+	<ModifiedDateTime>Yes</ModifiedDateTime>
+	<Modules>SalesAndMarketing</Modules>
+	<PrimaryIndex>TransIdIdx</PrimaryIndex>
+	<ReplacementKey>TransIdIdx</ReplacementKey>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>InventTransId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Product</Name>
+			<Label>@Retail:Product</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ItemId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>itemName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Name</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Quantity</Name>
+			<Label>@SYS3065</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Qty</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalOrderAutoReservation</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventTransId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PendingReturnQuantity</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Rental</Name>
+			<Label>@ITVTRental:Rental</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>rentalServiceItem</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalMinPeriod</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalTimeUnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ConfirmedRentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ConfirmedRentalToDate</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>DeliveryReturn</Name>
+			<Label>@ITVTRental:DeliveryReturn</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>DeliverNow</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ProjectLocationReceiptDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ReturnNow</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ReturnDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>ReturnReceiptDate</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Postings</Name>
+			<Label>@SYS25782</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalRunToDate</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>PriceDiscount</Name>
+			<Label>@SYS328717</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>UseFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SalesPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LineDisc</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LinePercent</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PriceUnit</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LineAmount</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Other</Name>
+			<Label>@SYS1284</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalAdditionalText</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalConstructionSite</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalDocumentNumber</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Grid</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>ItemId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>itemName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Qty</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalMinPeriod</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalTimeUnitId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalFromDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>PostedRentalToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalRunToDate</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalAdditionalText</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalConstructionSite</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalDocumentNumber</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>UseFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>SalesPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalFactorPercentage</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalPrice</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LineAmount</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalOrderAutoReservation</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>SalesTax</Name>
+			<Label>@SYS5878</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>TaxGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TaxItemGroup</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>SalesId</Name>
+			<AllowEdit>No</AllowEdit>
+			<ExtendedDataType>SalesId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>LineNum</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>LineNum</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventTransId</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>InventTransId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>ItemId</Name>
+			<AllowEdit>No</AllowEdit>
+			<ExtendedDataType>ItemId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>Name</Name>
+			<ExtendedDataType>ItemFreeTxt</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventDimId</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>InventDimId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>Qty</Name>
+			<ExtendedDataType>SalesQty</ExtendedDataType>
+			<Label>@SYS14578</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>UnitId</Name>
+			<ExtendedDataType>SalesUnit</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt">
+			<Name>RentalMinPeriod</Name>
+			<ExtendedDataType>ITVTRentalMinPeriod</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalTimeUnitId</Name>
+			<ExtendedDataType>ITVTRentalTimeUnitId</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>RentalFromDate</Name>
+			<ExtendedDataType>ITVTRentalFromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>RentalToDate</Name>
+			<ExtendedDataType>ITVTRentalToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ConfirmedRentalFromDate</Name>
+			<ExtendedDataType>ITVTConfirmedRentalFromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ConfirmedRentalToDate</Name>
+			<ExtendedDataType>ITVTConfirmedRentalToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>PostedRentalFromDate</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>ITVTPostedRentalFromDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>PostedRentalToDate</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>ITVTPostedRentalToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>RentalRunToDate</Name>
+			<ExtendedDataType>ITVTRentalRunToDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalAdditionalText</Name>
+			<ExtendedDataType>ITVTRentalAdditionalText</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalConstructionSite</Name>
+			<ExtendedDataType>ITVTRentalConstructionSite</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalDocumentNumber</Name>
+			<ExtendedDataType>ITVTRentalDocumentNumber</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>UseFactorPercentage</Name>
+			<ExtendedDataType>ITVTUseFactorPercentage</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>SalesPrice</Name>
+			<ExtendedDataType>SalesPrice</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>PriceUnit</Name>
+			<ExtendedDataType>PriceUnit</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>RentalFactorPercentage</Name>
+			<ExtendedDataType>ITVTRentalFactorPercentage</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>RentalPrice</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>Amount</ExtendedDataType>
+			<Label>@ITVTRental:RentalPrice</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>LineAmount</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>LineAmount</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>RentalOrderAutoReservation</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>InventTransferAutoReservation</ExtendedDataType>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>Status</Name>
+			<EnumType>ITVTRentalLineStatus</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>SalesType</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<EnumType>SalesType</EnumType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>InventTransIdRented</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>InventTransId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>LineDisc</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>SalesLineDisc</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>LinePercent</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>SalesLinePercent</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TaxGroup</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>TaxGroup</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TaxItemGroup</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>TaxItemGroup</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>DefaultDimension</Name>
+			<ExtendedDataType>InventSiteLinkedDimensionValueSet</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ProjectLocationReceiptDate</Name>
+			<ExtendedDataType>ITVTProjectLocationReceiptDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>DeliverNow</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>SalesQty</ExtendedDataType>
+			<Label>@SYS17214</Label>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>ReturnNow</Name>
+			<ExtendedDataType>ITVTReturnNow</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ReturnDate</Name>
+			<ExtendedDataType>ITVTReturnDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldDate">
+			<Name>ReturnReceiptDate</Name>
+			<ExtendedDataType>ITVTReturnReceiptDate</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldReal">
+			<Name>PendingReturnQuantity</Name>
+			<ExtendedDataType>ITVTPendingReturnQuantity</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>RentalLineIdx</Name>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>SalesId</DataField>
+				</AxTableIndexField>
+				<AxTableIndexField>
+					<DataField>LineNum</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+		<AxTableIndex>
+			<Name>TransIdIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>InventTransId</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+		<AxTableIndex>
+			<Name>TransIdRentedIdx</Name>
+			<AllowDuplicates>Yes</AllowDuplicates>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>InventTransIdRented</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings>
+		<AxTableMapping>
+			<MappingTable>DimensionDefaultMap</MappingTable>
+			<Connections>
+				<AxTableMappingConnection>
+					<MapField>DefaultDimension</MapField>
+					<MapFieldTo>DefaultDimension</MapFieldTo>
+				</AxTableMappingConnection>
+			</Connections>
+		</AxTableMapping>
+	</Mappings>
+	<Relations>
+		<AxTableRelation>
+			<Name>SalesTable</Name>
+			<Cardinality>OneMore</Cardinality>
+			<OnDelete>Cascade</OnDelete>
+			<RelatedTable>SalesTable</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelatedTableRole>SalesTable</RelatedTableRole>
+			<RelationshipType>Composition</RelationshipType>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>SalesId</Name>
+					<Field>SalesId</Field>
+					<RelatedField>SalesId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>InventDim</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>InventDim</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventDimId</Name>
+					<Field>InventDimId</Field>
+					<RelatedField>inventDimId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>ITVTRentalTimeUnit</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>ITVTRentalTimeUnit</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalTimeUnitId</Name>
+					<Field>RentalTimeUnitId</Field>
+					<RelatedField>TimeUnitId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>InventTable</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>InventTable</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>ItemId</Name>
+					<Field>ItemId</Field>
+					<RelatedField>ItemId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalLineInventTransOrigin</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<RelatedTable>InventTransOrigin</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>InventTransOrigin</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>SalesLine</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Validate>No</Validate>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventTransId</Name>
+					<Field>InventTransId</Field>
+					<RelatedField>InventTransId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>RentalLineRentedInventTransOrigin</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>InventTransOrigin</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>InventTransOriginReturn</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>SalesLine</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Validate>No</Validate>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventTransIdRented</Name>
+					<Field>InventTransIdRented</Field>
+					<RelatedField>InventTransId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+		<AxTableRelation>
+			<Name>DimensionAttributeValueSet</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>DimensionAttributeValueSet</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>DefaultDimension</Name>
+					<Field>DefaultDimension</Field>
+					<RelatedField>RecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+	</Relations>
+	<StateMachines />
+</AxTable>

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ITVTInventTransOriginRentalLineRented</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ITVTInventTransOriginRentalLineRented extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>deleteOriginRelationship</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Deletes the relationship between the inventory transactions originator and the rental order line.
+    /// </summary>
+    /// <param name="_inventTransOriginId">
+    /// The ID of the inventory transactions originator. It is the primary key on the <c>InventTransOrigin</c> table.
+    /// </param>
+    public static void deleteOriginRelationship(InventTransOriginId _inventTransOriginId)
+    {
+        ITVTInventTransOriginRentalLineRented  inventTransOriginRentalLine;
+
+        ttsbegin;
+
+        delete_from inventTransOriginRentalLine
+            where inventTransOriginRentalLine.InventTransOrigin == _inventTransOriginId;
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deleteOwnerRelationship</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Deletes the relationship between the inventory transactions originator and the rental order line.
+    /// </summary>
+    /// <param name="_rentalLineDataAreaId">
+    /// The value of the <c>dataAreaId</c> field of the <c>RentalLine</c> table. It is a part of the primary key on the <c>RentalLine</c> table.
+    /// </param>
+    /// <param name="_rentalLineInventTransId">
+    /// The value of the <c>InventTransId</c> field of the <c>RentalLine</c> table. It is a part of the primary key on the <c>RentalLine</c> table.
+    /// </param>
+    public static void deleteOwnerRelationship(
+        DataAreaId      _rentalLineDataAreaId,
+        InventTransId   _rentalLineInventTransIdRented)
+    {
+        ITVTInventTransOriginRentalLineRented  inventTransOriginRentalLine;
+
+        ttsbegin;
+
+        delete_from inventTransOriginRentalLine
+            where inventTransOriginRentalLine.RentalLineInventTransIdRented == _rentalLineInventTransIdRented
+               && inventTransOriginRentalLine.RentalLineDataAreaId    == _rentalLineDataAreaId;
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findInventTransOriginId</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Retrieves the ID of the inventory transactions originator for the rental order line.
+    /// </summary>
+    /// <param name="_rentalLineDataAreaId">
+    ///    The value of the <c>dataAreaId</c> field of the <c>RentalLine</c> table. It is a part of the primary
+    ///    key on the <c>RentalLine</c> table.
+    /// </param>
+    /// <param name="_rentalLineInventTransId">
+    ///    The value of the <c>InventTransId</c> field of the <c>RentalLine</c> table. It is a part of the
+    ///    primary key on the <c>RentalLine</c> table.
+    /// </param>
+    /// <returns>
+    ///    The ID of the inventory transactions originator.
+    /// </returns>
+    public static InventTransOriginId findInventTransOriginId(DataAreaId _rentalLineDataAreaId, InventTransId _rentalLineInventTransIdRented)
+    {
+        ITVTInventTransOriginRentalLineRented  inventTransOriginRentalLine;
+
+        if (_rentalLineDataAreaId && _rentalLineInventTransIdRented)
+        {
+            select firstonly InventTransOrigin from inventTransOriginRentalLine
+                where inventTransOriginRentalLine.RentalLineInventTransIdRented == _rentalLineInventTransIdRented
+                   && inventTransOriginRentalLine.RentalLineDataAreaId    == _rentalLineDataAreaId;
+        }
+
+        return inventTransOriginRentalLine.InventTransOrigin;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>rentalLine</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Retrieves the order line related to the ID of the inventory transactions originator.
+    /// </summary>
+    /// <param name="_inventTransOriginId">
+    ///    The ID of the inventory transactions originator. It is the primary key on the
+    ///    <c>InventTransOrigin</c> table.
+    /// </param>
+    /// <param name="_forUpdate">
+    ///    A Boolean value that indicates whether the buffer should be selected for update; optional.
+    /// </param>
+    /// <returns>
+    ///    A related record in the <c>RentalLine</c> table, if one exists; otherwise, an empty record.
+    /// </returns>
+    public static ITVTRentalLine rentalLine(
+        InventTransOriginId     _inventTransOriginId,
+        boolean                 _forUpdate = false)
+    {
+        ITVTRentalLine                   rentalLine;
+        ITVTInventTransOriginRentalLineRented  inventTransOriginRentalLine;
+
+        rentalLine.selectForUpdate(_forUpdate);
+
+        select firstonly rentalLine
+            exists join inventTransOriginRentalLine
+            where inventTransOriginRentalLine.RentalLineDataAreaId          == rentalLine.DataAreaId
+               && inventTransOriginRentalLine.RentalLineInventTransIdRented == rentalLine.InventTransIdRented
+               && inventTransOriginRentalLine.InventTransOrigin             == _inventTransOriginId;
+
+        return rentalLine;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>writeOriginOwnerRelationship</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Creates or updates the relationship between the inventory transactions originator and the rental order line.
+    /// </summary>
+    /// <param name="_rentalLineDataAreaId">
+    /// The value of the <c>dataAreaId</c> field of the <c>RentalLine</c> table. It is a part of the primary key on the <c>RentalLine</c> table.
+    /// </param>
+    /// <param name="_rentalLineInventTransId">
+    /// The value of the <c>InventTransId</c> field of the <c>RentalLine</c> table. It is a part of the primary key on the <c>RentalLine</c> table.
+    /// </param>
+    /// <param name="_inventTransOriginId">
+    /// The ID of the inventory transactions originator. It is the primary key on the <c>InventTransOrigin</c> table.
+    /// </param>
+    public static void writeOriginOwnerRelationship(
+        DataAreaId              _rentalLineDataAreaId,
+        InventTransId           _rentalLineInventTransIdRented,
+        InventTransOriginId     _inventTransOriginId)
+    {
+        ITVTInventTransOriginRentalLineRented  inventTransOriginRentalLine;
+        Counter                     logCount = infologLine();
+
+        ttsbegin;
+
+        try
+        {
+            inventTransOriginRentalLine.RentalLineDataAreaId            = _rentalLineDataAreaId;
+            inventTransOriginRentalLine.RentalLineInventTransIdRented   = _rentalLineInventTransIdRented;
+            inventTransOriginRentalLine.InventTransOrigin               = _inventTransOriginId;
+
+            inventTransOriginRentalLine.insert();
+        }
+        catch (Exception::DuplicateKeyException)
+        {
+            if (xSession::lastDuplicateKeyViolatingTable() == inventTransOriginRentalLine.TableId)
+            {
+                update_recordset inventTransOriginRentalLine
+                setting InventTransOrigin = _inventTransOriginId
+                where inventTransOriginRentalLine.RentalLineInventTransIdRented == _rentalLineInventTransIdRented
+                   && inventTransOriginRentalLine.RentalLineDataAreaId          == _rentalLineDataAreaId
+                   && inventTransOriginRentalLine.InventTransOrigin             != _inventTransOriginId;
+            }
+            else
+            {
+                throw Exception::DuplicateKeyException;
+            }
+            infolog.clear(logCount);
+        }
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<ConfigurationKey>LogisticsBasic</ConfigurationKey>
+	<DeveloperDocumentation>@SYS325114</DeveloperDocumentation>
+	<EntityRelationshipType>Relationship</EntityRelationshipType>
+	<Label>@SYS133325</Label>
+	<TableGroup>Transaction</TableGroup>
+	<TitleField1>InventTransOrigin</TitleField1>
+	<TitleField2>RentalLineInventTransIdRented</TitleField2>
+	<CacheLookup>Found</CacheLookup>
+	<ClusteredIndex>RentalLineIdx</ClusteredIndex>
+	<Modules>Inventory</Modules>
+	<ReplacementKey>RentalLineIdx</ReplacementKey>
+	<SaveDataPerCompany>No</SaveDataPerCompany>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalLineInventTransIdRented</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalLineDataAreaId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventTransOrigin</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalLineDataAreaId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalLineInventTransIdRented</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Other</Name>
+			<Label>@SYS1284</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>RentalLineInventTransIdRented</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>RentalLineDataAreaId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>InventTransOrigin</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>InventTransOrigin</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>InventTransOriginId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalLineDataAreaId</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<AssetClassification>Customer Content </AssetClassification>
+			<ExtendedDataType>DataAreaId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>RentalLineInventTransIdRented</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>InventTransId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>RentalLineIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>RentalLineDataAreaId</DataField>
+				</AxTableIndexField>
+				<AxTableIndexField>
+					<DataField>RentalLineInventTransIdRented</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+		<AxTableIndex>
+			<Name>InventTransOriginIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>InventTransOrigin</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings />
+	<Relations>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>InventTransOrigin</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<RelatedTable>InventTransOrigin</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelatedTableRole>InventTransOrigin</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>InventTransOrigin_InventTransOriginSalesLine</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>InventTransOrigin</Name>
+					<Field>InventTransOrigin</Field>
+					<RelatedField>RecId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+			<Index>RecId</Index>
+		</AxTableRelation>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>ITVTRentalLine</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<RelatedTable>ITVTRentalLine</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelatedTableRole>ITVTRentalLine</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>ITVTRentalLine_InventTransOriginSalesLine</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalLineDataAreaId</Name>
+					<Field>RentalLineDataAreaId</Field>
+					<RelatedField>dataAreaId</RelatedField>
+				</AxTableRelationConstraint>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>RentalLineInventTransIdRented</Name>
+					<Field>RentalLineInventTransIdRented</Field>
+					<RelatedField>InventTransId</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+			<Index>TransIdIdx</Index>
+		</AxTableRelation>
+	</Relations>
+	<StateMachines />
+</AxTable>
