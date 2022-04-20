@@ -1,0 +1,783 @@
+﻿NewLabel0=Label files created on 03/26/2020 13:12:07 for label file Id ITVTRental and language en-DE
+ ;Label file comment - see above label
+RentalParameters=Mietparameter
+ ;Rental
+SalesAgreements=Rahmenvereinbarungen
+ ;Rental
+UseSalesAgreements=Rahmenvereinbarung verwenden
+ ;Rental
+OverrightSalesAgreements=Rahmenvereinbarung übersteuerbar
+ ;Rental
+Rental=Miete
+ ;Rental
+Calendar=Kalender
+ ;Rental
+ReferenceAccount=Bezugskonto
+ ;Rental
+Invoice=Rechnung
+ ;Rental
+GeneralInfoForRent=Allgemeine Informationen zur Miete einrichten
+ ;Rental
+General=Allgemeines
+ ;Rental
+SetupInvoiceSpecificInfo=Rechnungsspezifische Information für Miete einrichten
+ ;Rental
+InvoiceCancellation=Rechnungsstorno
+ ;Rental
+InvoiceCancellationDateChange=Rechnungsstornodatum änderbar
+ ;Rental
+RentalItems=Mietrechnungsartikel
+ ;Rental
+ThresholdValue=Schwellenwert für Rundungsdifferenzen
+ ;Rental
+RentalMaturity=Mietfälligkeit
+ ;Rental
+GenerateDlvNote=Lieferschein über Rechnungsdialog mit erzeugen
+ ;Rental
+CollectiveInvoice=Sammelrechnung
+ ;Rental
+RentalItemRun=Mietpostenlauf
+ ;Rental
+NumOfParallelProcess=Anzahl paraleller Batch-Prozesse
+ ;Rental
+Prices=Preise
+ ;Rental
+SetupPricesInfo=Preisspezifische Informationen für Miete einrichten
+ ;Rental
+BasePriceList=Basispreisliste
+ ;Rental
+SalesPriceGroup=Verkaufspreisgruppe
+ ;Rental
+RentalPriceGroup=Mietpreisgruppe
+ ;Rental
+ItemDiscGroup=Positionsrabattgruppe (Miete)
+ ;Rental
+ItemDiscGroupRent=Positionsrabattgruppe – Miete
+ ;Rental
+Unit=Einheit
+ ;Rental
+TimeUnit=Zeiteinheit
+ ;Rental
+Logistic=Logistik
+ ;Rental
+SetupLogisticInfo=Logistikspezifische Informationen für Miete einrichten
+ ;Rental
+ActivateInventoryModel=Lagermodel für Rücklieferungen verwenden
+ ;Rental
+InventoryModel=Lagermodel für Rücklieferungen
+ ;Rental
+ReturnDeliveries=Rücklieferungen aus Projekten
+ ;Rental
+AllowReturnDelivaries=Rücklieferung aus dem Projekt erlauben
+ ;Rental
+AvailabilityCheck=Verfügbarkeitsprüfung
+ ;Rental
+CoveragePlan=Plan
+ ;Rental
+History=Historie
+ ;Rental
+SetupHistory=Protokollspezifische Informationen einrichten
+ ;Rental
+ActionLogged=Zu protokollierende Aktionen
+ ;Rental
+LogAllOrders=Verlängerung / Verkürzung
+ ;Rental
+FinancialDimension=Finanzdimensionen
+ ;Rental
+SetupFinancialDimension=Mietspezifische Finanzdimensionen einrichten 
+ ;Rental
+RentalOrder=Mietauftrag
+ ;Rental
+RentalProject=Miet Projekt
+ ;Rental
+NumberSeq=Nummernkreise
+ ;Rental
+SetupNumberSeq=Nummerkreise für Miete einrichten 
+ ;Rental
+Edit=Bearbeiten
+ ;Rental
+New=Neu
+ ;Rental
+Delete=Löschen
+ ;Rental
+ExternalCodes=Externe codes
+ ;Rental
+TimeUnit1=Zeiteinheit 1
+ ;Rental
+TimeUnit2=Zeiteinheit 2
+ ;Rental
+Description=Bezeichnung
+ ;Rental
+Settings=Einstellungen
+ ;Rental
+BaseUnit=Basiseinheit
+ ;Rental
+NumOfBaseUnit=Anzahl Basiseinheiten
+ ;Rental
+WorkCalendars=Arbeitszeitkalender
+ ;Rental
+BasicCalendar=Basiskalender
+ ;Rental
+RentalFactor=Abmietfaktor
+ ;Rental
+RentalFactorPercent=Abmietfaktor in Prozent
+ ;Rental
+DefaultRentalFactorPercent=Prozentsatz des Standardmietfaktors für Angebot und Kundenauftrag
+ ;Rental
+STRProjectCollectiveInv=SRT-Projektkollektivrechnung
+ ;Rental
+SetupRentalFactor=Mietfaktor einrichten\r\n\r\n\r\nMietfaktor einrichten
+ ;Rental
+TimeUnits=Zeiteinheiten
+ ;Rental
+RentalSetupParameters=Miet-Setup-Parameter
+ ;Rental
+RentalTimeUnits=Mietzeiteinheiten
+ ;Rental
+RentalWorkCalendars=Mietkalender
+ ;Rental
+IsRental=Miete
+ ;Rental
+IsRentalItem=Ist Mietgegenstand?
+ ;Rental
+CreateRentalOrder=Erstelle Mietauftrag
+ ;Rental
+RentalOrders=Mietaufträge
+ ;Rental
+TransferRentalOrder=Mietauftrag übertragen
+ ;Rental
+AllRentalOrders=Alle Mietaufträge
+ ;Rental
+ShippedButNotInvoiced=Versand aber nicht in Rechnung gestellt
+ ;Rental
+FindRentalOrder=Mietauftrag suchen
+ ;Rental
+TrasnferToSalesOrder=Mietauftrag auf Kundenauftrag übertragen
+ ;Rental
+TransferToSalesQuotation=Mietauftrag auf Angebot übertragen
+ ;Rental
+SalesOrderNotCreated=Kundenauftrag nicht angelegt.
+ ;Rental
+SalesOrderCreated=Kundenauftrag% 1 erstellt.
+ ;Rental
+SalesOrderFailed=Kundenauftragserstellung fehlgeschlagen.
+ ;Rental
+SalesQuotationCreated=Verkaufsangebot% 1 erstellt.
+ ;Rental
+SalesQuotationFailed=Die Erstellung des Verkaufsangebots ist fehlgeschlagen.
+ ;Rental
+RentalOrderHeader=Kopfzeile
+ ;Rental
+RentalOrderLines=Mietauftragspositionen
+ ;Rental
+Rent=Vermieten
+ ;Rental
+RentalOrderLine=Mietauftragsposition
+ ;Rental
+RentalLineDeleteMsg=Die Mietzeile ist eine Unterkomponente des Mietobjekts% 1 und kann nicht gelöscht werden. Löschen Sie die Hauptmietzeile mit der Los-ID% 2
+ ;Rental
+RentalLineAssociated=Für diese Hauptmietlinie gibt es zugeordnete Mietleitungen. Alle Zeilen weiter löschen?
+ ;Rental
+RentalLineNotDeleted=Mietauftragsposition (en) nicht gelöscht.
+ ;Rental
+Sell=Verkaufen
+ ;Rental
+RentalCreditNote=Kopieren Sie die Gutschrift aus dem Mietauftrag
+ ;Rental
+ReturnItemNum=Bestellnummer zurücksenden
+ ;Rental
+ReturnRentalOrder=Mietauftragsnummer zurücksenden
+ ;Rental
+RentalQuotation=Mietangebot
+ ;Rental quotation
+SentRentalQuotations=Mietangebote gesendet
+ ;Rental quotation
+RentalQuotationConfirm=Mietangebotsbestätigung
+ ;Rental quotation
+AllRentalQuotations=Alle Mietangebote
+ ;Rental quotation
+ConfirmedRentalQuotations=Bestätigte Mietangebote
+ ;Rental quotation
+NewRentalQuotations=Neue Mietangebote
+ ;Rental quotation
+ExpiringRentalQuotations=Auslaufende Mietangebote
+ ;Rental quotation
+OpenRentalQuotations=Offene Mietangebote
+ ;Rental quotation
+RentalQuotationDetails=Mietangebot Details
+ ;Rental quotation
+ConfirmRentalQuotation=Mietangebot bestätigen
+ ;Rental quotation
+SendRentalQuotation=Mietangebot senden
+ ;Rental quotation
+MassCreateRentalQuotation=Masse erstellen Mietangebot
+ ;Rental quotation
+CancelRentalQuotation=Mietangebot stornieren
+ ;Rental quotation
+LoseRentalQuotation=Mietangebot verlieren
+ ;Rental quotation
+LostRentalQuotation=Verlorenes Mietangebot
+ ;Rental quotation
+CreateRentalQuotation=Mietangebot erstellen
+ ;Rental quotation
+RentalQuotations=Mietangebote
+ ;Rental quotation
+RentalQuotationJour=Mietangebots Journal
+ ;Rental quotation
+RentalQuotationConfirmation=Mietangebotsbestätigung
+ ;Rental quotation
+DeleteRentalQuotation=Dieser Angebotszeile sind Mietangebotszeilen zugeordnet. Sie möchten also weiterhin alle zugehörigen Zeilen löschen?
+ ;Rental quotation
+RentalQuotationDeleteLine=Mietangebotszeile (n) nicht gelöscht.
+ ;Rental quotation
+RentalQuotationHeader=Mietangebotskopf
+ ;Rental quotation
+RentalQuotationLines=Mietangebotszeilen
+ ;Rental quotation
+RentalQuoteLineUpdate=Angebotszeile (n) für Verkaufsangebot geändert. Möchten Sie den Wert für die Gesamtsumme auf 0 zurücksetzen?
+ ;Rental quotation
+GrandTotalNotUpd=Der Wert der Gesamtsumme wird nicht aktualisiert. Ändern Sie die Summe manuell.
+ ;Rental quotation
+RentalOrderPosting=Buchung von Mietaufträgen
+ ;Rental invoice
+RentalInvoice=Mietrechnung
+ ;Rental invoice
+RentalInvoiceId=Mietrechnungs ID
+ ;Rental invoice
+RentalCreditNoteId=Mietgutschrifts ID
+ ;Rental invoice
+ConfirmRentalOrder=Mietauftrag bestätigen
+ ;Rental invoice
+Confirmation=Bestätigung
+ ;Rental invoice
+RentalOrderconfirmations=Mietauftragsbestätigungen
+ ;Rental invoice
+RentalInvProcessing=Details zur Verarbeitung der Retal-Rechnungsposition
+ ;Rental invoice
+AgreementType=Vertragsart
+ ;Rental invoice
+ConfirmRentalAgreement=Mietvertrag bestätigen
+ ;Rental invoice
+RentalAgreement=Mietvertrag
+ ;Rental invoice
+RentalOrderCreated=Mietauftrag% 1 wurde erfolgreich erstellt.
+ ;Rental invoice
+RentalAgreementHeader=Mietvertragskopf
+ ;Rental invoice
+RentalAgreementLines=Mietvertragslinien
+ ;Rental invoice
+RentalAgreementID=Mietvertrags-ID
+ ;Rental invoice
+RentalAgreementClass=Klassifizierung des Mietvertrags
+ ;Rental invoice
+CreateRentalAgreement=Mietvertrag anlegen
+ ;Rental invoice
+RentalAgreementConfirmation=Bestätigung des Mietvertrags
+ ;Rental invoice
+TimeUnitValid=Zeiteinheit muss angegeben werden.
+ ;Rental invoice
+RentalFromDate=Mietdatum muss angegeben werden.
+ ;Rental invoice
+RentalToDateValid=Rental to date must be specified.
+ ;Rental invoice
+DateError=Die Miete ab dem Datum muss geringer sein als die Miete bis zum Datum.
+ ;Rental invoice
+RentalAgreements=Mietverträge
+ ;Rental invoice
+AllRentalInvoices=Alle Mietrechnungen
+ ;Rental invoice
+RentalInvoicesDue=Mietrechnungen sind heute fällig
+ ;Rental invoice
+OpenRentalInvoices=Offene Mietrechnungen
+ ;Rental invoice
+RentalInvoicesPastDue=Mietrechnungen überfällig
+ ;Rental invoice
+RentalFactorNetAmt=Mietfaktor Nettobetrag
+ ;Rental invoice
+RentalSuppItems=Mietzusatzartikel
+ ;Rental supplimentary items
+CopyFromVersion=Von Version kopieren
+ ;Rental supplimentary items
+CopyFromVersionHelp=Kopieren Sie ergänzende Elemente aus der Version
+ ;Rental supplimentary item
+VersionFilter=Version filter
+ ;Rental supplimentary items
+RentalSupplimentaryId=Mietzusatz id
+ ;Rental supplimentary items
+RentalSupplimentaryIdHelp=Mietzusatz-ID für Zusatzartikel
+ ;Rental supplimentary items
+CopyFailed=Kopieren fehlgeschlagen
+ ;Rental supplimentary items
+SelectVersion=Wählen Sie eine andere Version aus, von der kopiert werden soll.
+ ;Rental supplimentary items
+ItemNotDefined=Zusätzliche Elemente, die in Version% 1 nicht definiert sind
+ ;Rental supplimentary items
+ActiveVersions=Aktive Versionen
+ ;Rental supplimentary items
+SuppItems=Ergänzungsartikel
+ ;Rental supplimentary items
+SuppItemVersion=Zusätzliche Artikelversion
+ ;Rental supplimentary items
+RentalDateCriteria=Die Miete ab Datum kann nicht höher sein als die Miete bis heute.
+ ;Rental journal
+RentalDateLess=ie Miete ab dem Datum für die Journalzeile darf nicht geringer sein als die Miete ab dem Datum für die Journalzeile.
+ ;Rental journal
+RentalDateMore=Die bisherige Miete für die Journalzeile kann nicht höher sein als die bisherige Miete für die Journalzeile.
+ ;Rental journal
+RentalDateMandatory=Vermietung von Datum und Datum muss angegeben werden.
+ ;Rental journal
+RentalTimeJournalLines=Mietzeit Journalzeilen
+ ;Rental journal
+RentalTimeJourLinesDev=Die Tabelle ITVTRentalTimeJourLine enthält die Zeitjournalzeilendaten
+ ;Rental journal
+RentalTimeJournal=Mietzeitschrift
+ ;Rental journal
+TimeJournalHeader=Zeitjournal-Header
+ ;Rental journal
+TimeJournalLines=Zeitjournalzeilen
+ ;Rental journal
+ReleaseStatus=Freigabestatus
+ ;Rental journal
+OnHoldStatus=Wartestatus
+ ;Rental journal
+RentalFreeDays=Mietfreie Tage
+ ;Rental journal
+RentalTimeJournalId=Mietzeit Journal ID
+ ;Rental journal
+TimeJournal=Zeitjournal
+ ;Rental journal
+RentalTimeJournalDev=Die Tabelle ITVTRentalTimeJourTable enthält die Zeitjournalzeilendaten
+ ;Rental journal
+RentalProjectID=Miet projekt ID
+ ;Rental project
+RentalProjectContract=ID des Mietprojektvertrags
+ ;Rental project
+RentalProjectContracts=Mietprojektverträge
+ ;Rental project
+AllRentalProjects=Alle Miet projekte
+ ;Rental Project
+RentalProjectOrders=Projektmietaufträge
+ ;Rental project
+SalesOrder=Kundenauftrag
+ ;Rental project
+NewRentalProject=Neues Miet projekt
+ ;Rental project
+RentalLinesNotInvoiced=Mietauftragspositionen nicht in Rechnung gestellt
+ ;Rental reports
+RentalLinesNotInvoicedReport=Mietauftragspositionen nicht in Rechnung gestellt Bericht
+ ;Rental reports
+RentalInvoiceJour=Mietrechnungsjournal
+ ;Rental reports
+RentalInvoiceTransReport=Transaktionsbericht für Mietrechnung
+ ;Rental reports
+RentalInvoiceSpec=Mietrechnungsspezifikation
+ ;Rental reports
+RentalInvoiceSpecReport=Mietrechnungsspezifikationsbericht
+ ;Rental reports
+RentalInvoiceTurnover=Umsatzbericht der Mietrechnung
+ ;Rental reports
+RentalInvoiceTurnoverByTax=Umsatzbericht der Mietrechnung nach steuerfreier Nummer
+ ;Rental reports
+RentalInvoiceTurnoverByAccount=Umsatzbericht der Mietrechnung nach Konto
+ ;Rental reports
+SalesLineModified=Verkaufslinie (n) geändert. Möchten Sie den Gesamtsummenwert im Header zurücksetzen?
+ ;Rental order
+RentalBackOrder=Mietrückstandslinien
+ ;Rental order
+RentalUpdate=Mietupdate
+ ;Rental order
+RentalReturnOrder=Mietrückgabeauftrag
+ ;Rental order
+SuppItem=Zusatzartikel
+ ;Supplimentary item
+ActiveSuppItem=Es kann jeweils nur eine zusätzliche Artikelversion aktiv sein. Aktivieren Sie die vorherige Version und versuchen Sie es erneut.
+ ;Supp item
+ApproveSupp=Genehmigen Sie die Zusatzartikelversion, bevor Sie sie aktivieren.
+ ;Supp item
+SuppItemError=Ergänzungsartikel können nicht mit Hauptartikel identisch sein.
+ ;Supp item
+RentalUnitDev=Die ITVTRentalTimeUnit speichert die Mietzeiteinheit.
+ ;Rental unit
+SuppItemsVersionDev=In der Tabelle ITVTRentalSupplimentaryItemVersion werden die zusätzlichen Artikelversionen gespeichert.
+ ;Rental Supp items
+SuppItemsDev=In der Tabelle ITVTRentalSupplimentaryItems werden die zusätzlichen Elemente gespeichert.
+ ;Rental Supp items
+RentalParamDev=In der Tabelle ITVTRentalParameters werden die Mietparameter gespeichert.
+ ;Rental parameters
+RentalInvProcessDev=In der Tabelle ITVTRentalInvoiceLineProcessDetails werden Details zur Verarbeitung der Mietrechnung gespeichert.
+ ;Rental invoice
+RentalFactorDev=In der Tabelle ITVTRentalFactore werden Details zum Mietfaktor gespeichert.
+ ;Rental factor
+RentalAgreementHistory=Mietvertragsgeschichte
+ ;Rental agreement
+MaintainRentalSetup=Mieteinrichtung pflegen
+ ;Rental setup
+MaintainRentalQuotation=Mietangebot pflegen
+ ;Rental quotation
+MaintainRentalOrder=Mietauftrag pflegen
+ ;Rental order
+MaintainRentalInvoice=Mietrechnung pflegen
+ ;Rental invoice
+MaintainRentalProject=Mietprojekt pflegen
+ ;Rental project
+RentalReportsInquiry=Mietbericht Anfrage
+ ;Rental reports
+RentalAdmin=Vermieter
+ ;Rental admin
+RentalFactorError=Stellen Sie den Minimalwert des Faktorprozentsatzes auf '0,01' und den Maximalwert auf '100,00' ein.
+ ;Rental parameter
+ProjectWarehouse=Projektlagerort
+ProjInventLocationCreate=Projektlagerort erstellen
+RentalDelivered=Rental geliefert
+RentalDeliveredBack=Rental geliefert zurück
+RentalLineMissingProjId=Position %1, Artikel %2: Projektnummer fehlt
+Delivery=Auslieferung
+Return=Rücklieferung
+SalesLineRentalMaintain=Sales line rental (maintaint)
+AdditionalTxt=Ergänzender Text
+ConstructionSite=Bauwerk/Baustelle
+DocNumber=Belegnummer
+LoadNumberSequences=Rental Nummernkreise laden
+ ;Rental maintain
+LoadNumberSequencesHelp=Durch die Betätigung des Buttons werden alle Rental Nummernkreise geladen, anschließend kann eine Zuordnung erfolgen.
+ ;Rental maintain
+LoadRentalNumberSequences=Erlaubt die Initalizierung der Rental Nummernkreise
+ ;Rental maintain
+LoadRentalNumberSequencesDescription=Diese Berechtigung erlaubt die Initalisierung der Rental-Nummernkreise in den Rentalparametern
+ ;Rental maintain
+MaintainRentalNumberSequences=Erlaubt die Pflege der Rental Nummernkreise
+ ;Rental maintain
+MaintainRentalNumberSequencesDescription=Diese Aufgabe beinhaltet alle Berechtigungen zur Pflege der Rental Nummernkreise
+ ;Rental maintain
+MaintainRental=Rental pflegen
+ ;Rental maintain
+MaintainRentalDescription=Diese Rolle beinhaltet alle Aufgaben, die zur Pflege des Rental-Moduls benötigt werden. 
+ ;Rental maintain
+RentalOnHandCube=Rental On-hand Cube
+UpdateRentalOnHandCube=Update the rental on-hand cube
+RentalSalesCube=Rental Sales Cube
+UpdateRentalSalesCube=Update the rental sales cube
+RentalCubesAccess=Grant access to rental cubes
+RentalOnHandCubeAccess=Grant access to rental on-hand cube
+RentalSalesCubeAccess=Grant access to rental sales cube
+FixedAssets=Anlagevermögen
+IsCurrentAsset=Umlaufvermögen
+FixedAssetHGBPercent=% HGB
+FixedAssetsIFRSPercent=% IFRS
+FixedAssetHGBServiceLine=Nutzungsdauer
+CurrentAssetHGBServiceLine=Nutzungsdauer HGB
+FixedAssetIFRSServiceLine=Nutzungsdauer IFRS
+CurrentAssetIFRSServiceLine=Nutzungsdauer IFRS
+CurrentAssetHGRBPercent=% HGB
+CurrentAssetIFRSPercent=% IFRS
+RentalOrderWrongToDateValue=Bis Datum muss nach dem Von Datum sein
+RentalOrderToDateAfterInvoiceDate=Bis Datum muss nach dem letzten Fakturadatum sein
+EEA=EAA
+BusinessLine=Sparte
+FAOwner=Besitzer
+OwnerChangeOffsetAccount=Gegenkonto für Besitzerwechsel
+LocalGapAssetBook=Anlagenbuch
+IFRSBook=IFRS
+AssetJournalNameLocalGap=Anlagenjournal HGB
+AssetJournalNameIFRS=Anlagenjournal IFRS
+ItemAssignments=Artikelzuordnungen
+ItemCode=Artikelcode
+FixedAssetGroup=Anlagengruppe
+AssetPostingLayer=Originale Anlagenbuchung
+ChangeOwner=Besitzerwechsel
+RentalProjectManagement=Rental Projektverwaltung
+ActiveRentalProjects=Aktive Rentalprojekte
+RentalProjectsFinished=Fertige Rentalprojekte
+LocalGAAP_IFRS=HGB/IFRS
+IFRS=IFRS
+LocalGAAP=HGB
+RentalService=Mietserviceartikel
+RentalServiceItemPrefix=Prefix
+RentalLineMissingProjLocationId=Position %1, Artikel %2: Projektlagerort fehlt
+TransferOrderWasCreated=Umlagerungsauftrag %1 erstellt
+RentalServiceAlreadyExists=Artikel %1 bereits vorhanden, bitten benennen Sie den Artikel um!
+TransferOrderType=Umlagerungstyp
+LastInvoiceDate=Letzte Rechnungsdatum
+LineFulfilled=Position is erfüllt
+RentalOrderLinesFilter=Mietpositionen
+RentalTimeJournal4WeeksPrompt=Möchten Sie die Positionen mit einer 4wöchigen mietfreien Zeit updaten?
+Functions=Funktionen
+FourWeeks=4 Wochen Frist
+RentalRunDate=Datum des Mietlaufs
+RentalRun=Mietlauf
+RentalInvoiceAction=Rental-Rechnung
+OriginSalesId=Ursprungsauftrag
+RentalArrivalJournalName=Journal für Rental Zugang
+RentalDispatchJournalName=Anlagenerfassung
+FixedAssetNotFound=Anlage wurde nicht gefunden
+NothingPost=Nichts zu buchen
+AssetQtyNotSpecified=Bitte die Menge in der Anlage anpassen
+ChangeFixedAssets=Anlagevermögen anpassen
+CurrentAssetValuation=Artikelabwertung
+ValuationDate=Abwertungsdatum
+Valuation=Abwertung
+Purchase=Einkauf
+Dispatch=Abgang
+PurchValue=Einkaufswert
+InvoiceReturn=Rücklieferung
+AmountHGB=Betrag HGB
+AmountIFRS=Betrag IFRS
+NumOfDaysTimeUnit=Anzahl der Tage pro Basiseinheit
+InvoiceRentalLinesExist=Es existieren nicht fakturierte Zeilen, bitte fakturieren oder löschen
+DefaultProjectLocation=Lagerplatzvorgabe
+CloseTransferOrderPrompt=Umlagerungsauftrag schliessen?
+CloseInventTransferOrder=Umlagerungsauftrag schliessen
+FixedCurrentAssetEqualCheckError=Bei einem Mietartikel muss ein von diesen zwei Kriterien aktiviert werden: Anlagevermögen oder Umlaufvermögen.
+ValuationHGB=Abwertung HGB
+InventValueHGB=Lagerwert HGB
+ValuationIFRS=Abwertung IFRS
+InventValueIFRS=Lagerwert IFRS
+SalesLineDeliveryItemCannotBeDeleted=Sie können einen gelieferten Artikel nicht löschen
+Used=Gebraucht
+InventTransferOrderExist=Der Umlagerungsauftrag existiert bereits!
+FixedCurrentAssetCheckError=Der Artikel kann nicht gleichzeitig Anlagevermögen und Umlaufvermöfen sein
+ITVTIsRental=Miete
+RentalWarehouse=Mietlager
+ProjWarehouseFieldGroup=Projekt
+ ;Project warehouse
+RentalDimension=Mietdimension
+ ;Rental Inventory Dimensions
+InventDimRental=Dimension für Miete
+ ;Rental Inventory Dimensions
+InventDimRentalStatusNew=Neu-Status (Kosten/Wert im Lager)
+ ;Rental Inventory Dimensions
+InventDimRentalStatusRented=Vermietet-Status
+ ;Rental Inventory Dimensions
+InventDimRentalStatusUsed=Gebraucht-Status
+ ;Rental Inventory Dimensions
+InventDimRentalDefaultPurch=Standard für Einkauf
+ ;Rental Inventory Dimensions
+InventDimRentalDefaultProd=Standard für Produktion
+ ;Rental Inventory Dimensions
+InventDimRentalDefaultSales=Standard für Verkauf
+ ;Rental Inventory Dimensions
+InventDimRentalDefaultRental=Standard für Miete
+ ;Rental Inventory Dimensions
+UpdateRentalItems=Mietartikel updaten
+ ;Update rental items
+UpdateRentalItemsHelp=Benutzen sie diesen Job um ein update der Mietartikel durchzuführen. Durch die Ausführung wird für alle Artikel, für die noch kein Mietartikel erzeugt wurde, ein Mietartikel erzeugt.
+ ;Update rental items
+RentalServiceItemCreatedForItem=Rental Service Artikel für Artikel %1 erstellt
+ ;Update rental items
+RentalServiceItemsCreationForAllItemsfinished=Erstellung der Rental Service Artikel für alle Artikel beendet.\r\n%1 Rental Service Artikel erstellt\r\n%2 übersprungene Erstellungen
+ ;Update rental items
+UpdateRentalItemsCanceledByError=Aktualisierung der Rental Artikel wurde auf Grund eines Fehler abgebrochen
+ ;Update rental items
+RunUpdateRentalServiceItems=Erstelle fehlende Rental Service Artikel im Batch
+ ;Update rental items
+RunUpdateRentalServiceItemsDescription=Erlaubt die Erstellung fehlender Rental Service Artikel im Batch
+ ;Update rental items
+UpdateRentalServiceItems=Aktualisiere Rental Service Artikel
+ ;Update rental items
+UpdateRentalServiceItemsDescription=Erlaubt die Nutzung von Funktionen zur Aktualisierung von Rental Service Artikeln
+ ;Update rental items
+ManageRentalItems=Rental Artikel Verwaltung
+ ;Update rental items
+ManageRentalItemsDescription=Diese Rolle beinhaltet die notwendigen Berechtigungen zur Verwaltung der Rental Artikel
+ ;Update rental items
+UserRentalFactorPct=Preis aus Abmietfaktor
+RentalStartDateConfirmed=Bestätigter Mietbeginn
+ ;Rental
+RentalEndDateConfirmed=Bestätigtes Mietende
+ ;Rental
+RentaEndDateRequested=Angefordertes Mietende
+ ;Rental
+RentalStartDateRequested=Angeforderter Mietbeginn
+ ;Rental
+MinRentalPeriod=Min. Mietdauer
+ ;Rental
+RentalLines=Mietpositionen
+ ;Rental Order lines
+RentalStartDatePosted=Gebuchter Mietbeginn
+ ;Rental
+RentalEndDatePosted=Gebuchtes Mietende
+ ;Rental
+RentalEndDateRun=Mietlauf bis
+ ;Rental
+RentalPrice=Mietpreis
+ ;Rental Order lines
+RentalLineDetails=Mietposition bearbeiten
+ ;Rental Order lines
+ITVTRentalDimension=Dimension für Miete
+RentalEndDateRequested=Angefordertes Mietende
+RentalLineDeleteError=Mietposition %1 kann nicht gelöscht werden
+ ;US5829
+SalesLineRentalItemWarning=Auftragspositionen dienen zum Verkauf von Artikeln. Eine Vermietung wäre in den Mietpositionen zu erfassen.
+ ;US5830
+ITVTRentalIsFulfilled=Miete erledigt
+ ;US5830
+ParameterIsMandatory=Parameter %1 ist ein Pflichtparameter
+RentalLineIsAlreadyRented=Mietposition is bereits vermietet
+ShippingDateIsDifferent=Mietbeginn in der Mietposition ist vor dem Auslieferdatum
+RentalLineMissingLocation=Position %1, Artikel: %2: Lagerort fehlt
+RentalLineTOExists=Für die gewählte Position %1 %2 gibt es bereits einen Umlagerungsauftrag. Die Umlagerungsmenge wird daher reduziert.
+RentalLineMainWarehouseIsDifferent=Hauptlagerort in der Mietposition unterscheidet sich von Von Lagerort
+PostRentalStartEnd=Mietbeginn/Mietende buchen
+ReallocateTransferOrderLine=Umlagerungsauftragsposition übertragen
+TargetTransferOrder=Zielumlagerungsauftrag
+NewFromWarehouse=Neuer von Lagerort
+ExecuteReallocateTransferOrderLine=Umlagerungsauftragsposition übertragen ausführen
+TargetTransferIdAndFromInventLocationError=Wenn der Parameter Zielumlagerungsauftrag leer ist, muss der Parameter Neuer von Lagerort gefüllt sein
+TargetFromInventLocationError=Neuer von Lagerort darf nicht gleich Nach Lagerort sein
+LinesMovedToTransferOrder=Positionen übertragen in Umlagerungsauftrag %1
+StartRental=Mietbeginn
+DeliverNow=Jetzt liefern
+ExecuteStartRental=Mietbeginn ausführen
+ChangeOwnerExecute=Besitzerwechsel ausführen
+ ;US5827
+MovementJournal=Bewegungsjournal
+EndRental=Mietende
+ExecuteEndRental=Mietende ausführen
+RentalLineNotRented=Mietposition ist nicht vermietet
+RentalLineMainWarehouseHasDifferentToWarehouse=Hauptlagerort in der Mietposition unterscheidet sich von An Lagerort
+ExecuteReturn=Rücklieferung ausführen
+InventTransStatusNotFound=Lagerbuchung mit Status %1 = %2 nicht gefunden
+LinesWithOpenRentalStart=Positionen mit offenem Mietbeginn
+QuantityAlreadyInTransfer=Menge bereits in Umlagerung
+RentalStartUntil=Mietbeginn bis
+LinesWithOpenRentalEnd=Positionen mit offenem Mietende
+RentalEndUntil=Mietende bis
+ITVTRentalLineOpenEndRentalMaintain=Positionen mit offenem Mietende verwalten
+ITVTRentalLineOpenStartRentalMaintain=Positionen mit offenem Mietbeginn verwalten
+RentalDimensionMustBeActive=Die Mietdimension muss in Mietartikeln eine aktive Dimension sein
+RentalStatus=Mietstatus
+ ;Rental
+RentalStatusSetup=Mietstatus-Einstellungen
+ ;Rental
+RentalLine=Mietposition
+RentFreePeriods=Mietfreie Zeit
+FromDateNotBeforePostedDate=Von Datum darf nicht vor dem Gebuchten Startdatum der Mietposition sein
+ToDateNotBeforeFromDate=Bis Datum darf nicht vor Von Datum sein
+RentalOrderConfirmation=Mietbestätigung
+ConfirmRentalOrderJour=Mietbestätigung
+ ;Rental order confirmation
+StartedRentalLineDeleteError=Löschen nach Mietbeginn nicht möglich
+OrderTypeCannotChange=Auftragstyp kann nicht geändert werden
+EndRentalRunToDateError=Datum "Mietlauf bis" zur Abrechnung der Mietposition %1, Artikel %2, liegt nach dem Mietende
+ShipDateMustBeAfterPostedRentalEndDate=Das Versanddatum für Rücklieferungen muss gleich oder größer dem gebuchten Mietende sein
+Split=Teilen
+ExecuteSplit=Teilen ausführen
+StartRentalNotPossibleForTOLine=Mietbeginn nicht möglich für Umlagerungsauftragsposition %1, Artikel %2
+EndRentalNotPossibleForTOLine=Mietende nicht möglich für Umlagerungsauftragsposition %1, Artikel %2
+StartEndRentalReceiptShip=Mietbeginn/Mietende bei Umlagerungseingang/-Abgang
+RentalItem=Mietartikel
+RentalLineWMSProcessActiveError=Sie können für den Artikel %1 am Lagerort %2 keinen Mietposition erstellen. Eine Vermietung ist nicht möglich, solange sich der Artikel auf einem Lager mit Lagerortverwaltungsprozesse befindet.
+DeliveryAndReturn=Auslieferungen und Rücklieferungen
+RentalLineRented=Mietposition (Vermietet)
+NumberOfTimeUnits=Anzahl Zeiteinheiten
+DefaultForFixedAssetPurch=Standard für Anlageneinkauf
+PostRentalItem=Mietartikel buchen
+ToRentalStatus=An Mietstatus
+RentalStartDate=Mietstart
+RentalPricePerPeriod=Mietpreis pro Periode
+AmountPerPeriod=Betrag pro Periode
+OpenRentalOrders=Offene Mietaufträge
+RentalOrderManagement=Mietverwaltung
+FinishedRentalOrders=Geschlossene Mietaufträge
+NewRentalOrder=Neuer Mietauftrag
+IssueLotID=Loskennung Lagerabgang
+ReceiptLotID=Loskennung Lagerzugang
+ReceiptAmount=Zugangswert
+AssetQuantity=Menge (Anlage)
+AssetRemainingQty=Restmenge (Anlage)
+RentalItemQtyReport=Mietartikelbestand im Lager und im Anlagevermögen
+ShowOpenReconciliation=Offenen Abgleich anzeigen
+ReconcileFixedAssets=Abgleich Anlagen mit Mietartikelbuchungen
+NumOfFixedAssets=Anzahl Anlagen
+FixedAssetQty=Anlagen-Gesamtmenge
+ReconQty=Menge im Abgleich
+ProjectRentalOrders=Projekt-Mietaufträge
+NestingIsNotSupported=Verschachtelung wird nicht unterstützt
+GenerateReconciliation=Abgleich Anlagen mit Mietartikelbuchungen generieren
+FixedAssetJournal=Anlagenerfassung
+PostFixedAssetJournalRecon=Anlagenerfassung für Abgleich buchen
+RentalNum=Miete %1
+InventDimRentalStatusNewFixedAsset=Neu-Status (Kosten/Wert im Anlagevermögen)
+CreateFixedAssetWithFirstRental=Anlage bei erstem Vermieten erzeugen
+FixedAssetsGroup=Anlagen
+SetUpFixedAssetRecon=Abgleich Anlagen einrichten
+CheckRentalItemNewFixedAssetCostMsg=Für Mietartikel im Anlagevermögen muss der Einstandspreis gleich Null sein, wenn der Mietstatus nicht ‘Neu‘ ist.
+CheckRentalItemNewFixedAssetCost=Einstandspreis für Anlagevermögen-Mietartikel prüfen
+POToRentalStatusError=An Mietstatus kann nicht %1 sein
+RentFree=Mietfreie
+FixedAssetPurchase=Anlageneinkauf
+InventDimStatusInterimForFixedAssetPurch=Zwischenstatus für Anlageneinkauf
+RentalLinesTemplate=Rental lines template
+OrderNotFound=Der ursprüngliche Auftrag wurde nicht gefunden.
+RentalLineWarehouse=Position %1, Artikel %2, Lagerort %3: Von Lagerort und An Lagerort dürfen nicht gleich sein
+ProjectWarehouseReceipt=Wareneingang Projektlager
+RentalStartBeforeDeliveryDate=Mietbeginn ist vor dem Auslieferdatum
+RentalStartBeforeDeliveryDateLine=Mietbeginn in der Mietposition ist vor dem Auslieferdatum
+ProjectWarehouseReceiptDateError=Wareneingang Projektlager darf nicht leer sein
+ReturnNow=Aktuelle Rücklieferung
+ReturnDate=Rücklieferdatum
+Quantity=Menge
+All=Alle
+PickUp=Abholung
+RentalLinesWithOpenDelivery=Mietpositionen mit offener Auslieferung
+OpenQuantity=Offene menge
+UnitWeight=Einzelgewicht
+ReceiptUntil=Wareneingang bis
+DeactivateDeliverNow=Jetzt liefern deaktivieren
+DeliverNowFromQuantity=Jetzt liefern aus Positionsmenge
+TotalWeight=Gesamtgewicht
+TotalWeightSelectedLines=Gesamtgewicht der markierten Positionen: %1
+UpdateRentalLinesOpenDelivery=Mietpositionen mit offener Auslieferung aktualisieren
+RentalLineWithOpenDelivery=Mietaufträge mit offener Auslieferung
+ProjectWarehouseZipCode=Postleitzahl Projektlagerort
+ProjectWarehouseCity=Ort Projektlagerort
+AlternativeProduct=Alternativprodukt
+OriginalLine=Originalposition
+QtyInventTrans=Menge in Lagerbuchung
+OnlyReceipt=Nur Zugangsbuchungen
+ReceiptAmountPositive=Zugangswert für das Erstellen der Anlage zu Buchung %1 muss ein positiver Wert sein.
+ReceiptAmountOk=Alle benötigten Feldwerte sind vorhanden.
+PostNotAllowed=Buchung für Asset %1 nicht möglich, da die Asset-Transaktionen aktualisiert wurden.
+DeliveryReturn=Auslieferung und Rücklieferung
+RentalQtyToAvailQty=Menge an verfügbare Menge anpassen
+NewRentalLineForUnavailQty=Neue Mietposition für nicht verfügbare Menge
+ReturnReceipt=Wareneingang Rücklieferung
+PendingReturnQuantity=Offene Rücklieferungsmenge
+PendingReturn=Offene Rücklieferung
+ClosePendingReturn=Offene Rücklieferung schließen
+CreateOnlyHeader=Nur Kopf erstellen
+RentalOrderWithOpenReturn=Mietaufträge mit offener Rücklieferung
+ReturnUntil=Rücklieferung bis
+UnspecificReturn=Unspezifische Rücklieferung
+TransferJournalForReturn=Umlagerungsjournal für Rücklieferung
+RentalRunForOpenPeriods=Mietlauf für offene Perioden
+UseConfirmedRentalEndDateForRentalEnd=Bestätigtes Mietende in Mietende-Buchung übernehmen
+DirectItemReceiptFromRental=Direkter Wareneingang aus Miete
+RegisterSerialNumbers=Seriennummern registrieren
+Registered=Erfasst
+RegisteredSerialNumbers=Registrierte Seriennummern
+Remaining=Verbleibend
+PostRentalReturn=Rücklieferung buchen
+StartRentalWarning=Mietbeginn kann für die weiterhin vermietete Menge von Artikel %1 nicht gebucht werden. Menge bitte manuell reservieren und Mietbeginn buchen.
+FieldToWarehouseMustBeSpecified=Feld 'An Lagerort' muss ausgefüllt werden.
+TOForItemAlreadyCreated=Umlagerungsautrag für Artikel %1 ist bereits erstellt
+SerialNumbersMustBeRegistered=Seriennummern für Artikel %1 müssen registriert werden
+TransferJourForReturnMissing=Umlagerungsjournal für Rücklieferung in Mietparametern fehlt
+ArrivalOptions=Wareneingangsoptionen
+Range=Bereich
+ReturnFromRental=Rücklieferung aus Miete
+PostingDate=Buchungsdatum
+DeactivateReturnNow=Aktuelle Rücklieferung deaktivieren
+ReturnNowFromLineQuantity=Aktuelle Rücklieferung aus Positionsmenge
+DepreciateInventory=Lagerwert abschreiben
+DepreciateInRentalEnd=Bei Mietende abschreiben
+AccrualTransaction=Abgrenzungsbuchung
+AccrualJournalName=Name der Abgrenzungserfassung
+AccrualAccount=Abgrenzungskonto
+ExpenseAccount=Ausgabenkonto 
+InventoryValueCurrentAsset=Lagerwert für Mietartikel im Umlaufvermögen
+InventoryValue=Lagerwert
+AssetReconciliationForRental=Abgleich Anlagen für Mietartikel im Anlagevermögen
+DepreciationPercentage=Abschreibungsprozentsatz
+DepreciationNotAllowed=Für Mietartikel im Umlaufvermögen mit einer Rückverfolgungsangabengruppe mit dem Modell Modelle 'Standardkosten' oder 'Flexible Durchschnittskosten' ist eine Abschreibung nicht zulässig.
+UpdateInventDepreciation=Aktualisierung der Lagerwertabschreibung für Mietartikel

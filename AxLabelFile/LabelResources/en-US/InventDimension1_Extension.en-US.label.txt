@@ -1,0 +1,10 @@
+﻿EDTLabel=Rental status
+ ;The label of the inventory dimension
+ConfigurationKeyLabel=Rental status
+ ;The label for the configuration key
+FlagLabel=Rental status
+ ;The label for the flag extended data type
+FromLabel=From rental status
+ ;The label used when specifying the source of dimension change
+ToLabel=To rental status
+ ;The label used when specifying the target of dimension change

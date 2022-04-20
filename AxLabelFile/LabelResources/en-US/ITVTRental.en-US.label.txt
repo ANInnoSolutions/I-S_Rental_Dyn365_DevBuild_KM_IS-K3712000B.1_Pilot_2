@@ -1,0 +1,785 @@
+﻿NewLabel0=Label files created on 03/26/2020 13:12:11 for label file Id ITVTRental and language en-US
+ ;Label file comment - see above label
+RentalParameters=Rental parameters
+ ;Rental
+SalesAgreements=Sales agreements
+ ;Rental
+UseSalesAgreements=Use sales agreements
+ ;Rental
+OverrightSalesAgreements=Overright sales agreement
+ ;Rental
+Rental=Rental
+ ;Rental
+Calendar=Calendar
+ ;Rental
+ReferenceAccount=Reference account
+ ;Rental
+Invoice=Invoice
+ ;Rental
+GeneralInfoForRent=Set up general information for rent
+ ;Rental
+General=General
+ ;Rental
+SetupInvoiceSpecificInfo=Set up invoice-specific information for rent
+ ;Rental
+InvoiceCancellation=Invoice cancellation
+ ;Rental
+InvoiceCancellationDateChange=Invoice cancellation date can be changed
+ ;Rental
+RentalItems=Rental items
+ ;Rental
+ThresholdValue=Threshold value for rounding differences
+ ;Rental
+RentalMaturity=Rental maturity
+ ;Rental
+GenerateDlvNote=Generate delivery note via invoice dialog
+ ;Rental
+CollectiveInvoice=Collective Invoice
+ ;Rental
+RentalItemRun=Rental item run
+ ;Rental
+NumOfParallelProcess=Number of parallel batch processes
+ ;Rental
+Prices=Prices
+ ;Rental
+SetupPricesInfo=Set up price-specific information for rent
+ ;Rental
+BasePriceList=Base price list
+ ;Rental
+SalesPriceGroup=Sales price group
+ ;Rental
+RentalPriceGroup=Rental price group
+ ;Rental
+ItemDiscGroup=Item discount group (Rental)
+ ;Rental
+ItemDiscGroupRent=Item discount group - Rent
+ ;Rental
+Unit=Unit
+ ;Rental
+TimeUnit=Time unit
+ ;Rental
+Logistic=Logistic
+ ;Rental
+SetupLogisticInfo=Set up logistics-specific information for rent
+ ;Rental
+ActivateInventoryModel=Activate Inventory model for return delivery
+ ;Rental
+InventoryModel=Inventory model for return delivery
+ ;Rental
+ReturnDeliveries=Return deliveries from project
+ ;Rental
+AllowReturnDelivaries=Allow return deliveries from project
+ ;Rental
+AvailabilityCheck=Availibility check
+ ;Rental
+CoveragePlan=Coverage plan
+ ;Rental
+History=History
+ ;Rental
+SetupHistory=Set up log-specific information
+ ;Rental
+ActionLogged=Actions to be logged
+ ;Rental
+LogAllOrders=Logall rental order changes
+ ;Rental
+FinancialDimension=Financial dimension
+ ;Rental
+SetupFinancialDimension=Set up rental-specific financial dimensions
+ ;Rental
+RentalOrder=Rental order
+ ;Rental
+RentalProject=Rental project
+ ;Rental
+NumberSeq=Number sequences
+ ;Rental
+SetupNumberSeq=Set up requirements for rental
+ ;Rental
+Edit=Edit
+ ;Rental
+New=New
+ ;Rental
+Delete=Delete
+ ;Rental
+ExternalCodes=External codes
+ ;Rental
+TimeUnit1=Time unit
+ ;Rental
+TimeUnit2=Time unit
+ ;Rental
+Description=Description
+ ;Rental
+Settings=Settings
+ ;Rental
+BaseUnit=Base unit
+ ;Rental
+NumOfBaseUnit=Number of base units
+ ;Rental
+WorkCalendars=Work calendars
+ ;Rental
+BasicCalendar=Basic calendar
+ ;Rental
+RentalFactor=Rental factor
+ ;Rental
+RentalFactorPercent=Rental factor percentage
+ ;Rental
+DefaultRentalFactorPercent=Default rental factor percentage for sales quotation and sales order
+ ;Rental
+STRProjectCollectiveInv=SRT project collective invoice
+ ;Rental
+SetupRentalFactor=Set up rental factor
+ ;Rental
+TimeUnits=Time units
+ ;Rental
+RentalSetupParameters=Rental setup parameters
+ ;Rental
+RentalTimeUnits=Rental time units
+ ;Rental
+RentalWorkCalendars=Rental work calendars
+ ;Rental
+IsRental=Rental
+ ;Rental
+IsRentalItem=Is rental item?
+ ;Rental
+CreateRentalOrder=Create rental order
+ ;Rental
+RentalOrders=Rental orders
+ ;Rental
+TransferRentalOrder=Transfer rental order
+ ;Rental
+AllRentalOrders=All rental orders
+ ;Rental
+ShippedButNotInvoiced=Shipped but not invoiced rental orders
+ ;Rental
+FindRentalOrder=Find rental order
+ ;Rental
+TrasnferToSalesOrder=Transfer rental order to sales order
+ ;Rental
+TransferToSalesQuotation=Transfer rental order to sales quotation
+ ;Rental
+SalesOrderNotCreated=Sales order not created.
+ ;Rental
+SalesOrderCreated=Sales order %1 created.
+ ;Rental
+SalesOrderFailed=Sales order creation failed.
+ ;Rental
+SalesQuotationCreated=Sales quotation %1 created.
+ ;Rental
+SalesQuotationFailed=Sales quotation creation failed.
+ ;Rental
+RentalOrderHeader=Rental order header
+ ;Rental
+RentalOrderLines=Rental order lines
+ ;Rental
+Rent=Rent
+ ;Rental
+RentalOrderLine=Rental order line
+ ;Rental
+RentalLineDeleteMsg=Rental line is sub component of rental item %1 ,and cannot be deleted. Delete the main rental line with lot id %2
+ ;Rental
+RentalLineAssociated=There are associated Rental line(s) for this main rental line. Continue deleting all the lines?
+ ;Rental
+RentalLineNotDeleted=Rental order line(s) not deleted.
+ ;Rental
+Sell=Sell
+ ;Rental
+RentalCreditNote=Copy credit note from rental order
+ ;Rental
+ReturnItemNum=Return order number
+ ;Rental
+ReturnRentalOrder=Return rental order number
+ ;Rental
+RentalQuotation=Rental quotation
+ ;Rental quotation
+SentRentalQuotations=Sent rental quotations
+ ;Rental quotation
+RentalQuotationConfirm=Rental quotation confirmations
+ ;Rental quotation
+AllRentalQuotations=All rental quotations
+ ;Rental quotation
+ConfirmedRentalQuotations=Confirmed rental quotations
+ ;Rental quotation
+NewRentalQuotations=New rental quotations
+ ;Rental quotatoin
+ExpiringRentalQuotations=Expiring rental quotations
+ ;Rental quotation
+OpenRentalQuotations=Open rental quotations
+ ;Rental quotation
+RentalQuotationDetails=Rental quotation details
+ ;Rental quotation
+ConfirmRentalQuotation=Confirm rental quotation
+ ;Rental quotation
+SendRentalQuotation=Send rental quotation
+ ;Rental quotation
+MassCreateRentalQuotation=Mass create rental quotation
+ ;Rental quotation
+CancelRentalQuotation=Cancel rental quotation
+ ;Rental quotation
+LoseRentalQuotation=Lose rental quotation
+ ;Rental quotation
+LostRentalQuotation=Lost rental quotation
+ ;Rental quotation
+CreateRentalQuotation=Create rental quotation
+ ;Rental quotation
+RentalQuotations=Rental quotations
+ ;Rental quotation
+RentalQuotationJour=Rental quotation journal
+ ;Rental quotation
+RentalQuotationConfirmation=Rental quotation confirmation
+ ;Rental quotation
+DeleteQuotationLine=There are associated rental quotation line(s) with this quotation line. So you want to continue deleting all related line(s)?
+ ;Rental quotation
+RentalQuotationDeleteLine=Rental quotation line(s) not deleted.
+ ;Rental quotation
+RentalQuotationHeader=Rental quotation header
+ ;Rental quotation
+RentalQuotationLines=Rental quotation lines
+ ;Rental quotation
+RentalQuoteLineUpdate=Quotation line(s) modified for sales quotation. Do you want to reset the value for grand total to 0?
+ ;Rental quotation
+GrandTotalNotUpd=The value of grand total is not updated. Manually change the total.
+ ;Rental quotation
+RentalOrderPosting=Rental order posting
+ ;Rental invoice
+RentalInvoice=Rental invoice
+ ;Rental invoice
+RentalInvoiceId=Rental invoice ID
+ ;Rental invoice
+RentalCreditNoteId=Rental credit note ID
+ ;Rental invoice
+ConfirmRentalOrder=Confirm rental order
+ ;Rental invoice
+Confirmation=Confirmation
+ ;Rental invoice
+RentalOrderconfirmations=Rental order confirmations
+ ;Rental invoice
+RentalInvProcessing=Retal invoice line processing details
+ ;Rental invoice
+AgreementType=Agreement type
+ ;Rental invoice
+ConfirmRentalAgreement=Confirm rental agreement
+ ;Rental invoice
+RentalAgreement=Rental agreement
+ ;Rental invoice
+RentalOrderCreated=Rental order %1 has been successfully created.
+ ;Rental invoice
+RentalAgreementHeader=Rental agreement header
+ ;Rental invoice
+RentalAgreementLines=Rental agreement lines
+ ;Rental invoice
+RentalAgreementID=Rental agreement ID
+ ;Rental invoice
+RentalAgreementClass=Rental agreement classification
+ ;Rental invoice
+CreateRentalAgreement=Create rental agreement
+ ;Rental invoice
+RentalAgreementConfirmation=Rental agreement confirmation
+ ;Rental invoice
+TimeUnitValid=Time unit must be specified.
+ ;Rental invoice
+RentalFromDateValid=Rental from date must be specified.
+ ;Rental invoice
+RentalToDateValid=Rental to date must be specified.
+ ;Rental invoice
+DateError=Rental from date must be less than rental to date.
+ ;Renta invoice
+RentalAgreements=Rental agreements
+ ;Rental invoice
+AllRentalInvoices=All rental invoices
+ ;Rental invoice
+RentalInvoicesDue=Rental invoices due today
+ ;Rental invoice
+OpenRentalInvoices=Open rental invoices
+ ;Rental invoice
+RentalInvoicesPastDue=Rental invoices past due
+ ;Rental invoice
+RentalFactorNetAmt=Rental factor net amount
+ ;Rental invoice
+RentalSuppItems=Rental supplimentary items
+ ;Rental supplimentary items
+CopyFromVersion=Copy from version
+ ;Rental supplimentary items
+CopyFromVersionHelp=Copy supplimentary items from version
+ ;Rental supplimentary items
+VersionFilter=Version filter
+ ;Rental supplimentary items
+RentalSupplimentaryId=Rental supplimentary id
+ ;Rental supplimentary items
+RentalSupplimentaryIdHelp=Rental supplimentary id for supplimentary items
+ ;Rental supplimentary items
+CopyFailed=Copy failed
+ ;Rental supplimentary items
+SelectVersion=Select a different version to be copied from.
+ ;Rental supplimentary items
+ItemNotDefined=Supplimentary items not defined in version %1
+ ;Rental supplimentary items
+ActiveVersions=Active versions
+ ;Rental supplimentary item
+SuppItems=Supplimentary items
+ ;Rental supplimentary items
+SuppItemVersion=Supplimentary item version
+ ;Rental supplimentary items
+RentalDateCriteria=Rental from date cannot be greated than rental to date.
+ ;Rental journal
+RentalDateLess=Rental from date for journal line cannot be less than rental from date on journal line.
+ ;Rental journal
+RentalDateMore=Rental to date for journal line cannot be greated than rental to date on journal line.
+ ;Rental journal
+RentalDateMandatory=Rental from date and to date must be specified.
+ ;Rental journal
+RentalTimejournalLines=Rental time journal lines
+ ;Rental journal
+RentalTimeJourLinesDev=The ITVTRentalTimeJourLine table holds the time journal lines data
+ ;Rental journal
+RentalTimeJournal=Rental time journal
+ ;Rental journal
+TimeJournalHeader=Time journal header
+ ;Rental journal
+TimeJournalLines=Time journal lines
+ ;Rental journal
+ReleaseStatus=Release status
+ ;Rental journal
+OnHoldStatus=On hold status
+ ;Rental journal
+RentalFreeDays=Rental free days
+ ;Rental journal
+RentalTimeJournalId=Rental time journal id
+ ;Rental journal
+TimeJournal=Time journal
+ ;Rental journal
+RentalTimeJournalDev=The ITVTRentalTimeJourTable table holds the time journal lines data
+ ;Rental journal
+RentalProjectID=Rental project ID
+ ;Rental project
+RentalProjectContract=Rental project contract ID
+ ;Rental project
+RentalProjectContracts=Rental project contracts
+ ;Rental project
+AllRentalProjects=All rental projects
+ ;Rental project
+ProjectRentalOrders=Project rental orders
+ ;Rental project
+SalesOrder=Sales order
+ ;Rental project
+NewRentalProject=New rental project
+ ;Rental project
+RentalLinesNotInvoiced=Rental order lines not invoiced
+ ;Rental reports
+RentalLinesNotInvoicedReport=Rental order lines not invoiced report
+ ;Rental reports
+RentalInvoiceJour=Rental invoice journal
+ ;Rental reports
+RentalInvoiceTransReport=Rental invoice transaction report
+ ;Rental reports
+RentalInvoiceSpec=Rental invoice specification
+ ;Rental reports
+RentalInvoiceSpecReport=Rental invoice specification report
+ ;Rental reports
+RentalInvoiceTurnover=Rental invoice turnover report
+ ;Rental reports
+RentalInvoiceTurnoverByTax=Rental invoice turnover report by tax exempt numbe
+ ;Rental reports
+RentalInvoiceTurnoverByAccount=Rental invoice turnover report by account
+ ;Rental reports
+SalesLineModified=Sales line(s) modified. Do you want to reset the grand total value on header?
+ ;Rental order
+RentalBackOrder=Rental backorder lines
+ ;Rental order
+RentalUpdate=Rental update
+ ;Rental order
+RentalReturnOrder=Rental return order
+ ;Rental order
+SuppItem=Supplimentary item
+ ;Rental supplimentary item
+ActiveSuppItem=Only one supplimentary item version can be active at a time.De-activate the prior version and try again.
+ ;Rental Supp
+ApproveSupp=Approve the supplimentary item version before activating it.
+ ;Rental supp
+SuppItemError=Supplimentary item cannot be same as main item.
+ ;Supp item
+RentalUnitDev=The ITVTRentalTimeUnit stores rental time unit.
+ ;Rental unit
+SuppItemsVersionDev=The ITVTRentalSupplimentaryItemVersion table stores the supplimentary item versions.
+ ;Rental Supp item
+SuppItemsDev=The ITVTRentalSupplimentaryItems table stores the supplimentary items. 
+ ;Rental Supp items
+RentalParamDev=The ITVTRentalParameters table stores the rental parameters.
+ ;Rental parameter
+RentalInvProcessDev=The ITVTRentalInvoiceLineProcessDetails table stores rental invoice processing details.
+ ;Rental invoice
+RentalFactorDev=The ITVTRentalFactore table stores rental factor details.
+ ;Rental factor
+RentalAgreementHistory=Rental agreement history
+ ;Rental agreement
+MaintainRentalSetup=Maintain rental setup
+ ;Rental setup
+MaintainRentalQuotation=Maintain rental quotation
+ ;Rental quotation
+MaintainRentalOrder=Maintain rental order
+ ;Rental order
+MaintainRentalInvoice=Maintain rental invoice
+ ;Rental invoice
+MaintainRentalProject=Maintain rental project
+ ;Rental project
+RentalReportsInquiry=Rental reports inquiry
+ ;Rental reports
+RentalAdmin=Rental administrator
+ ;Rental admin
+RentalFactorError=Set the minimum value of the factor percentage to '0.01' and the maximum value to '100.00'
+ ;Rental parameters
+ProjectWarehouse=Project warehouse
+ProjInventLocationCreate=Create project warehouse
+RentalDelivered=Rental delivered
+RentalDeliveredBack=Rental delivered back
+RentalLineMissingProjId=Line %1, item %2: missing project number
+Delivery=Delivery
+Return=Return
+SalesLineRentalMaintain=Sales line rental (maintaint)
+AdditionalTxt=Additional text
+ConstructionSite=Construction site
+DocNumber=Document number
+LoadNumberSequences=Load number sequences
+ ;Rental maintain
+LoadNumberSequencesHelp=Use this button to initialize number sequnece entries for rental
+ ;Rental maintain
+LoadRentalNumberSequences=Allows to initialize rental number sequences
+ ;Rental maintain
+LoadRentalNumberSequencesDescription=This privielge allows to initialize rental number sequences
+ ;Rental maintain
+MaintainRentalNumberSequences=Allows to maintain rental number sequences
+ ;Rental maintain
+MaintainRentalNumberSequencesDescription=This duty covers every privilege related to maintenance of rental number sequences
+ ;Rental maintain
+MaintainRental=Maintain Rental
+ ;Rental maintain
+MaintainRentalDescription=This Role covers every duty used for maintaining the rental module
+ ;Rental maintain
+RentalOnHandCube=Rental On-hand Cube
+UpdateRentalOnHandCube=Update the rental on-hand cube
+RentalSalesCube=Rental Sales Cube
+UpdateRentalSalesCube=Update the rental sales cube
+RentalCubesAccess=Grant access to rental cubes
+RentalOnHandCubeAccess=Grant access to rental on-hand cube
+RentalSalesCubeAccess=Grant access to rental sales cube
+FixedAssets=Fixed asset
+IsCurrentAsset=Current asset
+FixedAssetHGBPercent=% Local gap
+FixedAssetsIFRSPercent=% IFRS
+FixedAssetHGBServiceLine=Service life
+CurrentAssetHGBServiceLine=Service life HGB
+FixedAssetIFRSServiceLine=Service life IFRS
+CurrentAssetIFRSServiceLine=Service life IFRS
+CurrentAssetHGRBPercent=% HGB
+CurrentAssetIFRSPercent=% IFRS
+MinRentalPeriod=Min. rental period
+RentalOrderWrongToDateValue=To date must be after From date
+RentalOrderToDateAfterInvoiceDate=To date must be after last invoice date
+EEA=EAA
+BusinessLine=Business line
+FAOwner=Owner
+OwnerChangeOffsetAccount=Offset account for owner change
+LocalGapAssetBook=Asset book
+IFRSBook=IFRS book
+AssetJournalNameLocalGap=Asset journal name local gap
+AssetJournalNameIFRS=Asset journal name IFRS
+ItemAssignments=Item assignments
+ItemCode=Item code
+FixedAssetGroup=Fixed asset group
+AssetPostingLayer=Asset posting origin
+ChangeOwner=Change owner
+RentalProjectManagement=Rental project management
+ActiveRentalProjects=Active rental projects
+RentalProjectsFinished=Finished rental projects
+LocalGAAP_IFRS=Local GAAP/IFRS
+IFRS=IFRS
+LocalGAAP=Local GAAP
+RentalService=Rental service
+RentalServiceItemPrefix=Prefix
+RentalLineMissingProjLocationId=Line %1, item %2: missing project location
+TransferOrderWasCreated=Transfer order %1 was created
+RentalServiceAlreadyExists=Item %1 already exists, please rename the item
+TransferOrderType=Transfer order type
+LastInvoiceDate=Last invoice date
+LineFulfilled=Line is fulfilled
+RentalLines=Rental lines
+ ;Rental Order Lines
+RentalOrderLinesFilter=Rental order lines
+RentalTimeJournal4WeeksPrompt=Do you want to update lines with 4 weeks period?
+Functions=Functions
+FourWeeks=4 weeks period
+RentalRunDate=Date of rental run
+RentalRun=Rental run
+RentalInvoiceAction=Rental invoice
+OriginSalesId=Original sales order
+RentalArrivalJournalName=Journal for rental arrival
+RentalDispatchJournalName=Asset journal
+FixedAssetNotFound=Fixed asset not found
+NothingPost=Nothing to post
+AssetQtyNotSpecified=Please set quantity in fixed asset
+ChangeFixedAssets=Change fixed asset
+CurrentAssetValuation=Current asset valuation
+ValuationDate=Valuation date
+Valuation=Valuation
+Purchase=Purchase
+Dispatch=Dispatch
+PurchValue=Purchase value
+InvoiceReturn=Invoice return
+AmountHGB=Amount HGB
+AmountIFRS=Amount IFRS
+NumOfDaysTimeUnit=Number of days pro base unit
+InvoiceRentalLinesExist=There are uninvoiced lines, please invoice or delete them
+DefaultProjectLocation=Default location name
+CloseTransferOrderPrompt=Close the transfer order?
+CloseInventTransferOrder=Close transfer order
+FixedCurrentAssetEqualCheckError=For the rental item, one of these two flags must be enabled: Fixed asset or Current asset
+ValuationHGB=Valuation HGB
+InventValueHGB=Inventory: value HGB
+ValuationIFRS=Valuation IFRS
+InventValueIFRS=Inventory: value IFRS
+SalesLineDeliveryItemCannotBeDeleted=You can’t delete a delivered item
+Used=Used
+InventTransferOrderExist=The transfer order already exists!
+FixedCurrentAssetCheckError=The item cannot be fixed asset and current asset at the same time
+ITVTIsRental=Rental
+ITVTProjInventLocationNumSeqHelp=New Text
+ProjWarehouseNumSeqHelp=Unique key of a warehouse created for a project.
+ ;Project warehouse create
+CopyDeliveryAddressToWarehouse=Copy delivery address to the warehouse?
+RentalWarehouse=Rental warehouse
+ProjWarehouseFieldFroup=Project
+ ;Project warehouse
+RentalDimension=Rental dimension
+ ;Rental Inventory Dimensions
+InventDimRental=Dimension for rental
+ ;Rental Inventory Dimensions
+InventDimRentalStatusNew=New status (cost value in inventory)
+ ;Rental Inventory Dimensions
+InventDimRentalStatusRented=Rented status
+ ;Rental Inventory Dimensions
+InventDimRentalStatusUsed=Used status
+ ;Rental Inventory Dimensions
+InventDimRentalDefaultPurch=Default for purchase
+ ;Rental Inventory Dimensions
+InventDimRentalDefaultProd=Default for production
+ ;Rental Inventory Dimensions
+InventDimRentalDefaultSales=Default for sales
+ ;Rental Inventory Dimensions
+InventDimRentalDefaultRental=Default for rental
+ ;Rental Inventory Dimensions
+UpdateRentalItems=Update rental items
+ ;Update rental items
+UpdateRentalItemsHelp=This job will create all missing rental items for released products which are configred as rental item.
+ ;Update rental items
+RentalServiceItemCreatedForItem=Rental Service Item created for item %1
+ ;Update rental items
+RentalServiceItemsCreationForAllItemsfinished=Rental Service Items creation for all items finished.\r\n%1 Rental Service Items created\r\n%2 skipped creations
+ ;Update rental items
+UpdateRentalItemsCanceledByError=Update Rental Service Items canceled by error
+ ;Update rental items
+RunUpdateRentalServiceItems=Create missing rental Service items by batch
+ ;Update rental items
+RunUpdateRentalServiceItemsDescription=Allows to create missing rental Service items by batch
+ ;Update rental items
+UpdateRentalServiceItems=Update Rental Service Items
+ ;Update rental items
+UpdateRentalServiceItemsDescription=Allows to use function for update rental service items
+ ;Update rental items
+ManageRentalItems=Manage Rental Items
+ ;Update rental items
+ManageRentalItemsDescription=This Role hold the needed permissions to manage the rental items
+ ;Update rental items
+UserRentalFactorPct=Price from rental factor
+ ;Rental
+RentalStartDateConfirmed=Rental start date (confirmed)
+ ;Rental
+RentalEndDateConfirmed=Rental end date (confirmed)
+ ;Rental
+RentalEndDateRequested=Rental end date (requested)
+ ;Rental
+RentalStartDateRequested=Rental start date (requested)
+ ;Rental
+RentalEndDatePosted=Posted end date
+ ;Rental
+RentalStartDatePosted=Posted start date
+ ;Rental
+RentalEndDateRun=Rental run to date
+ ;Rental
+RentalPrice=Rental price
+ ;Rental Order lines
+RentalLineDetails=Rental line details
+ ;Rental Order Lines
+ITVTRentalDimension=Dimension for rental
+RentalLineDeleteError=Rental line %1 cannot be deleted
+ ;US5829
+SalesLineRentalItemWarning=Order lines are used for selling items. If you want to rent an item, enter a rental line.
+ ;US5830
+ITVTRentalIsFulfilled=Rental fulfilled
+ ;US5830
+ParameterIsMandatory=Parameter %1 is mandatory
+RentalLineIsAlreadyRented=Rental line is already rented
+ShippingDateIsDifferent=Shipping date is after rental start date
+RentalLineMissingLocation=Line %1, item %2: missing location
+RentalLineTOExists=There is a transfer order for the selected line %1 %2 already. Hence, the transfer quantity will be reduced.
+RentalLineMainWarehouseIsDifferent=Main warehouse in rental line is different than From warehouse
+PostRentalStartEnd=Post rental start/end
+ReallocateTransferOrderLine=Reallocate transfer order line
+TargetTransferOrder=Target transfer order
+NewFromWarehouse=New from warehouse
+ExecuteReallocateTransferOrderLine=Execute Reallocate transfer order line
+TargetTransferIdAndFromInventLocationError=When the parameter Target transfer order is empty, the parameter New from warehouse must be specified
+TargetFromInventLocationError=New from warehouse cannot be the same as the To warehouse
+LinesMovedToTransferOrder=Lines moved to the transfer order %1
+StartRental=Start rental
+DeliverNow=Deliver now
+ExecuteStartRental=Execute Start rental
+ChangeOwnerExecute=Execute change owner
+ ;US5827
+MovementJournal=Movement journal
+EndRental=End rental
+ExecuteEndRental=Execute End rental
+RentalLineNotRented=Rental line is not rented
+RentalLineMainWarehouseHasDifferentToWarehouse=Main warehouse in rental line is different than To warehouse
+ExecuteReturn=Execute Return
+InventTransStatusNotFound=Inventory transaction with %1 = %2 not found
+LinesWithOpenRentalStart=Lines with open rental start
+QuantityAlreadyInTransfer=Quantity already in transfer
+RentalStartUntil=Rental start until
+LinesWithOpenRentalEnd=Lines with open rental end
+RentalEndUntil=Rental end until
+ITVTRentalLineOpenEndRentalMaintain=Maintain lines with open rental end
+ITVTRentalLineOpenStartRentalMaintain=Maintain lines with open rental start
+RentalDimensionMustBeActive=For rental items, the rental dimension must be an active dimension
+RentalStatus=Rental Status
+ ;Rental
+RentalStatusSetup=Rental Status Setup
+ ;Rental
+RentalLine=Rental line
+RentFreePeriods=Rent-free periods
+FromDateNotBeforePostedDate=From date must not be before Posted start date
+ToDateNotBeforeFromDate=To date must not be before From date
+RentalOrderConfirmation=Rental order confirmation
+ConfirmRentalOrderJour=Confirm rental order
+ ;Rental order confirmation
+StartedRentalLineDeleteError=Rental line cannot be deleted after rental start
+OrderTypeCannotChange=Order type cannot be changed
+EndRentalRunToDateError=Rental run to date for invoicing the rental line %1, item %2, is after the rental end date
+ShipDateMustBeAfterPostedRentalEndDate=Ship date for returns must be on or after the posted rental end date
+Split=Split
+ExecuteSplit=Execute Split
+StartRentalNotPossibleForTOLine=Start rental not possible for the transfer order line %1, item %2
+EndRentalNotPossibleForTOLine=End rental not possible for the transfer order line %1, item %2
+StartEndRentalReceiptShip=Start/End rental with transfer receipt/ship
+RentalItem=Rental item
+RentalLineWMSProcessActiveError=You cannot create a rental order for item %1 in warehouse %2. Rental is not possible while the item is in a warehouse with warehouse management processes.
+DeliveryAndReturn=Deliveries and returns
+RentalLineRented=Rental line (Rented)
+NumberOfTimeUnits=Number of time units
+DefaultForFixedAssetPurch=Default for fixed asset purchase
+PostRentalItem=Post rental item
+ToRentalStatus=To rental status
+RentalStartDate=Rental start date
+RentalPricePerPeriod=Rental price per period
+AmountPerPeriod=Amount per period
+OpenRentalOrders=Open rental orders
+RentalOrderManagement=Rental order management
+FinishedRentalOrders=Closed rental orders
+NewRentalOrder=New rental order
+IssueLotID=Issue lot ID
+ReceiptLotID=Receipt lot ID
+ReceiptAmount=Receipt amount
+AssetQuantity=Asset quantity
+AssetRemainingQty=Remaining asset quantity
+RentalItemQtyReport=Rental item quantity in inventory and fixed assets
+ShowOpenReconciliation=Show open reconciliation
+ReconcileFixedAssets=Reconcile fixed assets with rental item transactions
+NumOfFixedAssets=Number of fixed assets
+FixedAssetQty=Fixed asset quantity
+ReconQty=Quantity for reconciliation
+NestingIsNotSupported=Nesting is not supported
+GenerateReconciliation=Generate fixed asset and rental item transaction reconciliation
+FixedAssetJournal=Fixed asset journal
+PostFixedAssetJournalRecon=Post fixed asset journal for reconciliation
+RentalNum=Rental %1
+InventDimRentalStatusNewFixedAsset=New status (cost value in fixed assets)
+CreateFixedAssetWithFirstRental=Generate fixed asset with first rental
+FixedAssetsGroup=Fixed assets
+SetUpFixedAssetRecon=Set up fixed asset reconciliation
+CheckRentalItemNewFixedAssetCostMsg=For rental items in fixed assets, the cost price must be zero if the rental status is not 'New'.
+CheckRentalItemNewFixedAssetCost=Check cost price for fixed asset rental items
+POToRentalStatusError=To rental status cannot be '%1'
+RentFree=Rent-free
+FixedAssetPurchase=Fixed asset purchase
+InventDimStatusInterimForFixedAssetPurch=Interim status for fixed asset purchase
+RentalLinesTemplate=Rental lines template
+OrderNotFound=The order was not found.
+RentalLineWarehouse=Line %1, item %2, warehouse %3: From and To warehouse must be different
+ProjectWarehouseReceipt=Project warehouse receipt
+RentalStartBeforeDeliveryDate=Rental start is before delivery date
+RentalStartBeforeDeliveryDateLine=Rental start in the rental line is before delivery date
+ProjectWarehouseReceiptDateError=Project warehouse receipt date cannot be empty
+ReturnNow=Return now
+ReturnDate=Return date
+Quantity=Quantity
+All=All
+PickUp=Pick up
+RentalLinesWithOpenDelivery=Rental lines with open delivery
+OpenQuantity=Open quantity
+UnitWeight=Unit weight
+ReceiptUntil=Receipt until
+DeactivateDeliverNow=Deactivate Deliver now
+DeliverNowFromQuantity=Deliver now from Quantity
+TotalWeight=Total weight
+TotalWeightSelectedLines=Total weight of the selected lines: %1
+UpdateRentalLinesOpenDelivery=Update rental lines with open delivery
+RentalLineWithOpenDelivery=Rental orders with open delivery
+ProjectWarehouseZipCode=Project warehouse zip code
+ProjectWarehouseCity=Project warehouse city
+AlternativeProduct=Alternative product
+OriginalLine=Original line
+QtyInventTrans=Quantity in inventory transaction
+OnlyReceipt=Only receipt transactions
+ReceiptAmountPositive=Receipt amount for generating an asset for the transaction %1 must be a positive number.
+ReceiptAmountOk=All required values are specified.
+PostNotAllowed=Posting not possible for asset %1 because there have been updates in the asset transactions.
+DeliveryReturn=Delivery and return
+RentalQtyToAvailQty=Adjust the rental quantity to the available quantity
+NewRentalLineForUnavailQty=New rental line for the quantity not yet available
+ReturnReceipt=Return receipt
+PendingReturnQuantity=Pending return quantity
+PendingReturn=Pending return
+ClosePendingReturn=Close pending return
+CreateOnlyHeader=Create only header
+RentalOrderWithOpenReturn=Rental orders with open return
+ReturnUntil=Return until
+UnspecificReturn=Unspecific return
+TransferJournalForReturn=Transfer journal for return
+RentalRunForOpenPeriods=Rental run for open periods
+UseConfirmedRentalEndDateForRentalEnd=Use confirmed rental end date for rental end
+DirectItemReceiptFromRental=Direct item receipt from rental
+RegisterSerialNumbers=Register serial numbers
+Registered=Registered
+RegisteredSerialNumbers=Register serial numbers
+Remaining=Remaining
+PostRentalReturn=Post rental return
+StartRentalWarning=It is not possible to start rental for the remaining quantity of item %1. Please reserve the quantity and manually start rental.
+FieldToWarehouseMustBeSpecified=Field 'To warehouse' must be specified
+TOForItemAlreadyCreated=Transfer order for item %1 has already been created
+SerialNumbersMustBeRegistered=Serial numbers for item %1 must be registered
+TransferJourForReturnMissing=Transfer journal for return in Rental parameters is missing
+ArrivalOptions=Arrival options
+Range=Range
+ReturnFromRental=Return from rental
+PostingDate=Posting date
+DeactivateReturnNow=Deactivate Return now
+ReturnNowFromLineQuantity=Return now from Line quantity
+DepreciateInventory=Depreciate inventory value
+DepreciateInRentalEnd=Depreciate at rental end
+AccrualTransaction=Accrual transaction
+AccrualJournalName=Accrual journal name
+AccrualAccount=Accrual account
+ExpenseAccount=Expense account
+InventoryValueCurrentAsset=Inventory value for rental items in the current assets
+InventoryValue=Inventory value
+AssetReconciliationForRental=Fixed asset reconciliation for rental items in the fixed assets
+DepreciationPercentage=Depreciation percentage
+DepreciationNotAllowed=For rental items which are tracked in the current assets ('Fixed asset' is set to 'No'), a depreciation is not possible with a tracking dimension group with a Standard cost or Moving average cost model.
+UpdateInventDepreciation=Update inventory depreciation for rental items
