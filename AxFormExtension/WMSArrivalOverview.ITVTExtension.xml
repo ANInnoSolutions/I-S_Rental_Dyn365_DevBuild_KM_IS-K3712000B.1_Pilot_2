@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>WMSArrivalOverview.ITVTExtension</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControl5evoy51y1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormButtonGroupControl">
+				<Name>ITVTRental</Name>
+				<Type>ButtonGroup</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTRentalArrivalOverview</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<MenuItemName>ITVTRentalArrivalOverview</MenuItemName>
+					</AxFormControl>
+				</Controls>
+				<Caption>@ITVTRental:Rental</Caption>
+			</FormControl>
+			<Parent>ActionPaneControl</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>UpdateButtonGroup</PreviousSibling>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

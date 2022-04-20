@@ -1,0 +1,1470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>SalesTable.ITVTRental</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlkwpgvu1m1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>ITVTRentalGroup</Name>
+				<Type>Group</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ITVTRentalGroup_ITVTIsRental</Name>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTIsRental</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>ITVTRentalGroup_ITVTRentalTimeUnitId</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalTimeUnitId</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ITVTRentalGroup_ITVTUseFactorPercentage</Name>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTUseFactorPercentage</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>ITVTRentalGroup_ITVTRentalFromDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalFromDate</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>ITVTRentalGroup_ITVTRentalToDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalToDate</DataField>
+						<DataSource>SalesTable</DataSource>
+						<MaxDateLabel>@SYS1091</MaxDateLabel>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>ITVTRentalGroup_ITVTProjectLocationReceiptDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTProjectLocationReceiptDate</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>ITVTRentalGroup_ITVTConfirmedRentalFromDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTConfirmedRentalFromDate</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>ITVTRentalGroup_ITVTConfirmedRentalToDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTConfirmedRentalToDate</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormIntegerControl">
+						<Name>ITVTRentalGroup_ITVTRentalMinPeriod</Name>
+						<Type>Integer</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalMinPeriod</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>ITVTRentalGroup_ITVTReturnDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTReturnDate</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>ITVTRentalGroup_ITVTReturnReceiptDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTReturnReceiptDate</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ITVTRentalGroup_ITVTIsPendingReturn</Name>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTIsPendingReturn</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ITVTRentalGroup_ITVTRentalOrderAutoReservation</Name>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalOrderAutoReservation</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ITVTRentalGroup_ITVTRentalIsFulfilled</Name>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalIsFulfilled</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+				</Controls>
+				<DataGroup>ITVTRentalGroup</DataGroup>
+				<DataSource>SalesTable</DataSource>
+			</FormControl>
+			<Parent>TabHeaderGeneral</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlfnfe0fu41</Name>
+			<FormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>ITVTProjInventLication</Name>
+				<Type>Group</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>ITVTProjInventLication_ITVTProjInventLocationId</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTProjInventLocationId</DataField>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>ITVTProjInventLication_ITVTSalesTable_Extension_projInventLocationAddress</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataMethod>ITVTSalesTable_Extension.projInventLocationAddress</DataMethod>
+						<DataSource>SalesTable</DataSource>
+					</AxFormControl>
+				</Controls>
+				<HideIfEmpty>No</HideIfEmpty>
+				<DataGroup>ITVTProjInventLocation</DataGroup>
+				<DataSource>SalesTable</DataSource>
+			</FormControl>
+			<Parent>TabHeaderGeneral</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlo5i5lfdw1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormButtonGroupControl">
+				<Name>ITVTRent</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<Type>ButtonGroup</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTProjInventLocationCreatorAction</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataSource>SalesTable</DataSource>
+						<MenuItemName>ITVTProjInventLocationCreatorAction</MenuItemName>
+						<MenuItemType>Action</MenuItemType>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTRentFreePeriod</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataSource>SalesTable</DataSource>
+						<MenuItemName>ITVTRentFreePeriod</MenuItemName>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTRentalLineDeliveryQtyDeliveryHeader</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataSource>SalesTable</DataSource>
+						<MenuItemName>ITVTRentalLineDeliveryQtyDelivery</MenuItemName>
+						<MenuItemType>Action</MenuItemType>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTRentalLineDeliveryQtyReturnHeader</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataSource>SalesTable</DataSource>
+						<MenuItemName>ITVTRentalLineDeliveryQtyReturn</MenuItemName>
+						<MenuItemType>Action</MenuItemType>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTRentalLineStartRentalHeader</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataSource>SalesTable</DataSource>
+						<MenuItemName>ITVTRentalLineStartRental</MenuItemName>
+						<MenuItemType>Action</MenuItemType>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTRentalLineEndRentalHeader</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataSource>SalesTable</DataSource>
+						<MenuItemName>ITVTRentalLineEndRental</MenuItemName>
+						<MenuItemType>Action</MenuItemType>
+					</AxFormControl>
+				</Controls>
+				<Caption>@ITVTRental:Rent</Caption>
+				<DataSource>SalesTable</DataSource>
+			</FormControl>
+			<Parent>SalesOrder</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlwlsij2aq1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormTabPageControl">
+				<Name>ITVTRentalOrderLineViewLines</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<Type>TabPage</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormActionPaneControl">
+						<Name>RentalLinesActionPaneStrip</Name>
+						<Type>ActionPane</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormActionPaneTabControl">
+								<Name>RetailLineOverviewActionTab</Name>
+								<Type>ActionPaneTab</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormButtonGroupControl">
+										<Name>RetailLineOverviewMainActionButtonGroup</Name>
+										<Type>ButtonGroup</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormCommandButtonControl">
+												<Name>RentalLineNew</Name>
+												<Type>CommandButton</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Command>New</Command>
+												<MultiSelect>Yes</MultiSelect>
+												<NormalImage>Add</NormalImage>
+												<Text>@SYS319116</Text>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormMenuFunctionButtonControl">
+												<Name>ITVTRentalEditLine</Name>
+												<Type>MenuFunctionButton</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataSource>ITVTRentalLine</DataSource>
+												<MenuItemName>ITVTRentalEditLine</MenuItemName>
+												<NormalImage>Edit</NormalImage>
+												<OpenMode>Edit</OpenMode>
+												<Text>@SYS453</Text>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormCommandButtonControl">
+												<Name>RentalLineDelete</Name>
+												<Type>CommandButton</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Command>DeleteRecord</Command>
+												<MultiSelect>Yes</MultiSelect>
+												<NormalImage>Delete</NormalImage>
+												<Text>@SYS135131</Text>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormCommandButtonControl">
+												<Name>ITVTOpenInExcel</Name>
+												<Type>CommandButton</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Text>@ApplicationFoundation:OfficeOpenLinesInExcel</Text>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormMenuButtonControl">
+												<Name>ButtonRentalLine</Name>
+												<Type>MenuButton</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormButtonSeparatorControl">
+														<Name>NewSeparator</Name>
+														<Type>ButtonSeparator</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Text>@SYS5480</Text>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>ITVTRentalLineDeliveryQtyDelivery</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>MenuFunctionButton</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>ITVTRentalLineDeliveryQtyDelivery</MenuItemName>
+														<MenuItemType>Action</MenuItemType>
+														<MultiSelect>Yes</MultiSelect>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>ITVTRentalLineStartRental</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>MenuFunctionButton</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>ITVTRentalLineStartRental</MenuItemName>
+														<MenuItemType>Action</MenuItemType>
+														<MultiSelect>Yes</MultiSelect>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>ITVTRentalLineEndRental</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>MenuFunctionButton</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>ITVTRentalLineEndRental</MenuItemName>
+														<MenuItemType>Action</MenuItemType>
+														<MultiSelect>Yes</MultiSelect>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>ITVTRentalLineDeliveryQtyReturn</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>MenuFunctionButton</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>ITVTRentalLineDeliveryQtyReturn</MenuItemName>
+														<MenuItemType>Action</MenuItemType>
+														<MultiSelect>Yes</MultiSelect>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormButtonSeparatorControl">
+														<Name>FunctionsSeparator</Name>
+														<Type>ButtonSeparator</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Text>@SYS81103</Text>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>ITVTRentalLineSplit</Name>
+														<Type>MenuFunctionButton</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>ITVTRentalLineSplit</MenuItemName>
+														<MenuItemType>Action</MenuItemType>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>ITVTRentFreePeriodLine</Name>
+														<Type>MenuFunctionButton</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>ITVTRentFreePeriod</MenuItemName>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormButtonSeparatorControl">
+														<Name>DisplaySeparator</Name>
+														<Type>ButtonSeparator</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Text>@SYS53465</Text>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormButtonControl">
+														<Name>InventDimParmFixedRental</Name>
+														<Type>Button</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Text>@SCM:DisplayDimensions</Text>
+													</AxFormControl>
+												</Controls>
+												<MultiSelect>Yes</MultiSelect>
+												<Text>@ITVTRental:RentalLine</Text>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormMenuButtonControl">
+												<Name>ButtonLineInventoryRental</Name>
+												<ElementPosition>2130706430</ElementPosition>
+												<FilterExpression>%1</FilterExpression>
+												<HeightMode>Auto</HeightMode>
+												<Type>MenuButton</Type>
+												<VerticalSpacing>-1</VerticalSpacing>
+												<WidthMode>Auto</WidthMode>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormButtonSeparatorControl">
+														<Name>ViewSeparator</Name>
+														<Type>ButtonSeparator</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Text>@SYS53394</Text>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>InventOnhand</Name>
+														<Type>MenuFunctionButton</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>InventOnhand</MenuItemName>
+														<NeedsRecord>Yes</NeedsRecord>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>InventReservation</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<ElementPosition>468541886</ElementPosition>
+														<FilterExpression>%1</FilterExpression>
+														<HeightMode>Auto</HeightMode>
+														<Type>MenuFunctionButton</Type>
+														<VerticalSpacing>-1</VerticalSpacing>
+														<WidthMode>Auto</WidthMode>
+														<FormControlExtension
+															i:nil="true" />
+														<ButtonDisplay>TextOnly</ButtonDisplay>
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>InventReserve</MenuItemName>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormMenuFunctionButtonControl">
+														<Name>InventTrans</Name>
+														<ElementPosition>693458260</ElementPosition>
+														<FilterExpression>%1</FilterExpression>
+														<HeightMode>Auto</HeightMode>
+														<Type>MenuFunctionButton</Type>
+														<VerticalSpacing>-1</VerticalSpacing>
+														<WidthMode>Auto</WidthMode>
+														<FormControlExtension
+															i:nil="true" />
+														<ButtonDisplay>TextOnly</ButtonDisplay>
+														<DataSource>ITVTRentalLine</DataSource>
+														<MenuItemName>InventTrans</MenuItemName>
+													</AxFormControl>
+												</Controls>
+												<ButtonDisplay>TextOnly</ButtonDisplay>
+												<MultiSelect>Yes</MultiSelect>
+												<SaveRecord>No</SaveRecord>
+												<Text>@SYS981</Text>
+											</AxFormControl>
+										</Controls>
+										<DataSource>ITVTRentalLine</DataSource>
+									</AxFormControl>
+								</Controls>
+							</AxFormControl>
+						</Controls>
+						<DataSource>ITVTRentalLine</DataSource>
+						<Style>Strip</Style>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGridControl">
+						<Name>RentalLineGrid</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>Grid</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>RentalLineGrid_ItemId</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ItemId</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>RentalLineGrid_itemName</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataMethod>itemName</DataMethod>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>RentalLineInventoryDimensionsGrp</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Group</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_configId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>configId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventSizeId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventSizeId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventColorId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventColorId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventStyleId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventStyleId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventVersionId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventVersionId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension1</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension1</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension2</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension2</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension3</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension3</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension4</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension4</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension5</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension5</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension6</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension6</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension7</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension7</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension8</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension8</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormDateTimeControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension9</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>DateTime</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension9</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormRealControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension10</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>Real</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension10</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension11</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension11</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventDimension12</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventDimension12</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventSiteId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventSiteId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventLocationId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventLocationId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_wMSLocationId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>wMSLocationId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventStatusId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventStatusId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_LicensePlateId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>LicensePlateId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_inventBatchId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>inventBatchId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_inventSerialId</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>inventSerialId</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventOwnerId_RU</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventOwnerId_RU</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventProfileId_RU</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventProfileId_RU</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>RentalLineInventoryDimensionsGrp_InventGtdId_RU</Name>
+										<AutoDeclaration>Yes</AutoDeclaration>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>InventGtdId_RU</DataField>
+										<DataSource>ITVTRentalLineInventDim</DataSource>
+									</AxFormControl>
+								</Controls>
+								<DataGroup>InventoryDimensions</DataGroup>
+								<DataSource>ITVTRentalLineInventDim</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>RentalLineGrid_Qty</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>Qty</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>RentalLineGrid_UnitId</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>UnitId</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormIntegerControl">
+								<Name>RentalLineGrid_RentalMinPeriod</Name>
+								<Type>Integer</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>RentalMinPeriod</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>RentalLineGrid_RentalTimeUnitId</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>RentalTimeUnitId</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>RentalLineGrid_RentalFromDate</Name>
+								<Type>Date</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>RentalFromDate</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>RentalLineGrid_RentalToDate</Name>
+								<Type>Date</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>RentalToDate</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+								<MaxDateLabel>@SYS1091</MaxDateLabel>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>RentalLineGrid_PostedRentalFromDate</Name>
+								<Type>Date</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>PostedRentalFromDate</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>RentalLineGrid_PostedRentalToDate</Name>
+								<Type>Date</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>PostedRentalToDate</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>RentalLineGrid_RentalRunToDate</Name>
+								<Type>Date</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>RentalRunToDate</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormDateControl">
+								<Name>ITVTRentalLine_ProjectLocationReceiptDate</Name>
+								<Type>Date</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ProjectLocationReceiptDate</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>RentalLineGrid_UseFactorPercentage</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>UseFactorPercentage</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>RentalLineGrid_SalesPrice</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>SalesPrice</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>RentalLineGrid_RentalFactorPercentage</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>RentalFactorPercentage</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>RentalLineGrid_RentalPrice</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>RentalPrice</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>ITVTRentalLine_LineDisc</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>LineDisc</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>ITVTRentalLine_LinePercent</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>LinePercent</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>RentalLineGrid_LineAmount</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>LineAmount</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTRentalLine_TaxGroup</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>TaxGroup</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>ITVTRentalLine_TaxItemGroup</Name>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>TaxItemGroup</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>ITVTRentalLine_RentalOrderAutoReservation</Name>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>RentalOrderAutoReservation</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>ITVTRentalLine_DeliverNow</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>DeliverNow</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormRealControl">
+								<Name>ITVTRentalLine_ReturnNow</Name>
+								<Type>Real</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataField>ReturnNow</DataField>
+								<DataSource>ITVTRentalLine</DataSource>
+							</AxFormControl>
+						</Controls>
+						<DataSource>ITVTRentalLine</DataSource>
+						<Style>Tabular</Style>
+					</AxFormControl>
+				</Controls>
+				<Caption>@ITVTRental:RentalLines</Caption>
+				<FastTabExpanded>Always</FastTabExpanded>
+			</FormControl>
+			<Parent>LineViewTab</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>LineViewHeader</PreviousSibling>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlac4lku4a1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>SalesTable_ITVTIsRental</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTIsRental</DataField>
+				<DataSource>SalesTable</DataSource>
+			</FormControl>
+			<Parent>LineViewHeader</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>MCRCustomerGroup</PreviousSibling>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControltpkgex4a1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuFunctionButtonControl">
+				<Name>ITVTRentalRunAction</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<Type>MenuFunctionButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataSource>SalesTable</DataSource>
+				<MenuItemName>ITVTRentalRunAction</MenuItemName>
+				<MenuItemType>Action</MenuItemType>
+				<NeedsRecord>Yes</NeedsRecord>
+			</FormControl>
+			<Parent>InvoiceGenerate</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControle5nmzqi01</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuFunctionButtonControl">
+				<Name>InventTransferOrder</Name>
+				<Type>MenuFunctionButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataSource>SalesTable</DataSource>
+				<MenuItemName>InventTransferOrder</MenuItemName>
+				<NeedsRecord>Yes</NeedsRecord>
+			</FormControl>
+			<Parent>GeneralRelatedInfo</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlyhgnfucc1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormTabPageControl">
+				<Name>TabRental</Name>
+				<Pattern>FieldsFieldGroups</Pattern>
+				<PatternVersion>1.1</PatternVersion>
+				<Type>TabPage</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>SalesLine_ITVTRentalTimeUnitId</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalTimeUnitId</DataField>
+						<DataSource>SalesLine</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormIntegerControl">
+						<Name>SalesLine_ITVTTimeUnitCount</Name>
+						<Type>Integer</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTTimeUnitCount</DataField>
+						<DataSource>SalesLine</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormRealControl">
+						<Name>SalesLine_ITVTRentalPrice</Name>
+						<Type>Real</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalPrice</DataField>
+						<DataSource>SalesLine</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>SalesLine_ITVTRentFree</Name>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentFree</DataField>
+						<DataSource>SalesLine</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>SalesLine_ITVTRentalFromDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalFromDate</DataField>
+						<DataSource>SalesLine</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateControl">
+						<Name>SalesLine_ITVTRentalToDate</Name>
+						<Type>Date</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTRentalToDate</DataField>
+						<DataSource>SalesLine</DataSource>
+					</AxFormControl>
+				</Controls>
+				<ColumnsMode>Fill</ColumnsMode>
+				<Caption>@ITVTRental:Rental</Caption>
+			</FormControl>
+			<Parent>LineDetailsTab</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControl4xmdy5bn1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuFunctionButtonControl">
+				<Name>ITVTRentalOrderConfirmJournal</Name>
+				<Type>MenuFunctionButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataSource>SalesTable</DataSource>
+				<MenuItemName>ITVTRentalOrderConfirm</MenuItemName>
+				<NeedsRecord>Yes</NeedsRecord>
+				<Text>@ITVTRental:RentalOrderConfirmation</Text>
+			</FormControl>
+			<Parent>SellJournals</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlnsmwbndz1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuFunctionButtonControl">
+				<Name>ITVTRentalOrderConfirm</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<Type>MenuFunctionButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataSource>SalesTable</DataSource>
+				<MenuItemName>ITVTRentalOrderConfirm</MenuItemName>
+				<MenuItemType>Action</MenuItemType>
+				<NeedsRecord>Yes</NeedsRecord>
+			</FormControl>
+			<Parent>Generate</Parent>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources>
+		<AxFormDataSource xmlns="">
+			<Name>ITVTRentalLine</Name>
+			<Table>ITVTRentalLine</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>ConfirmedRentalFromDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ConfirmedRentalToDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreatedBy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreatedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DefaultDimension</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DeliverNow</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventTransId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventTransIdRented</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ItemId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LineAmount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LineDisc</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LineNum</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LinePercent</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedBy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Name</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PostedRentalFromDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PostedRentalToDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PriceUnit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ProjectLocationReceiptDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Qty</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalAdditionalText</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalConstructionSite</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalDocumentNumber</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalFactorPercentage</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalFromDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalMinPeriod</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalOrderAutoReservation</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalPrice</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalRunToDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalTimeUnitId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RentalToDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReturnDate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ReturnNow</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SalesId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SalesPrice</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SalesType</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Status</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TaxItemGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>UnitId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>UseFactorPercentage</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<JoinSource>salesTable</JoinSource>
+			<CounterField>LineNum</CounterField>
+			<Index>RentalLineIdx</Index>
+			<InsertIfEmpty>No</InsertIfEmpty>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>ITVTRentalLineInventDim</Name>
+			<Table>InventDim</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>configId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>CreatedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>inventBatchId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventColorId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension1</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension10</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension11</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension12</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension2</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension3</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension4</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension5</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension6</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension7</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension8</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventDimension9</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>inventDimId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventGtdId_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventLocationId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventOwnerId_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventProfileId_RU</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>inventSerialId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventSiteId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventSizeId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventStatusId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventStyleId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InventVersionId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>LicensePlateId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedBy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SHA1HashHex</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>wMSLocationId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>wMSPalletId</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<JoinSource>ITVTRentalLine</JoinSource>
+			<LinkType>InnerJoin</LinkType>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+	</DataSources>
+	<Parts />
+	<PropertyModifications>
+		<AxPropertyModification xmlns="">
+			<Name>Pattern</Name>
+			<Value>Custom</Value>
+		</AxPropertyModification>
+	</PropertyModifications>
+</AxFormExtension>

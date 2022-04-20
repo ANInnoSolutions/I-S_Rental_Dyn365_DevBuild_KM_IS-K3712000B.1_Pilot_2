@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>InventJournalTransfer.ITVTExtension</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlgc2ywuaj1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>ITVTRental</Name>
+				<Type>Group</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>ITVTRental_ITVTOrigSalesId</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTOrigSalesId</DataField>
+						<DataSource>InventJournalTable</DataSource>
+					</AxFormControl>
+				</Controls>
+				<DataGroup>ITVTRental</DataGroup>
+				<DataSource>InventJournalTable</DataSource>
+			</FormControl>
+			<Parent>General2</Parent>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

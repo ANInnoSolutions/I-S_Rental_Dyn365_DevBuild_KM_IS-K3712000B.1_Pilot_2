@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>SalesTableListPage.ITVTRental</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControleaphlkeq1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>SalesTable_ITVTIsRental</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTIsRental</DataField>
+				<DataSource>SalesTable</DataSource>
+			</FormControl>
+			<Parent>Grid</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>SalesTable_SalesType</PreviousSibling>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlj111dpwj1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuFunctionButtonControl">
+				<Name>ITVTRentalRunAction</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<Type>MenuFunctionButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<MenuItemName>ITVTRentalRunAction</MenuItemName>
+				<MenuItemType>Action</MenuItemType>
+			</FormControl>
+			<Parent>IssueInvoice</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlp5cwwkmn1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuFunctionButtonControl">
+				<Name>InventTransferOrder</Name>
+				<Type>MenuFunctionButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataSource>SalesTable</DataSource>
+				<MenuItemName>InventTransferOrder</MenuItemName>
+				<NeedsRecord>Yes</NeedsRecord>
+			</FormControl>
+			<Parent>GeneralRelatedInfo</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlx0gsiujh1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuFunctionButtonControl">
+				<Name>ITVTRentalOrderConfirmJournal</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<Type>MenuFunctionButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataSource>SalesTable</DataSource>
+				<MenuItemName>ITVTRentalOrderConfirm</MenuItemName>
+			</FormControl>
+			<Parent>RelatedDocuments</Parent>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

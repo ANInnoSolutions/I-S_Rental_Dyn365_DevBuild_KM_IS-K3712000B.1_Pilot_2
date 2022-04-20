@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>PurchTable.ITVTExtension</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControljxobrjr01</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>PurchLine_ITVTPostRentalItem</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTPostRentalItem</DataField>
+				<DataSource>PurchLine</DataSource>
+			</FormControl>
+			<Parent>FixedAssets</Parent>
+			<PositionType>Begin</PositionType>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlnae3qr3j1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormStringControl">
+				<Name>PurchLine_ITVTToRentalStatus</Name>
+				<Type>String</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTToRentalStatus</DataField>
+				<DataSource>PurchLine</DataSource>
+			</FormControl>
+			<Parent>FixedAssets</Parent>
+			<PositionType>Begin</PositionType>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

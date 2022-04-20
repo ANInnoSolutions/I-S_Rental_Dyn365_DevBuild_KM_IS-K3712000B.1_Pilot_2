@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ProjTable.ITVTExtension</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControloskghjzw1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuFunctionButtonControl">
+				<Name>ITVTProjInventLocationCreatorAction</Name>
+				<Type>MenuFunctionButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<MenuItemName>ITVTProjInventLocationCreatorAction</MenuItemName>
+				<MenuItemType>Action</MenuItemType>
+				<Text>@ITVTRental:ProjInventLocationCreate</Text>
+			</FormControl>
+			<Parent>ModifyGroup</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>Copyai4qt2s51</Name>
+			<FormControl xmlns=""
+				i:type="AxFormActionPaneTabControl">
+				<Name>ITVTRental</Name>
+				<Type>ActionPaneTab</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonGroupControl">
+						<Name>ITVTRentalNewButtonGroup</Name>
+						<Type>ButtonGroup</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormMenuFunctionButtonControl">
+								<Name>SalesTableForNew</Name>
+								<Type>MenuFunctionButton</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataSource>ProjTable</DataSource>
+								<MenuItemName>SalesTableForNew</MenuItemName>
+								<NeedsRecord>Yes</NeedsRecord>
+								<Text>@ITVTRental:RentalOrder</Text>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS2055</Caption>
+						<DataSource>ProjTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonGroupControl">
+						<Name>ITVTRentalRelatedInfo</Name>
+						<Type>ButtonGroup</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormMenuFunctionButtonControl">
+								<Name>ITVTRentalTableListPage</Name>
+								<Type>MenuFunctionButton</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<DataSource>ProjTable</DataSource>
+								<MenuItemName>ITVTRentalTableListPage</MenuItemName>
+								<NeedsRecord>Yes</NeedsRecord>
+								<Text>@ITVTRental:RentalOrders</Text>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS314516</Caption>
+						<DataSource>ProjTable</DataSource>
+					</AxFormControl>
+				</Controls>
+				<Caption>@ITVTRental:Rental</Caption>
+			</FormControl>
+			<Parent>ApplicationBar</Parent>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

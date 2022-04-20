@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>CustTable.ITVTExtension</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>Copymvpistmx1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormButtonControl">
+				<Name>ITVTCreateRentalOrder</Name>
+				<Type>Button</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Text>@ITVTRental:RentalOrder</Text>
+			</FormControl>
+			<Parent>btngrpSellNew</Parent>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>EcoResProductDetailsExtended.ITVTExtension</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlm1x5lbe11</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>InventTable_ITVTIsRentalItem</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTIsRentalItem</DataField>
+				<DataSource>InventTable</DataSource>
+			</FormControl>
+			<Parent>HeaderGrid</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>EcoResProduct_ProductType</PreviousSibling>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControlou2m2dqt1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCheckBoxControl">
+				<Name>InventTable_ITVTIsRentalItem1</Name>
+				<Type>CheckBox</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTIsRentalItem</DataField>
+				<DataSource>InventTable</DataSource>
+			</FormControl>
+			<Parent>GeneralIdentification</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControllzy5k43j1</Name>
+			<FormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>ITVTFixedAssetsGroup</Name>
+				<Type>Group</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ITVTFixedAssetsGroup_ITVTIsFixedAsset</Name>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTIsFixedAsset</DataField>
+						<DataSource>InventTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormRealControl">
+						<Name>ITVTFixedAssetsGroup_ITVTFixedAssetHGBPct</Name>
+						<Type>Real</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTFixedAssetHGBPct</DataField>
+						<DataSource>InventTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormRealControl">
+						<Name>ITVTFixedAssetsGroup_ITVTFixedAssetIFRSPct</Name>
+						<Type>Real</Type>
+						<Visible>No</Visible>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTFixedAssetIFRSPct</DataField>
+						<DataSource>InventTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormRealControl">
+						<Name>ITVTFixedAssetsGroup_ITVTFixedAssetHGBSL</Name>
+						<Type>Real</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTFixedAssetHGBSL</DataField>
+						<DataSource>InventTable</DataSource>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormRealControl">
+						<Name>ITVTFixedAssetsGroup_ITVTFixedAssetIFRSSL</Name>
+						<Type>Real</Type>
+						<Visible>No</Visible>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>ITVTFixedAssetIFRSSL</DataField>
+						<DataSource>InventTable</DataSource>
+					</AxFormControl>
+				</Controls>
+				<ArrangeMethod>Auto</ArrangeMethod>
+				<DataGroup>ITVTFixedAssets</DataGroup>
+				<DataSource>InventTable</DataSource>
+			</FormControl>
+			<Parent>TabPageCost</Parent>
+		</AxFormExtensionControl>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControldocovz121</Name>
+			<FormControl xmlns=""
+				i:type="AxFormStringControl">
+				<Name>InventTable_ITVTRentalService</Name>
+				<Type>String</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<DataField>ITVTRentalService</DataField>
+				<DataSource>InventTable</DataSource>
+			</FormControl>
+			<Parent>GeneralIdentification</Parent>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

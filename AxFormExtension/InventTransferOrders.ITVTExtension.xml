@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>InventTransferOrders.ITVTExtension</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>FormExtensionControleagkt4p31</Name>
+			<FormControl xmlns=""
+				i:type="AxFormMenuButtonControl">
+				<Name>ITVTRental</Name>
+				<Type>MenuButton</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTAlternativeProduct</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataSource>InventTransferLine</DataSource>
+						<MenuItemName>ITVTAlternativeProduct</MenuItemName>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormMenuFunctionButtonControl">
+						<Name>ITVTReallocateTransferOrderLines</Name>
+						<Type>MenuFunctionButton</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataSource>InventTransferLine</DataSource>
+						<MenuItemName>ITVTReallocateTransferOrderLines</MenuItemName>
+						<MenuItemType>Action</MenuItemType>
+						<MultiSelect>Yes</MultiSelect>
+					</AxFormControl>
+				</Controls>
+				<Text>@ITVTRental:Rental</Text>
+			</FormControl>
+			<Parent>ButtonGroupLine</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>InventTransferUpdateRemain</PreviousSibling>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>
