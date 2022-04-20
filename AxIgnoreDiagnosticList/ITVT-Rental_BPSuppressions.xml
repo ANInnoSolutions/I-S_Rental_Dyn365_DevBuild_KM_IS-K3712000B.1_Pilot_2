@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<IgnoreDiagnostics>
+  <Name>ITVT-Rental_BPSuppressions</Name>
+  <Items>
+    <Diagnostic>
+      <DiagnosticType>CodeAnalysis</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://TableExtension/SalesLine.ITVTExtension</Path>
+      <Moniker>BPCheckNumberofNewFields</Moniker>
+      <Justification>Cannot be created another table to omit this error</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>CodeAnalysis</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://TableExtension/InventTable.ITVTExtension</Path>
+      <Moniker>BPCheckNumberofNewFields</Moniker>
+      <Justification>Cannot be created another table to omit this error</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>CodeAnalysis</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://TableExtension/EcoResReleasedProductCreationV2Staging.ITVTRental</Path>
+      <Moniker>BPCheckNumberofNewFields</Moniker>
+      <Justification>Cannot be created another table to omit this error</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>CodeAnalysis</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://TableExtension/EcoResReleasedProductV2Staging.ITVTRental</Path>
+      <Moniker>BPCheckNumberofNewFields</Moniker>
+      <Justification>Cannot be created another table to omit this error</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Metadata</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>AxDataEntityViewExtension/EcoResReleasedProductV2Entity.ITVTRental/Relations/CatchWeightItemHandlingPolicy/RelatedDataEntity</Path>
+      <Moniker>ReferencedObjectIsObsolete</Moniker>
+      <Justification>Only extended tha standard entity</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Metadata</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>AxDataEntityViewExtension/EcoResReleasedProductV2Entity.ITVTRental/Relations/WHSProductFilterGroups/RelatedDataEntity</Path>
+      <Moniker>ReferencedObjectIsObsolete</Moniker>
+      <Justification>Only extended tha standard entity</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Metadata</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>AxDataEntityViewExtension/EcoResReleasedProductMasterV2Entity.ITVTRental/Fields/PackageHandlingTime/DataField</Path>
+      <Moniker>ReferencedObjectIsObsolete</Moniker>
+      <Justification>Only extended tha standard entity</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Metadata</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>AxDataEntityViewExtension/EcoResReleasedProductV2Entity.ITVTRental/Fields/PackageHandlingTime/DataField</Path>
+      <Moniker>ReferencedObjectIsObsolete</Moniker>
+      <Justification>Only extended tha standard entity</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://Form/ITVTRentalProjectMgmtWorkspace/FormDesign/FormDesign/FormTabControl/PanoramaBody</Path>
+      <Moniker>BPUpgradeMetadataTabColumnsMode</Moniker>
+      <Justification>Not allow edit the propetry because it was locked by the form pattern</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://Form/ITVTRentalProjectMgmtWorkspace/FormDesign/FormDesign/FormTabControl/PanoramaBody/FormTabPageControl/TabbedListSection/FormTabControl/TabbedList</Path>
+      <Moniker>BPErrorSizeToAvailableControlsInsideColumn</Moniker>
+      <Justification>Not allow edit the propetry because it was locked by the form pattern</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://DataEntityView/ITVTRentalOnHandCubeDataEntity/DataEntityViewMappedField/DimDim1</Path>
+      <Moniker>DataEntityFieldNamePropertyCheck</Moniker>
+      <Justification>The digit cannot be removed from the column name</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://DataEntityView/ITVTRentalOnHandCubeDataEntity/DataEntityViewMappedField/DimDim2</Path>
+      <Moniker>DataEntityFieldNamePropertyCheck</Moniker>
+      <Justification>The digit cannot be removed from the column name</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://DataEntityView/ITVTRentalOnHandCubeDataEntity/DataEntityViewMappedField/DimDim3</Path>
+      <Moniker>DataEntityFieldNamePropertyCheck</Moniker>
+      <Justification>The digit cannot be removed from the column name</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://DataEntityView/ITVTRentalOnHandCubeDataEntity/DataEntityViewMappedField/DimDim4</Path>
+      <Moniker>DataEntityFieldNamePropertyCheck</Moniker>
+      <Justification>The digit cannot be removed from the column name</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://DataEntityView/ITVTRentalOnHandCubeDataEntity/DataEntityViewMappedField/DimDim4</Path>
+      <Moniker>DataEntityFieldNamePropertyCheck</Moniker>
+      <Justification>The digit cannot be removed from the column name</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>CodeAnalysis</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://Form/ITVTRentalParameters/FormDesign/FormDesign/FormTabControl/Tab/FormTabPageControl/TabNumberSeq/FormGroupControl/GridGroup/FormGridControl/Grid/FormStringControl/ctrlLabelSameAs</Path>
+      <Moniker>BPCheckDisplayMethodCached</Moniker>
+      <Justification>Display method cannot be cached</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://Table/ITVTRentalTimeJourLine/TableIndex/LineIdx/TableIndexField/RecId</Path>
+      <Moniker>BPErrorTableNaturalKeyWithRecordID</Moniker>
+      <Justification>Suppress the BP warning</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>CodeAnalysis</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://Form/ITVTRentalTimeJourTable/FormDesign/FormDesign/FormTabControl/MainTab/FormTabPageControl/TabPageDetails/FormTabControl/DetailsTab/FormTabPageControl/LineView/FormTabControl/LineViewTab/FormTabPageControl/LineViewLineDetails/FormTabControl/LineDetailsTab/FormTabPageControl/TabLineGeneral</Path>
+      <Moniker>BPCheckPassiveJoinUse</Moniker>
+      <Justification>Passive join cannot be used for the form datasource</Justification>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>BestPractices</DiagnosticType>
+      <Severity>Warning</Severity>
+      <Path>dynamics://Class/ITVTSalesTableForm_Extension/Method/init</Path>
+      <Moniker>BPErrorUnknownLabel</Moniker>
+      <Justification>All label texts are defined in label files</Justification>
+    </Diagnostic>
+  </Items>
+</IgnoreDiagnostics>
