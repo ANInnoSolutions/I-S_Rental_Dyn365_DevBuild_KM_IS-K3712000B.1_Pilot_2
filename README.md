@@ -1,4 +1,4 @@
-## dyn365finops_rentalmodule_example_in_devstate
+## I|S_Rental_Dyn365_DevBuild_KM_IS-K3712000B.1_Pilot_2
 Microsoft Dynamics 365 (https://dynamics.microsoft.com/)
 > Microsoft Dynamics 365 is a cloud-based ERP & CRM Application. 
 > Licenses are required in regards to the actual Microsoft Licensing Guide to use Microsoft Dynamics 365 Applications.
